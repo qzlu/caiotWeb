@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+
+</head>
+
+<style>
+
+</style>
+<body> 
+	
+<script>
+
+const fun = (head, ...tail) => [head, tail];
+var aa=fun(1, 2, 3, 4, 5)
+  console.log(aa)
+  
+const fun2 = (head, ...tail) =>  tail;  
+  var bb=fun2(1, 2, 3, 4, 5)
+  console.log(bb)
+  const set = new Set([1, 2, 3, 4, 4]);
+ 
+  console.log([...set])
+  
+  
+ var users = [
+  {name: "张含韵",  "email": "zhang@email.com"},
+  {name: "江一燕",  "email": "jiang@email.com"},
+  {name: "李小璐",  "email": "li22@email.com"},
+  {name: "李小璐",  "email": "li@email.com"}
+ ];
+  
+  var u=users.map(x=>x.name)
+  console.log(u)
+  var g=users.filter(x=>x.name!="李小璐")
+  console.log(Math.max(...[114, 3, 77]))
+  
+  
+
+var es6 = new Map();
+es6.set("edition", 6);
+es6.set("committee", "TC39");
+console.log(es6)
+
+for(let iem of es6){
+	console.log(iem)
+}
+
+
+</script>
+</body>
+</html>

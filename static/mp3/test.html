@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+
+</head>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/6.7.3/video-js.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/6.7.3/video.js"></script>
+<script src="https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
+<style>
+	.video-js .vjs-big-play-button{
+    font-size: 2.5em;
+    line-height: 2.3em;
+    height: 2.5em;
+    width: 2.5em;
+    -webkit-border-radius: 2.5em;
+    -moz-border-radius: 2.5em;
+    border-radius: 2.5em;
+    background-color: #73859f;
+    background-color: rgba(115,133,159,.5);
+    border-width: 0.15em;
+    margin-top: -1.25em;
+    margin-left: -1.75em;
+}
+/* 中间的播放箭头 */
+.vjs-big-play-button .vjs-icon-placeholder {
+    font-size: 1.63em;
+}
+/* 加载圆圈 */
+.vjs-loading-spinner {
+    font-size: 2.5em;
+    width: 2em;
+    height: 2em;
+    border-radius: 1em;
+    margin-top: -1em;
+    margin-left: -1.5em;
+}
+
+.video-js .vjs-time-control{display:block;}
+.video-js .vjs-remaining-time{display: none;}
+</style>
+<body> 
+	
+	
+<!--<video id="my_video_1" class="video-js vjs-default-skin fillWidth" controls width="640" height="268" data-setup='{}'>
+  <source src="http://hls.open.ys7.com/openlive/9afe414a6dfe481aad4a1d154d3dc954.m3u8" type="application/x-mpegURL">
+</video>-->
+
+<!--如果不用videojs手动启用,那黄色部分代码是必须要有的,否则video.js无法找到该作用于哪个对象导致将失效	-->
+	
+<video id="example_video_1" class="video-js vjs-big-play-centered" controls preload="none" width="640" height="264"  poster="http://vjs.zencdn.net/v/oceans.png">
+  <source src="http://hls.open.ys7.com/openlive/9afe414a6dfe481aad4a1d154d3dc954.m3u8" type="application/x-mpegURL">
+</video>
+
+<video id="example_video_2" class="video-js vjs-big-play-centered" controls preload="none" width="640" height="264"  poster="http://vjs.zencdn.net/v/oceans.png">
+  <source src="http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4" type="video/mp4">
+</video>
+	
+	
+<audio src="warn.mp3" controls="controls" preload id="music1" hidden>
+</audio>
+
+
+
+
+
+
+
+<span id="bf2" onclick="bf()">1</span>
+<span id="bf2" onclick="rbf()">2</span>
+
+
+
+
+<script>
+
+
+var player = videojs('example_video_1',{
+	 autoplay: true,
+    muted: true,
+    controls : true/false,      
+    height:300, 
+    width:300,
+    loop : true,
+    auto:true
+    // 更多配置.....
+});
+
+var player = videojs('example_video_2',{
+	 autoplay: true,
+    muted: true,
+    controls : true/false,      
+    height:300, 
+    width:300,
+    loop : true,
+    auto:true
+    // 更多配置.....
+});
+	
+	
+/*function rbf(){
+ 
+ audio.currentTime = 0;
+}*/
+
+
+
+
+function bf(){
+ 
+ var audio = document.getElementById('music1');
+  audio.currentTime = 0;
+    audio.play();
+ 
+
+}
+function rbf(){
+	 var audio = document.getElementById('music1');
+	  audio.currentTime = 0;
+	audio.pause();
+}
+
+
+
+  
+</script>
+</body>
+</html>

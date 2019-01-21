@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+   <head>
+       <meta charset="utf-8">
+   </head>
+   <body style="height: 100%; margin: 0">
+       <div id="container" style="height: 100%"></div>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+      
+       <script type="text/javascript">
+       	
+       	
+var arr=["运行", "离线", "停止"];
+var arr2=[["运行", "停止"],["运行"],["运行", "离线"],["运行", "停止", "离线"],["运行","停止"],["离线"]];
+var arr3=[[4,3],[4],[101,10],[1,1,1],[6,5],[3]]
+
+let len=arr.length;
+
+
+for(let uu=0;uu<arr.length;uu++){
+	for(let pp=0;pp<arr2.length;pp++){
+		 if(arr2[pp].indexOf(arr[uu])==-1){
+		 	arr3[pp].splice(uu,0,0) 
+		 }
+		console.log(arr2[pp].indexOf(arr[uu]))
+	}
+	
+}
+
+console.log(arr3)
+let aa2=[];
+for(let g=0;g<arr.length;g++){
+	let aa1=[];
+	 for(let h=0;h<arr3.length;h++){
+	 	aa1.push(arr3[h][g])
+	 }
+	aa2.push(aa1)
+}
+
+console.log(aa2)       	
+       	
+ let aa3=[];
+ 
+ for(let yy=0;yy<arr.length;yy++){
+ 	let obj_01={type: 'bar',stack: '总量',label: {normal: { show: true,position: 'insideRight'}}}
+ 	    obj_01.name=arr[yy];
+ 	    obj_01.data=aa2[yy];
+ 	    aa3.push(obj_01)
+ }
+ console.log(aa3)
+/*for(let yy of arr){
+	let obj_01={type: 'bar',stack: '总量',label: {normal: { show: true,position: 'insideRight'}}}
+	obj_01.name=yy;
+	
+}*/
+ 
+ 
+ 
+       	
+       	
+var dom = document.getElementById("container");
+var myChart = echarts.init(dom);
+var app = {};
+option = null;
+app.title = '堆叠条形图';
+
+option = {
+    tooltip : {
+        trigger: 'axis',
+        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+        }
+    },
+    legend: {
+      //  data: ['运行', '停止','营运']
+      data: arr
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis:  {
+    	 type: 'category',
+         data: ["变压器", "进线柜", "馈线柜", "联络柜1" ]
+      
+    },
+    yAxis: {
+         type: 'value'
+    },
+   // series:aa3
+    series: [
+        {
+            name: '运行',
+            type: 'bar',
+            stack: '总量',
+            label: {
+                normal: {
+                    show: true,
+                    position: 'insideRight'
+                }
+            },
+            data: [320, 302, 301, 334,]
+        },
+        {
+            name: '停止',
+            type: 'bar',
+            stack: '总量',
+            label: {
+                normal: {
+                    show: true,
+                    position: 'insideRight'
+                }
+            },
+            data: [120, 132, 101, 134]
+        },
+        {
+            name: '营运',
+            type: 'bar',
+            stack: '总量',
+            label: {
+                normal: {
+                    show: true,
+                    position: 'insideRight'
+                }
+            },
+            data: [220, 182, 191, 234]
+        }
+    ]
+};;
+if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+}
+
+
+
+
+
+
+
+
+
+
+
+       </script>
+   </body>
+</html>

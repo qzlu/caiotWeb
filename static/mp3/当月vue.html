@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html >
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>日历操作</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+
+  
+</head>
+<body>
+<div id='app'>
+ <a v-on:click="itest(0)">111</a>--- <a @click="itest(1)">22222</a>
+
+	{{value1}}
+  <button id="last-week">上一周</button><button id="next-week">下一周</button>
+</div>	
+	
+
+ <script>
+	
+var aa=0;	
+new Vue({
+ el: '#app',
+  data () {
+    return {
+    	currentFirstDate:"",
+        value1:"",
+    }
+  },
+  components: {
+    
+  },
+  methods: {
+  	itest(x){
+  		var aaa="s";
+  		if(this.value1==""){
+  			  aaa="2018-12-25"
+  		}else{
+  			 aaa=this.value1
+  		}
+  		
+  		if(x==0){
+  		 this.getPreMonth(aaa)	
+  		}else{
+  			 this.getNextMonth(aaa)	
+  		}
+  	},
+   getPreMonth(date) {
+            var arr = date.split('-');
+            var year = arr[0]; //获取当前日期的年份
+            var month = arr[1]; //获取当前日期的月份
+            var day = arr[2]; //获取当前日期的日
+            var days = new Date(year, month, 0);
+            days = days.getDate(); //获取当前日期中月的天数
+            var year2 = year;
+            var month2 = parseInt(month) - 1;
+            if (month2 == 0) {
+                year2 = parseInt(year2) - 1;
+                month2 = 12;
+            }
+            var day2 = day;
+            var days2 = new Date(year2, month2, 0);
+            days2 = days2.getDate();
+            if (day2 > days2) {
+                day2 = days2;
+            }
+            if (month2 < 10) {
+                month2 = '0' + month2;
+            }
+            var t2 = year2 + '-' + month2 ;
+            this.value1=t2
+            return t2;
+       },
+        
+        /**
+         * 获取下一个月@date 格式为yyyy-mm-dd的日期，如：2014-01-25
+
+         */        
+     getNextMonth(date) {
+            var arr = date.split('-');
+            var year = arr[0]; //获取当前日期的年份
+            var month = arr[1]; //获取当前日期的月份
+            var day = arr[2]; //获取当前日期的日
+            var days = new Date(year, month, 0);
+            days = days.getDate(); //获取当前日期中的月的天数
+            var year2 = year;
+            var month2 = parseInt(month) + 1;
+            if (month2 == 13) {
+                year2 = parseInt(year2) + 1;
+                month2 = 1;
+            }
+            var day2 = day;
+            var days2 = new Date(year2, month2, 0);
+            days2 = days2.getDate();
+            if (day2 > days2) {
+                day2 = days2;
+            }
+            if (month2 < 10) {
+                month2 = '0' + month2;
+            }
+        
+            var t2 = year2 + '-' + month2 ;
+             this.value1=t2
+            return t2;
+        },
+    
+  },
+  mounted:function(){
+  	/*var sss=this.getPreMonth("2018-12-25")
+  	var bbb=this.getNextMonth("2018-12-25")
+  	console.log(sss)
+  	console.log(bbb)*/
+  }
+
+    
+
+  
+
+
+
+
+    })
+  </script> 
+</body>
+</html

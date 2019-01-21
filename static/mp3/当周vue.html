@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html >
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>日历操作</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+
+  
+</head>
+<body>
+<div id='app'>
+ <a v-on:click="itest(0)">111</a>--- <a @click="itest(1)">22222</a>
+
+	
+  <button id="last-week">上一周</button><button id="next-week">下一周</button>
+</div>	
+	
+
+ <script>
+	
+var aa=0;	
+new Vue({
+ el: '#app',
+  data () {
+    return {
+    	currentFirstDate:"",
+
+    }
+  },
+  components: {
+    
+  },
+  methods: {
+  	
+  	formatDate(date){      
+        var year = date.getFullYear()+'年';
+        var month = (date.getMonth()+1)+'月';
+        var day = date.getDate()+'日';
+        return year+month+day;
+      },
+  	 	
+    itest(x){	
+     let _this=this
+      var addDate= function(date,n){   
+        date.setDate(date.getDate()+n);
+        return date;
+      };
+
+      var setDate = function(date){      
+        var week = date.getDay();
+        date = addDate(date,week*-1);
+        _this.currentFirstDate = new Date(date);
+       console.log(_this.formatDate(_this.currentFirstDate))
+              
+      }; 
+       if(aa==0){
+       	setDate(new Date());
+       }     
+        	aa=1
+        
+        if(x==0){
+        	  setDate(addDate(_this.currentFirstDate,-7))
+        }else{
+        	 setDate(addDate(_this.currentFirstDate,7));
+        }
+        
+  		
+  	}
+    
+  },
+  mounted:function(){
+  	
+  }
+
+    
+
+  
+
+
+
+
+    })
+  </script> 
+</body>
+</html
