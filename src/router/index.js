@@ -74,11 +74,11 @@ import PersonalReports from '@/components/Count/list' //个人报表
 /*----------*/
 
 import SystemManagement from '@/components/SystemManagement' //系统管理
-import DeviceChangeManagement from '@/components/home/test' // 用户管理
-import ProjectManagement from '@/components/home/test' // 用户管理
-import UserManagement from '@/components/home/test'  //项目管理
+import DeviceChangeManagement from '@/components/home/test' // 
+import ProjectManagement from '@/components/home/test' // 
+import UserManagement from '@/components/SystemManagement/user'  //用户管理
 import ConfigurationManagement from '@/components/SystemManagement/ConfigurationManagement' //配置管理
-import Role from '@/components/SystemManagement/role';//角色管理
+import role from '@/components/SystemManagement/role';//角色管理
 
 /*----------*/
 import agreement from '@/components/agreement' //安卓页面
@@ -526,8 +526,8 @@ let routers_item=[
 						 },
 					},
 					{ path: 'role',
-						name: 'Role', // 用户管理
-						component: Role,
+						name: 'role',//角色管理
+						component: role,
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,

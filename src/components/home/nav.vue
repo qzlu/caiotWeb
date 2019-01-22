@@ -134,7 +134,7 @@ export default {
         FAction: "QueryUsersMenu"
       })
       .then(data => {
-      	this.navData = comm.ChangeRouterVal(data.FObject); //匹配路由名
+        this.navData = comm.ChangeRouterVal(data.FObject); //匹配路由名
       	localStorage.setItem("config_nav_data", JSON.stringify(this.navData)); //系统管理-配置管理要用到的
       })
       .catch(error => {

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="clearfix">
         <div class="zw-pagination">
             <el-pagination
              @current-change="handleCurrentChange"

@@ -334,10 +334,10 @@ export default {
             }
         },
         async submit(){
-            await new Promise(resove => {
+            await new Promise(resolve => {
                 this.$refs.form.validate((valid) => {
                   if (valid) {
-                      resove()
+                      resolve()
                   } 
                 });
             })
@@ -581,6 +581,7 @@ export default {
     .role-main{
         height: 920px;
         padding: 56px 46px 85px 57px;
+        position: relative;
         box-sizing: border-box;
         background: url('#{$img-url}index/count_back.png') center no-repeat
     }

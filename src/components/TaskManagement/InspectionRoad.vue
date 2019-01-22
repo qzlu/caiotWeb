@@ -110,6 +110,7 @@ $img-url:'/static/image/';
     height: 920px;
     padding: 56px 46px 85px 57px;
     box-sizing: border-box;
+    position: relative;
     background: url('#{$img-url}index/count_back.png') center no-repeat;
     .road-head{
         margin-bottom: 15px;
