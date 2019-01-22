@@ -1,5 +1,5 @@
 <template>
-    <div class="role-main">
+    <div class="user-main">
         <!-- 新增或编辑用户弹框 -->
         <div class="config-dialog">
             <el-dialog  :title="title" :visible.sync="show" width="676">
@@ -25,10 +25,10 @@
                 </div>
             </el-dialog>
         </div>
-        <ul class="role-head clearfix">
-            <li class="l role-head-add" @click="add">新增</li>
-            <li class="l role-head-export" @click ="exportUser()">导出</li>
-            <li class="l role-head-refrest" @click="pageIndex=1;filterText = '';queryData()">刷新</li>
+        <ul class="user-head clearfix">
+            <li class="l user-head-add" @click="add">新增</li>
+            <li class="l user-head-export" @click ="exportUser()">导出</li>
+            <li class="l user-head-refrest" @click="pageIndex=1;filterText = '';queryData()">刷新</li>
             <li class="r">
                 <el-input class="search" v-model="filterText"></el-input>
                 <i class="el-icon-search"></i>
@@ -53,7 +53,7 @@
                  prop=""
                  label="操作">
                  <template slot-scope="scoped">
-                     <div class="role-operation">
+                     <div class="user-operation">
                         <span @click="deleteUser(scoped.row.FGUID)">删除</span>
                         <span @click="updateUser(scoped.row)">编辑</span>
                         <span @click="resetUsers(scoped.row)">初始化</span>
@@ -337,15 +337,14 @@ export default {
 }
 </script>
 <style lang='scss'>
-    $img-url:'/static/image/';
-    .role-main{
-        height: 920px;
-        padding: 56px 46px 85px 57px;
-        position: relative;
-        box-sizing: border-box;
-        background: url('#{$img-url}index/count_back.png') center no-repeat
-    }
-    .role-head{
+$img-url:'/static/image/';
+.user-main{
+    height: 920px;
+    padding: 56px 46px 85px 57px;
+    position: relative;
+    box-sizing: border-box;
+    background: url('#{$img-url}index/count_back.png') center no-repeat;
+    .user-head{
         margin-bottom: 15px;
         li{
             width: 44px;
@@ -395,7 +394,7 @@ export default {
             margin-left: 10px;
         }
     }
-    .role-operation{
+    .user-operation{
         span{
             cursor: pointer;
         }
@@ -449,4 +448,5 @@ export default {
             }
         }
     }
+}
 </style>
