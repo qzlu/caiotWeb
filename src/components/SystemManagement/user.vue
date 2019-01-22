@@ -27,7 +27,7 @@
         </div>
         <ul class="user-head clearfix">
             <li class="l user-head-add" @click="add">新增</li>
-            <li class="l user-head-export" @click ="exportUser()">导出</li>
+            <li class="l user-head-export" @click ="exportFile()">导出</li>
             <li class="l user-head-refrest" @click="pageIndex=1;filterText = '';queryData()">刷新</li>
             <li class="r">
                 <el-input class="search" v-model="filterText"></el-input>
@@ -314,9 +314,9 @@ export default {
             })
         },
         /**
-         * exportUser 导出
+         * exportFile 导出
          */
-        exportUser(){
+        exportFile(){
             system({
                 FAction:'QueryExportTUsers',
                 FUserName:this.filterText,

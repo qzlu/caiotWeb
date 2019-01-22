@@ -140,7 +140,7 @@
         </div>
         <ul class="role-head clearfix">
             <li class="l role-head-add" @click="add">新增</li>
-            <li class="l role-head-export">导出</li>
+            <li class="l role-head-export" @click="exportFile">导出</li>
             <li class="l role-head-refrest" @click="pageIndex=1;queryData()">刷新</li>
         </ul>
         <div class="role-table">
@@ -571,7 +571,25 @@ export default {
                     if(item[children]) this.findTree(item[children],children,id,arr)
                 }
             })
-        }
+        },
+        /**
+         * exportFile 导出
+         */
+        exportFile(){
+            system({
+                FAction:'QueryExportTRole',
+                FName:''
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: '导出失败!请重试'
+                });
+            })
+        }   
         
     }
 }
