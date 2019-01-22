@@ -12,7 +12,7 @@
                     <el-form-item label="用户名称" prop="FUserNickname" :rules="[{ required: true, message: '请输入用户名称'}]">
                         <el-input v-model="addFormData.FUserNickname"></el-input>
                     </el-form-item>
-                    <el-form-item label="账号" prop="FUserName" :rules="[{ required: true, message: '请输入账号'}]">
+                    <el-form-item label="账号" prop="FUserName" :rules="FUserNameRule">
                         <el-input v-model="addFormData.FUserName"></el-input>
                     </el-form-item>
                     <el-form-item label="密码" prop="FPassword">
@@ -44,6 +44,7 @@
                >
                <el-table-column
                  v-for="item in tableLabel"
+                 show-overflow-tooltip
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
@@ -72,6 +73,17 @@ import {zwPagination} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
+        const validateUserName = (rule,value,callback) => {  
+ 			var uPattern = /^[a-zA-Z0-9_]{3,16}$/;
+	        if(!value) {
+	            return callback(new Error('请输入用户名'));
+	          }
+	        else if(value&& uPattern.test(value)){
+	         	callback();
+	        } else{
+	        	callback(new Error('请输入(3~10)位字母、数字、_'));
+	        }
+	    };
         return{
             tableLabel:[
                 {
@@ -79,8 +91,8 @@ export default {
                     label: '序号'
                 },
                 {
-                    prop: 'ProjectName',
-                    label: '所属项目'
+                    prop: 'FUserName',
+                    label: '账号'
                 },
                 {
                     prop: 'FUserNickname',
@@ -91,8 +103,8 @@ export default {
                     label: '所属角色'
                 },
                 {
-                    prop: 'FUserName',
-                    label: '账号'
+                    prop: 'ProjectName',
+                    label: '所属项目'
                 },
                 {
                     prop: 'FPassword',
@@ -131,6 +143,7 @@ export default {
             title:'新增', //新增或修改用户弹框标题
             show:false, //控制新增弹框是否显示
             type:0,  // 0 :新增用户 1：修改用户
+            FUserNameRule: [{required: true, validator: validateUserName}],//用户名规则
             filterText:''
         }
     },
@@ -169,9 +182,12 @@ export default {
             .then(data => {
                 this.total = data.FObject.Table[0].Count
                 this.tableData = data.FObject.Table1
+                this.tableData.forEach(item => {
+                    item.ProjectName = item.ProjectName.replace(/,$/,'')
+                })
             })
             .catch(err => {
-
+                console.log(err);
             })
         },
         /**
