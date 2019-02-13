@@ -1,12 +1,12 @@
 <template>
-    <div class="road">
-        <ul class="road-head clearfix report-header">
-            <li class="l road-head-add" @click=""><button class="zw-btn zw-btn-add">新增</button></li>
-            <li class="l road-head-export"><button class="zw-btn zw-btn-export">导出</button></li>
-            <li class="l road-head-print"><button class="zw-btn zw-btn-print">导出</button></li>
+    <div class="">
+        <ul class="clearfix report-header">
+            <li class="l" @click=""><button class="zw-btn zw-btn-add">新增</button></li>
+            <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
+            <li class="l"><button class="zw-btn zw-btn-refrest">刷新</button></li>
             <li class="r">
-                <el-input class="search-input" v-model="filterText" placeholder="搜索路线关键字">
-                     <i class="el-icon-search" slot="suffix"></i>
+                <el-input class="search-input" placeholder="搜索设备关键字" v-model="filterText">
+                    <i class="el-icon-search" slot="suffix"></i>
                 </el-input>
                 <el-button type="primary">
                   高级搜索<i class="el-icon-arrow-down el-icon--right"></i>
@@ -109,28 +109,6 @@ export default {
 }
 </script>
 <style lang="scss">
-$img-url:'/static/image/';
-.road{
-    height: 920px;
-    padding: 56px 46px 85px 57px;
-    box-sizing: border-box;
-    position: relative;
-    background: url('#{$img-url}index/count_back.png') center no-repeat;
-    .road-head{
-        li.r{
-            .el-button.el-button--primary{
-                width:94px;
-                height:46px;
-                margin-left: 10px;
-                background:rgba(0,80,153,1);
-                border:1px solid rgba(12,55,110,1);
-                padding-left: 4px;
-                .el-icon-arrow-down.el-icon--right{
-                    color: #2A91FC
-                }
-            }
-        }
-    }
-}
+
 </style>
 

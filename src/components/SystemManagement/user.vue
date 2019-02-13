@@ -15,6 +15,12 @@
                     <el-form-item label="账号" prop="FUserName" :rules="FUserNameRule">
                         <el-input v-model="addFormData.FUserName"></el-input>
                     </el-form-item>
+                    <el-form-item label="联系人" prop="FContacts" :rules="[{ required: true, message: '请输入联系人'}]">
+                        <el-input v-model="addFormData.FContacts"></el-input>
+                    </el-form-item>
+                    <el-form-item label="电话号码" prop="FTelephone" :rules="FTelephoneRule">
+                        <el-input v-model="addFormData.FTelephone"></el-input>
+                    </el-form-item>
                     <el-form-item label="密码" prop="FPassword">
                         <span style="margin-left:10px;">{{addFormData.FPassword}}</span>
                         <!-- <el-input v-model="addFormData.FPassword" :disabled="true"></el-input> -->
@@ -25,13 +31,14 @@
                 </div>
             </el-dialog>
         </div>
-        <ul class="user-head clearfix">
-            <li class="l user-head-add" @click="add">新增</li>
-            <li class="l user-head-export" @click ="exportFile()">导出</li>
-            <li class="l user-head-refrest" @click="pageIndex=1;filterText = '';queryData()">刷新</li>
+        <ul class="user-head clearfix report-header">
+            <li class="l" @click="add"><button class="zw-btn zw-btn-add">新增</button></li>
+            <li class="l" @click ="exportFile()"><button class="zw-btn zw-btn-export">导出</button></li>
+            <li class="l" @click="pageIndex=1;filterText = '';queryData()"><button class="zw-btn zw-btn-refrest">刷新</button></li>
             <li class="r">
-                <el-input class="search" v-model="filterText"></el-input>
-                <i class="el-icon-search"></i>
+                <el-input class="search-input" v-model="filterText" placeholder="搜索用户关键字">
+                     <i class="el-icon-search" slot="suffix"></i>
+                </el-input>
                 <button class="zw-btn zw-btn-primary" @click="filterText = '' ">重置</button>
             </li>
         </ul>
@@ -55,7 +62,7 @@
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="user-operation">
-                        <span @click="deleteUser(scoped.row.FGUID)">删除</span>
+                        <span @click="deleteUser(scoped.row)">删除</span>
                         <span @click="updateUser(scoped.row)">编辑</span>
                         <span @click="resetUsers(scoped.row)">初始化</span>
                      </div>
@@ -83,7 +90,17 @@ export default {
 	        } else{
 	        	callback(new Error('请输入(3~10)位字母、数字、_'));
 	        }
-	    };
+        };
+        const phoneNumbre = (rule, value, callback) => {
+            var isPhone = /^0?1[3|4|5|7|8][0-9]\d{8}$/;//手机号码
+            var isMob= /^([0-9]{3,4}-)?[0-9]{7,8}$/;// 座机格式
+            if(isMob.test(value)||isPhone.test(value)){
+                callback();
+            }
+            else{
+               callback(new Error('请输入正确的电话号码'));
+            }
+        }
         return{
             tableLabel:[
                 {
@@ -144,6 +161,7 @@ export default {
             show:false, //控制新增弹框是否显示
             type:0,  // 0 :新增用户 1：修改用户
             FUserNameRule: [{required: true, validator: validateUserName}],//用户名规则
+            FTelephoneRule:[{required: true, validator: phoneNumbre}], //联系方式规则
             filterText:''
         }
     },
@@ -297,23 +315,20 @@ export default {
         },
         /**
          * deleteRole 删除用户
-         * @param {type String} guid 用户唯一ID
+         * @param {type String} user 用户
          */
-        async deleteUser(guid){
+        async deleteUser(user){
             await new Promise(resolve => {
-                this.$confirm('此操作将永久删除, 是否继续?', '提示', {
-                  confirmButtonText: '确定',
-                  cancelButtonText: '取消',
-                  type: 'warning'
-                }).then(() => {
+                this.$DeleteMessage([user.FUserName,'删除用户'])
+                .then(() => {
                     resolve()
-                }).catch(() => {
-
-                });
+                })
+                .catch(() => {
+                })
             })
             system({
                 FAction:'DeleteTUsers',
-                FGUID:guid
+                FGUID:user.FGUID
             })
             .then(data => {
                 this.$message({
@@ -361,50 +376,9 @@ $img-url:'/static/image/';
     box-sizing: border-box;
     background: url('#{$img-url}index/count_back.png') center no-repeat;
     .user-head{
-        margin-bottom: 15px;
-        li{
-            width: 44px;
-            height: 46px;
-            line-height: 46px;
-            margin-left: 10px;
-            font-size:14px;
-            font-family:MicrosoftYaHei;
-            font-weight:400;
-            color:rgba(241,241,242,1);
-            font-size: 14px;
-            padding-left: 44px;
-            text-align: left;
-            cursor: pointer;
-        }
-        &-add{
-            background: url('#{$img-url}admin/added.png') #0a3c7b no-repeat 16px 13px;
-        }
-        &-export{
-            background-image: url('#{$img-url}count/btn1.png')
-        }
-        &-refrest{
-            background-image: url('#{$img-url}count/btn3.png')
-        }
         li:last-of-type{
            width: auto;
            position: relative;
-        }
-        .search{
-            width: 174px;
-            .el-input__inner{
-                width:174px;
-                height:46px;
-                background:rgba(0,80,153,1);
-                border:1px solid rgba(12,55,110,1);
-                color: white
-            }
-        }
-        .el-icon-search{
-            position: absolute;
-            left: 182px;
-            top: 10px;
-            font-size: 24px;
-            color: #2A91FC;
         }
         .zw-btn{
             margin-left: 10px;

@@ -1,13 +1,68 @@
+$img-url:'/static/image/';
+.report-header{
+    margin-bottom: 15px;
+    li{
+        margin-left: 10px;
+    }
+}
 .zw-btn{
-    height: 100%;
+    width: 88px;
+    height: 46px;
+    line-height: 46px;
     background: none;
     border: none;
     outline: none;
     cursor: pointer;
     font-size: 14px;
     color: #F1F1F2;
-    padding: 14px 30px;
+    text-align: center;
+    box-sizing: border-box
 }
 .zw-btn-primary{
     background: #12559D
+}
+.zw-btn-add{
+    background: url('#{$img-url}count/add_un1.png');
+    padding-left: 28px;
+}
+.zw-btn-add:active{
+    background: url('#{$img-url}count/add_un2.png');
+}
+.zw-btn-export{
+    background-image: url('#{$img-url}count/btn1.png');
+    padding-left: 28px;
+}
+.zw-btn-export:active{
+    background-image: url('#{$img-url}count/btn2.png');
+}
+.zw-btn-refrest{
+    background-image: url('#{$img-url}count/btn3.png');
+    padding-left: 28px;
+}
+.zw-btn-refrest:active{
+    background-image: url('#{$img-url}count/btn4.png');
+}
+.zw-btn-print{
+    background-image: url('#{$img-url}count/print.png');
+    padding-left: 28px;
+}
+.zw-btn-print:active{
+    background-image: url('#{$img-url}count/print1.png');
+}
+.search-input{
+    width: 174px;
+    .el-input__inner{
+        width:174px;
+        height:46px;
+        background: #042E74;
+        border-color: #005099;
+        color: white
+    }
+    .el-input__suffix{
+        line-height: 50px
+    }
+    .el-icon-search{
+        font-size: 24px;
+        color: #2A91FC;
+    }
 }

@@ -33,102 +33,39 @@
                     </div> -->
                 </ul>
                 <div class="tab-content clearfix" v-show="tabIndex === 1">
-                    <div class="clearfix">
-                        <div class="l tab-content-item">
-                            <div class="border border-left-top">
-                            </div>
-                            <div class="border border-right-top">
-                            </div>
-                            <div class="border border-right-bottom">
-                            </div>
-                            <div class="border border-left-bottom">
-                            </div>
-                            <p class="tab-content-item-head">所有权限</p>
-                            <el-tree
-                              :data="data"
-                              show-checkbox
-                              default-expand-all
-                              node-key="ProjectID"
-                              ref="tree"
-                              :default-checked-keys='defaultChecked'
-                              :render-content="renderContent"
-                              @check-change="checkChange"
-                              :props="defaultProps">
-                            </el-tree>
-                        </div>
-                        <i class="arrow"></i>
-                        <div class="r tab-content-item">
-                            <div class="border border-left-top">
-                            </div>
-                            <div class="border border-right-top">
-                            </div>
-                            <div class="border border-right-bottom">
-                            </div>
-                            <div class="border border-left-bottom">
-                            </div>
-                            <p class="tab-content-item-head">已选权限</p>
-                            <el-tree
-                              :data="data1"
-                              empty-text="无"
-                              class="checked"
-                              default-expand-all
-                              node-key="BlocID"
-                              ref="tree1"
-                              :render-content="renderContent"
-                              :props="defaultProps">
-                            </el-tree>
-                        </div>
-                    </div>
+                    <tree-transfer
+                    :data="data"
+                    :data1="data1"
+                    leftTitle="所有权限"
+                    rightTitle="已选权限"
+                    nodeKey="ProjectID"
+                    nodeKey1="BlocID"
+                    :defaultChecked="defaultChecked"
+                    @check-change="checkChange"
+                    :defaultProps="defaultProps"
+                    :renderContent="renderContent"
+                    :renderContent1="renderContent"
+                    >
+                    </tree-transfer>
                     <div class="submit">
                         <button class="zw-btn zw-btn-primary" @click="updateTRoleProject()">确定</button>
                     </div>
                 </div>
                 <div class="tab-content clearfix" v-show="tabIndex === 2">
-                    <div class="clearfix">
-                        <div class="l tab-content-item">
-                            <div class="border border-left-top">
-                            </div>
-                            <div class="border border-right-top">
-                            </div>
-                            <div class="border border-right-bottom">
-                            </div>
-                            <div class="border border-left-bottom">
-                            </div>
-                            <p class="tab-content-item-head">所有权限</p>
-                            <el-tree
-                              :data="menuData"
-                              show-checkbox
-                              default-expand-all
-                              node-key="FGUID"
-                              ref="tree2"
-                              :default-checked-keys='defaultCheckedMenu'
-                              @check-change="checkChange1"
-                              :props="defaultProps1">
-                            </el-tree>
-                        </div>
-                        <i class="arrow"></i>
-                        <div class="r tab-content-item">
-                            <div class="border border-left-top">
-                            </div>
-                            <div class="border border-right-top">
-                            </div>
-                            <div class="border border-right-bottom">
-                            </div>
-                            <div class="border border-left-bottom">
-                            </div>
-                            <p class="tab-content-item-head">已选权限</p>
-                            <el-tree
-                              :data="menuData"
-                              class="checked"
-                              empty-text="无"
-                              default-expand-all
-                              node-key="FGUID"
-                              ref="checkedMenuTree"
-                              :filter-node-method="filterNode"
-                              :props="defaultProps1">
-                            </el-tree>
-                        </div>
-                    </div>
+                    <tree-transfer
+                        :data='menuData'
+                        :data1='menuData'
+                        leftTitle='所有权限'
+                        rightTitle='已选权限'
+                        nodeKey="FGUID"
+                        :defaultProps="defaultProps1"
+                        :filterNode="filterNode"
+                        :defaultChecked="defaultCheckedMenu"
+                         @check-change="checkChange1"
+                        ref="transfer"
+                    >
+
+                    </tree-transfer>
                     <div class="submit">
                         <button class="zw-btn zw-btn-primary" @click="updateTRoleMenu()">确定</button>
                     </div>
@@ -138,10 +75,10 @@
                 </div>
             </el-dialog>
         </div>
-        <ul class="role-head clearfix">
-            <li class="l role-head-add" @click="add">新增</li>
-            <li class="l role-head-export" @click="exportFile">导出</li>
-            <li class="l role-head-refrest" @click="pageIndex=1;queryData()">刷新</li>
+        <ul class="report-header clearfix">
+            <li class="l role-head-add" @click="add"><button class="zw-btn zw-btn-add">新增</button></li>
+            <li class="l role-head-export" @click="exportFile"><button class="zw-btn zw-btn-export">导出</button></li>
+            <li class="l role-head-refrest" @click="pageIndex=1;queryData()"><button class="zw-btn zw-btn-refrest">刷新</button></li>
         </ul>
         <div class="role-table">
             <el-table
@@ -163,7 +100,7 @@
                  <template slot-scope="scoped">
                      <div class="role-operation">
                         <span @click="updateRole(scoped.row)">修改</span>
-                        <span @click="deleteRole(scoped.row.FGUID)">删除</span>
+                        <span @click="deleteRole(scoped.row)">删除</span>
                         <span @click="queryTRoleBloc(scoped.row.FGUID)">权限</span>
                      </div>
                  </template>
@@ -176,7 +113,7 @@
 <script>
 import {system} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination} from '@/zw-components/index'
+import {zwPagination,treeTransfer} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -243,30 +180,32 @@ export default {
             type:0,  // 0 :新增角色 1：修改角色
             show1:false, //控制权限弹框是否显示
             tabIndex:1, // 选项卡索引
-            data:null, //权限弹框所有项目数据
-            data1:null, //权限弹框已选项目数据
+            data:[], //权限弹框所有项目数据
+            data1:[], //权限弹框已选项目数据
             defaultChecked:[], //权限弹框已选项目，控制所有项目默认选中
             roleGuid:null, //角色guid
             defaultProps: { //
                 children: 'data',
                 label: 'BlocName'
             }, 
-            menuData:null, //权限菜单数据
+            menuData:[], //权限菜单数据
             // checkedMenuData:null,
             defaultCheckedMenu:[], //已选菜单数据，控制所有菜单的选中
             defaultProps1:{  //el-tree props指向
                 children: 'list',
                 label: 'FMenuName'
             },
+            showDelete:false
         }
     },
     components:{
-        zwPagination
+        zwPagination,
+        treeTransfer
     },
     watch:{
         tabIndex(){
-             if(this.tabIndex === 2){
-                this.$refs.checkedMenuTree.filter()
+            if(this.tabIndex === 2){
+                this.$refs.transfer.$refs.tree1.filter()
             }
         },
         show1(){
@@ -369,23 +308,20 @@ export default {
         },
         /**
          * deleteRole 删除角色
-         * @param {type String} guid 角色唯一ID
+         * @param {type String} role 角色
          */
-        async deleteRole(guid){
-            await new Promise(resove => {
-                this.$confirm('此操作将永久删除, 是否继续?', '提示', {
-                  confirmButtonText: '确定',
-                  cancelButtonText: '取消',
-                  type: 'warning'
-                }).then(() => {
-                    resove()
-                }).catch(() => {
-
-                });
+        async deleteRole(role){
+            await new Promise(resolve => {
+                this.$DeleteMessage([role.FName,'删除角色'])
+                .then(() => {
+                    resolve()
+                })
+                .catch(() => {
+                })
             })
             system({
                 FAction:'DeleteTRole',
-                FGUID:guid
+                FGUID:role.FGUID
             })
             .then(data => {
                 this.$message({
@@ -439,7 +375,7 @@ export default {
             this.show1 = true
             this.roleGuid = guid
             // 获取所有菜单
-            this.queryUsersMenuTree(0,'menuData')
+            this.queryUsersMenuTree(2,'menuData')
             // this.queryUsersMenuTree(1,'checkedMenuData')
             system({
                 FAction:'QueryTRoleBloc',
@@ -518,12 +454,15 @@ export default {
          * 菜单选择发生改变
          */
         checkChange1(data,check){
+            if(data.IsExist == null){
+                data.IsExist = '0'
+            }
             if(data.IsExist&&check){
                 data.IsExist = '1'
             }else if(data.IsExist&&!check){
                 data.IsExist = '0'
             }
-            this.$refs.checkedMenuTree.filter()
+            this.$refs.transfer.$refs.tree1.filter()
         },
         /**
          * 修改菜单权限
@@ -531,6 +470,7 @@ export default {
         updateTRoleMenu(){
             let menuArr = []
             this.findTree(this.menuData,'list','FGUID',menuArr)
+            console.log('所有菜单',menuArr)
             system({
                 FAction:'UpdateTRoleMenu',
                 FGUID:this.roleGuid,
@@ -544,6 +484,7 @@ export default {
                 this.show1 = false
             })
             .catch(error => {
+                console.log('错误',error);
                 this.$message({
                   type: 'error',
                   message: '设置失败!'
@@ -603,32 +544,6 @@ export default {
         box-sizing: border-box;
         background: url('#{$img-url}index/count_back.png') center no-repeat
     }
-    .role-head{
-        margin-bottom: 15px;
-        li{
-            width: 44px;
-            height: 46px;
-            line-height: 46px;
-            margin-left: 10px;
-            font-size:14px;
-            font-family:MicrosoftYaHei;
-            font-weight:400;
-            color:rgba(241,241,242,1);
-            font-size: 14px;
-            padding-left: 44px;
-            text-align: left;
-            cursor: pointer;
-        }
-        &-add{
-            background: url('#{$img-url}admin/added.png') #0a3c7b no-repeat 16px 13px;
-        }
-        &-export{
-            background-image: url('#{$img-url}count/btn1.png')
-        }
-        &-refrest{
-            background-image: url('#{$img-url}count/btn3.png')
-        }
-    }
     .role-operation{
         span{
             cursor: pointer;
@@ -661,6 +576,7 @@ export default {
             .el-form{
                 &-item{
                     .el-form-item__label{
+                        width: 80px;
                         color: #F1F1F2;
                     }
                     .el-input{
@@ -730,86 +646,6 @@ export default {
             }
             .tab-content{
                 padding: 20px 30px;
-                .clearfix{
-                    position: relative;
-                    .arrow{
-                        display: inline-block;
-                        width: 22px;
-                        height: 16px;
-                        position: absolute;
-                        left: 50%;
-                        top: 50%;
-                        transform: translate(-50%,-50%);
-                        background: url('#{$img-url}admin/icon_1.png');
-                        animation: arrow 1.5s linear infinite;
-                    }
-                    @keyframes arrow {
-                        from{left:173px}
-                        to{left:300px}
-                    }
-                }
-                &-item{
-                    width: 173px;
-                    height: 283px;
-                    background: #18406B;
-                    position: relative;
-                    .border{
-                        width:20px;
-                        height:4px;
-                        background:rgba(38,83,148,1);
-                        opacity:0.7;
-                        border-radius:2px;
-                        position: absolute
-                    }
-                    .border-left-top{
-                        left: -6px;
-                        top: -2px;
-                    }
-                    .border-right-top{
-                        right: -6px;
-                        top: -2px;
-                    }
-                    .border-right-bottom{
-                        right: -6px;
-                        bottom: -2px;
-                    }
-                    .border-left-bottom{
-                        left: -6px;
-                        bottom: -2px;
-                    }
-                    &-head{
-                        font-size: 14px;
-                        color: #6EA7E4;
-                        margin-top: 10px;
-                    }
-                    .el-tree{
-                        height: 232px;
-                        overflow: auto;
-                        background: #18406B;
-                        margin-top: 19px;
-                        color: white;
-                        &-node__content:hover {
-                            background-color: #18406B;
-                            opacity: 0.5;
-                        }
-                    }
-                    .el-tree.checked{
-                        color: #A0A0A3;
-                    }
-                    .el-tree::-webkit-scrollbar {/*滚动条整体样式*/
-                            width: 5px;     /*高宽分别对应横竖滚动条的尺寸*/
-                            height: 5px;
-                    }
-                    .el-tree::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
-                            border-radius: 10px;
-                             -webkit-box-shadow: inset 0 0 5px #1752BA;
-                            background: #c1c1c1;
-                    }
-                    .el-tree::-webkit-scrollbar-track {/*滚动条里面轨道*/
-                            -webkit-box-shadow: inset 0 0 5px #1752BA;
-                            border-radius: 10px;
-                    }
-                }
                 .zw-btn{
                     margin-top: 26px;
                 }
