@@ -376,6 +376,14 @@ let routers_item=[
 							requireAuth: true,  
 						 },
 					},
+					{ path: 'InspectionPlan',
+						name: 'InspectionPlan',
+						component: () => import('@/components/TaskManagement/InspectionPlan.vue'), //新增或编辑巡检路线
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,  
+						 },
+					},
 					{ path: 'InspectionItem',
 						name: 'InspectionItem',
 						component: () => import('@/components/TaskManagement/InspectionItem.vue'), //巡检点管理

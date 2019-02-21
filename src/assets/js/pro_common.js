@@ -84,9 +84,23 @@
         }
         var currentdate = year + seperator1 + month + seperator1 + strDate;
         return currentdate;
-    }
- 
-
+		}
+/**
+ * 小于10在前面补0
+ * @param {Number} num 
+ */
+export function formatNumber(num){
+	return num<10?'0'+num:num
+}
+/**
+ * 格式化时间
+ * @param {Date} val 
+ */
+export function getFormatTime(val){
+	let time = new Date(val)
+	return time.getFullYear() + '-' + formatNumber(time.getMonth()+1) + '-' + formatNumber(time.getDate()) + ' ' + 
+	formatNumber(time.getHours()) + ':' + formatNumber(time.getMinutes())
+}
 export function chart_utis(o){
 	
 	

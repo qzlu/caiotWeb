@@ -1,5 +1,5 @@
 <template>
-    <div class="role-main">
+    <div class="role-main report">
         <!-- 新增或编辑角色弹框 -->
         <div class="config-dialog">
             <el-dialog  :title="title" :visible.sync="show" width="676">
@@ -312,7 +312,7 @@ export default {
          */
         async deleteRole(role){
             await new Promise(resolve => {
-                this.$DeleteMessage([role.FName,'删除角色'])
+                this.$DeleteMessage([`确定要删除　　${role.FName}`,'删除角色'])
                 .then(() => {
                     resolve()
                 })
@@ -331,10 +331,12 @@ export default {
                 this.queryData()
             })
             .catch(error => {
-                this.$message({
+                console.log(error);
+                this.$DeleteMessage([`删除失败!${error}`,'提示信息'],false)
+/*                 this.$message({
                   type: 'error',
-                  message: '删除失败!'
-                });
+                  message: '删除失败!'+error
+                }); */
             })
         },
         /**
@@ -537,13 +539,6 @@ export default {
 </script>
 <style lang='scss'>
     $img-url:'/static/image/';
-    .role-main{
-        height: 920px;
-        padding: 56px 46px 85px 57px;
-        position: relative;
-        box-sizing: border-box;
-        background: url('#{$img-url}index/count_back.png') center no-repeat
-    }
     .role-operation{
         span{
             cursor: pointer;

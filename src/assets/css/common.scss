@@ -1,7 +1,14 @@
 $img-url:'/static/image/';
+.report{
+    height: 920px;
+    padding: 56px 46px 85px 57px;
+    box-sizing: border-box;
+    position: relative;
+    background: url('#{$img-url}index/count_back.png') center no-repeat; 
+}
 .report-header{
     margin-bottom: 15px;
-    li{
+    >li{
         margin-left: 10px;
     }
 }
@@ -21,36 +28,48 @@ $img-url:'/static/image/';
 .zw-btn-primary{
     background: #12559D
 }
+.zw-btn-primary:active,.zw-btn-primary:hover{
+    background: #005099
+}
 .zw-btn-add{
     background: url('#{$img-url}count/add_un1.png');
     padding-left: 28px;
 }
-.zw-btn-add:active{
+.zw-btn-add:active,.zw-btn-add:hover{
     background: url('#{$img-url}count/add_un2.png');
 }
 .zw-btn-export{
     background-image: url('#{$img-url}count/btn1.png');
     padding-left: 28px;
 }
-.zw-btn-export:active{
+.zw-btn-export:active,.zw-btn-export:hover{
     background-image: url('#{$img-url}count/btn2.png');
 }
 .zw-btn-refrest{
     background-image: url('#{$img-url}count/btn3.png');
     padding-left: 28px;
 }
-.zw-btn-refrest:active{
+.zw-btn-refrest:active,.zw-btn-refrest:hover{
     background-image: url('#{$img-url}count/btn4.png');
 }
 .zw-btn-print{
     background-image: url('#{$img-url}count/print.png');
     padding-left: 28px;
 }
-.zw-btn-print:active{
+.zw-btn-print:active,.zw-btn-print:hover{
     background-image: url('#{$img-url}count/print1.png');
+}
+.zw-btn-import{
+    width: 119px;
+    background-image: url('#{$img-url}count/import.png');
+    padding-left: 28px;
+}
+.zw-btn-import:active,.zw-btn-import:hover{
+    background-image: url('#{$img-url}count/import1.png');
 }
 .search-input{
     width: 174px;
+    margin-right: 10px;
     .el-input__inner{
         width:174px;
         height:46px;
@@ -64,5 +83,37 @@ $img-url:'/static/image/';
     .el-icon-search{
         font-size: 24px;
         color: #2A91FC;
+    }
+}
+.el-input__inner{
+    color: #F1F1F2
+}
+.pointer{
+    cursor: pointer;
+}
+.el-dialog{
+    text-align: left;
+    padding: 20px;
+    &__title{
+        color: #F1F1F2;
+        font-size: 17px;
+        font-weight:400;
+    }
+    &__headerbtn{
+        top: 42px;
+        right: 40px;
+        z-index: 100;
+        .el-dialog__close{
+            color: #9FC1FD;
+            font-size: 16px;
+        }
+    }
+    &__body{
+        padding-left: 10px;
+        padding-top: 10px;
+        color: #F1F1F2;
+    }
+    .submit{
+        text-align: center;
     }
 }

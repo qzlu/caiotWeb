@@ -6,17 +6,20 @@
       <div class="border border-right-bottom"></div>
       <div class="border border-left-bottom"></div>
       <p class="transfer-item-head">{{leftTitle}}</p>
-      <el-tree
-        :data="data"
-        show-checkbox
-        default-expand-all
-        :node-key="nodeKey"
-        ref="tree"
-        :default-checked-keys="defaultChecked"
-        @check-change="checkChange"
-        :render-content="renderContent"
-        :props="defaultProps"
-      ></el-tree>
+      <el-scrollbar>
+        <el-tree
+          :data="data"
+          show-checkbox
+          default-expand-all
+          :node-key="nodeKey"
+          ref="tree"
+          :default-checked-keys="defaultChecked"
+          @check-change="checkChange"
+          :render-content="renderContent"
+          :props="defaultProps"
+        >
+        </el-tree>
+      </el-scrollbar>
     </div>
     <i class="arrow"></i>
     <div class="r transfer-item">
@@ -25,17 +28,19 @@
       <div class="border border-right-bottom"></div>
       <div class="border border-left-bottom"></div>
       <p class="transfer-item-head">{{rightTitle}}</p>
-      <el-tree
-        :data="data1"
-        empty-text="无"
-        class="checked"
-        default-expand-all
-        :node-key="nodeKey1"
-        ref="tree1"
-        :filter-node-method="filterNode"
-        :render-content="renderContent1"
-        :props="defaultProps"
-      ></el-tree>
+      <el-scrollbar>
+        <el-tree
+          :data="data1"
+          empty-text="无"
+          class="checked"
+          default-expand-all
+          :node-key="nodeKey1"
+          ref="tree1"
+          :filter-node-method="filterNode"
+          :render-content="renderContent1"
+          :props="defaultProps"
+        ></el-tree>
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -98,6 +103,9 @@ export default {
 $img-url: "/static/image/";
 .transfer {
   position: relative;
+  &-item-head{
+    text-align: center
+  }
   &-item {
     width: 173px;
     height: 283px;
@@ -134,7 +142,7 @@ $img-url: "/static/image/";
     }
     .el-tree {
       height: 232px;
-      overflow: auto;
+      // overflow: auto;
       background: #18406b;
       margin-top: 19px;
       color: white;

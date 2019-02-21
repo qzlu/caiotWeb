@@ -5,11 +5,11 @@
           :visible.sync="show"
         >
             <div>
-                确定要删除　{{msg}}
+                {{msg}}
             </div>
-            <div class="footer">
+            <div class="footer" v-if="showConfirm">
                 <button class="zw-btn zw-btn-primary" @click="confirm">确定</button>
-                <button class="zw-btn zw-btn-primary" @click="show = false">取消</button>
+                <button class="zw-btn zw-btn-primary" @click="cancle">取消</button>
             </div>
         </el-dialog>
     </div>
@@ -18,8 +18,6 @@
 export default {
     data(){
         return{
-            promise:null,
-            sure:false
         }
     },
     props:{
@@ -32,11 +30,17 @@ export default {
         },
         msg:{
             type:String
+        },
+        showConfirm:{
+            type:Boolean
         }
     },
     methods:{
         confirm(){
             this.$emit('confirm')
+        },
+        cancle(){
+            this.$emit('cancle')
         }
     }
 }

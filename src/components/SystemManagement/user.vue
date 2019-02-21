@@ -1,5 +1,5 @@
 <template>
-    <div class="user-main">
+    <div class="user-main report">
         <!-- 新增或编辑用户弹框 -->
         <div class="config-dialog">
             <el-dialog  :title="title" :visible.sync="show" width="676">
@@ -260,15 +260,12 @@ export default {
          */
         async resetUsers(item){
             await new Promise(resolve => {
-                this.$confirm('是否初始化？', '提示', {
-                  confirmButtonText: '确定',
-                  cancelButtonText: '取消',
-                  type: 'warning'
-                }).then(() => {
+                this.$DeleteMessage([`确定要初始化${item.FUserName}`,'初始化密码'])
+                .then(() => {
                     resolve()
-                }).catch(() => {
-
-                });
+                })
+                .catch(() => {
+                })
             })
             this.type = 1
             for(let key in this.addFormData){
@@ -314,12 +311,12 @@ export default {
             })
         },
         /**
-         * deleteRole 删除用户
-         * @param {type String} user 用户
+         * deleteUser 删除用户
+         * @param {type Object} user 用户
          */
         async deleteUser(user){
             await new Promise(resolve => {
-                this.$DeleteMessage([user.FUserName,'删除用户'])
+                this.$DeleteMessage([`确定要删除　　${user.FUserName}`,'删除用户'])
                 .then(() => {
                     resolve()
                 })
@@ -370,11 +367,6 @@ export default {
 <style lang='scss'>
 $img-url:'/static/image/';
 .user-main{
-    height: 920px;
-    padding: 56px 46px 85px 57px;
-    position: relative;
-    box-sizing: border-box;
-    background: url('#{$img-url}index/count_back.png') center no-repeat;
     .user-head{
         li:last-of-type{
            width: auto;
