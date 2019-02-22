@@ -88,32 +88,39 @@ $img-url:'/static/image/';
 .el-input__inner{
     color: #F1F1F2
 }
+.el-date-picker__time-header{
+    .el-input__inner{
+        color:#606266
+    }
+}
 .pointer{
     cursor: pointer;
 }
-.el-dialog{
-    text-align: left;
-    padding: 20px;
-    &__title{
-        color: #F1F1F2;
-        font-size: 17px;
-        font-weight:400;
-    }
-    &__headerbtn{
-        top: 42px;
-        right: 40px;
-        z-index: 100;
-        .el-dialog__close{
-            color: #9FC1FD;
-            font-size: 16px;
+.zw-dialog{
+    .el-dialog{
+        text-align: left;
+        padding: 20px;
+        &__title{
+            color: #F1F1F2;
+            font-size: 17px;
+            font-weight:400;
         }
-    }
-    &__body{
-        padding-left: 10px;
-        padding-top: 10px;
-        color: #F1F1F2;
-    }
-    .submit{
-        text-align: center;
+        &__headerbtn{
+            top: 42px;
+            right: 40px;
+            z-index: 100;
+            .el-dialog__close{
+                color: #9FC1FD;
+                font-size: 16px;
+            }
+        }
+        &__body{
+            padding-left: 10px;
+            padding-top: 10px;
+            color: #F1F1F2;
+        }
+        .submit{
+            text-align: center;
+        }
     }
 }

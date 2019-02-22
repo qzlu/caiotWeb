@@ -2,7 +2,7 @@
     <div class="role-main report">
         <!-- 新增或编辑角色弹框 -->
         <div class="config-dialog">
-            <el-dialog  :title="title" :visible.sync="show" width="676">
+            <el-dialog  :title="title" :visible.sync="show" width="676" class="zw-dialog">
                 <el-form :model='addFormData' ref='form' inline>
                     <el-form-item v-for="item in addFormList" :key="item.prop" :prop="item.prop" :label="item.label" :rules="item.rule">
                       <el-input v-model="addFormData[item.prop]"></el-input>

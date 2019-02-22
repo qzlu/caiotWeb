@@ -2,7 +2,7 @@
     <div class="user-main report">
         <!-- 新增或编辑用户弹框 -->
         <div class="config-dialog">
-            <el-dialog  :title="title" :visible.sync="show" width="676">
+            <el-dialog  :title="title" :visible.sync="show" width="676" class="zw-dialog">
                 <el-form :model='addFormData' ref='form' inline>
                     <el-form-item label="所属角色" prop="FRoleGUID" :rules="[{ required: true, message: '请选择'}]">
                       <el-select v-model="addFormData.FRoleGUID"   placeholder="请选择角色">

@@ -1,6 +1,6 @@
 <template>
     <div class=" road report">
-        <el-dialog title="新增巡检路线" :visible.sync="show">
+        <el-dialog title="新增巡检路线" :visible.sync="show" class="zw-dialog">
             <div class="clearfix">
                 <ul class="l clearfix ">
                     <li>
@@ -190,6 +190,7 @@
                                 selectableRange:'00:00-23:59',
                                 format:'HH:mm'
                               }"
+                              @change="searchTime"
                               range-separator="至"
                               start-placeholder="开始时间"
                               end-placeholder="结束时间"
@@ -296,7 +297,7 @@
                 </el-table>
             </div> -->
         </div>
-        <el-dialog title="设置巡检点" :visible.sync="showPointTree" class="showPointTree">
+        <el-dialog title="设置巡检点" :visible.sync="showPointTree" class="zw-dialog showPointTree">
             <div style="padding-right: 16px;">
                 <tree-transfer
                  ref="transfer"
@@ -324,6 +325,7 @@
 import {system,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {zwPagination,treeTransfer} from '@/zw-components/index'
+import * as comm from "../../assets/js/pro_common";
 export default {
     mixins:[table],
     data(){
@@ -422,6 +424,9 @@ export default {
             if(val){
                 this.$nextTick(() => {
                     this.$refs.transfer.$refs.tree.setCheckedKeys(this.defaultChecked)
+                    if(this.defaultChecked.length === 0){
+                        this.$refs.transfer.$refs.tree1.filter()
+                    }
                 })
             }
         }
@@ -518,7 +523,6 @@ export default {
                 PageSize:10000000000
             })
             .then(data => {
-                console.log(data);
                 this.tableData = data.FObject.Table1
                 this.tableData.forEach(item => {
                     item.InspectionTime = item.InspectionTime.replace(/,$/ig,'').split(',')
@@ -856,6 +860,13 @@ export default {
          */
         deleteTime(arr,i){
             this[arr].splice(i,1)
+        },
+        /**
+         * 高级搜索弹框选择时间
+         */
+        searchTime(val){
+            this.startDateTime = comm.getFormatTime(val[0]).split(' ')[1].substr(0,5)
+            this.endDateTime = comm.getFormatTime(val[1]).split(' ')[1].substr(0,5)
         }
     }
 }

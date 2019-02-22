@@ -53,7 +53,7 @@ import TaskManagement from '@/components/TaskManagement' //任务警管理
 import FixRecords from '@/components/home/test'//维修管理-子菜单
 
 
-import InspectionStandard from '@/components/TaskManagement/test' //巡检管理-巡检标准
+import InspectionStandard from '@/components/TaskManagement/InspectionStandard' //巡检管理-巡检标准
 import InspectionRecords from '@/components/TaskManagement/InspectionRecords' //巡检管理-巡检记录  
 import InspectionPlan from '@/components/home/test' //巡检管理-巡检计划 
 

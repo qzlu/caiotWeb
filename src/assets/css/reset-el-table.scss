@@ -2,12 +2,13 @@
     height:66px;
 }
 .el-table__empty-block{
-    background: #134FA4;
+    // background: #134FA4;
     .el-table__empty-text{
         color: white;
     }
 }
 .el-table{
+    background: none;
     th{
         font-size:17px;
         font-weight: normal;

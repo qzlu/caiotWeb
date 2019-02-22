@@ -8,7 +8,7 @@
       <el-scrollbar>
         <el-tree
           :data="data"
-          show-checkbox
+          :show-checkbox='showCheckbox'
           default-expand-all
           :node-key="nodeKey"
           ref="tree"
@@ -50,6 +50,10 @@ export default {
     renderContent:{
         type:Function
     },
+    showCheckbox:{
+        type:Boolean,
+        default:false
+    }
   },
   methods: {
     checkChange(data, check) {

@@ -1,6 +1,6 @@
 <template>
     <div class="report inspection-item">
-        <el-dialog :title="title" :visible.sync="show" width="426">
+        <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog">
             <el-form :model="addPoint" ref="form">
                 <el-form-item label="巡检点名称"  prop='InspectionPointName' :rules="[{ required: true, message: '请输入巡检点名称'}]">
                     <el-input v-model="addPoint.InspectionPointName"></el-input>

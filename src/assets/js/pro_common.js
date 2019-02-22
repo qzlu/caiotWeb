@@ -99,7 +99,7 @@ export function formatNumber(num){
 export function getFormatTime(val){
 	let time = new Date(val)
 	return time.getFullYear() + '-' + formatNumber(time.getMonth()+1) + '-' + formatNumber(time.getDate()) + ' ' + 
-	formatNumber(time.getHours()) + ':' + formatNumber(time.getMinutes())
+	formatNumber(time.getHours()) + ':' + formatNumber(time.getMinutes()) + ':' + formatNumber(time.getSeconds())
 }
 export function chart_utis(o){
 	

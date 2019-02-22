@@ -119,7 +119,7 @@
         <!-- <li>综合巡检</li> -->
       </ul>
     </div>
-    <div class="bg_are" v-if="activeIndex === 0">
+    <div class="bg_are" v-show="activeIndex === 0">
       <div class="ich">
         <div
           class="gre_btns"
@@ -174,7 +174,7 @@
           <section id="show_bar" style="height:183px; width: 90%;"></section>
           <div>
             <div class="atc_title">
-              <p>巡检设备数</p>
+              <p>巡检点数</p>
               <p>
                 {{bar_value.InspectionDeviceCount}}
                 <!--100-->
@@ -296,61 +296,170 @@
         <!--<iframe :src="exl_url"    frameborder="0" scrolling="yes"  class="iframe_tiem"></iframe>-->
       </div>
     </div>
-    <div class="bg_are" v-if="activeIndex === 1">
-      <div class="ich">
-        <div
-          class="gre_btns"
-          style="position: absolute; top: 57px; left: 485px; height: 46px; width: 119px; background: #093b7c; opacity: 0.8;"
-        ></div>
-        <div
-          class="gre_btns02"
-          style="position: absolute; top: 57px; left: 839px; height: 46px; width: 84px; background: #093b7c; opacity: 0.8;"
-        ></div>
-
-        <div class="time">
-          <p class="l name">日期</p>
-          <div class="date_chs">
-            <div class="block" style="margin-top: 5px; height: 20px;">
-              <el-date-picker
-                v-model="value1"
-                value-format="yyyy-MM-dd"
-                type="date"
-                @change="start_barData"
-                placeholder="选择日期"
-              ></el-date-picker>
-            </div>
-          </div>
-        </div>
-        <div
-          class="ntb01_pp"
-          :class="{divsh:currt==0}"
-          style="position: absolute; top: 57px; left: 358px; height: 46px; width: 119px; background: #093b7c; opacity: 0.8;"
-        ></div>
-        <div
-          class="ntb01_pp yuh"
-          :class="{isod:exl_hef!=''}"
-          style="position: absolute; top: 57px; left: 741px; height: 46px; width: 86px; background: #093b7c; opacity: 0.8;"
-        ></div>
-        <div class="ntb01" @click="one_change">一键巡检</div>
-        <div class="ntb02">自动巡检</div>
-        <div class="ntb03" @click="make_paf">报告预览</div>
-        <a :href="exl_hef">
-          <div class="ntb04">导出</div>
-        </a>
-        <div class="ntb05">审核</div>
-      </div>
-			<div class="title">
+    <div class="bg_are" v-show="activeIndex === 1">
+      <ul class="ich record-header">
+        <li class="l">
+          <span class="label">日期</span>
+          <el-date-picker
+            class=""
+            v-model="time"
+            value-format="yyyy-MM-dd"
+            type="date"
+            @change="selectTime"
+            placeholder="选择日期"
+          ></el-date-picker>
+        </li>
+<!--         <li class="l">
+          <span class="label">巡检路线名称</span>
+          <el-input class="search-input" v-model="filterText" placeholder="搜索路线关键字">
+              <i class="el-icon-search" slot="suffix"></i>
+          </el-input>
+          <button class="zw-btn zw-btn-primary">查询</button>
+        </li> -->
+        <li class="l">
+            <button class="zw-btn zw-btn-export" @click="exportFile">导出</button>
+            <button class="zw-btn ntb03" @click="make_paf">报告预览</button>
+        </li>
+      </ul>
+      <div class="title">
         <p class="l ti_n">
           <span class="icon iconfont icon-Automaticinspection abc"></span>
           <span>巡检总况</span>
         </p>
       </div>
-		</div>
-    <div class="title">
-      <p class="l ti_n">
-        <span class="icon iconfont icon-Inspectionreport abc"></span>
-        <span>巡检记录</span>
-      </p>
+      <section class="btn_baritems">
+        <div class="l showitem01" v-if="bar_value">
+          <section id="record-chart" style="height:183px; width: 90%;"></section>
+          <div>
+            <div class="atc_title">
+              <p>巡检点数</p>
+              <p>
+                {{points}}
+                <!--100-->
+              </p>
+            </div>
+            <div class="act_num">待巡检计划：
+              <span>
+                <!--6-->
+                {{waitingPlan}}个
+              </span>
+            </div>
+            <div class="act_num02">
+              <p>
+                <!--70-->
+                {{pointsInfo.NormalCount?pointsInfo.NormalCount:0}}
+              </p>
+              <p>
+                <!--50-->
+                {{pointsInfo.FaultCount?pointsInfo.FaultCount:0}}
+              </p>
+            </div>
+          </div>
+          <!--	<img src="/static/image/task/test.png">-->
+        </div>
+        <ul>
+          <li
+            v-for="(item,key) in plans"
+            :class="{currt_ing:active==key}"
+            @click="active=key;queryPlan(item.ID)"
+          >
+            <section class="ui_box">
+              <div class="l status">
+                  {{item.InspectionState}}
+              </div>
+              <div class="r itext">
+                <p>
+                  <span class="colors"></span>
+                  <span class="igh">待巡检</span>
+                  <span class="hgy">
+                    <!--70-->
+                    {{item.InspectionCount - item.NormalCount - item.FaultCount}}
+                  </span>
+                </p>
+                <p>
+                  <span class="colors"></span>
+                  <span class="igh">正常</span>
+                  <span class="hgy">
+                    <!--70-->
+                    {{item.NormalCount}}
+                  </span>
+                </p>
+                <p>
+                  <span class="colors colors_red"></span>
+                  <span class="igh">异常</span>
+                  <span class="hgy">
+                    <!--30-->
+                    {{item.FaultCount}}
+                  </span>
+                </p>
+              </div>
+            </section>
+            <p class="ghj_time">
+              <span>
+                <!--00:00-->
+                {{item.InspectionDatetime.split(' ')[1]}}
+              </span>
+              <span>
+                {{item.FContacts}}
+                <!--自动巡检-->
+              </span>
+            </p>
+          </li>
+        </ul>
+      </section>
+
+      <div class="title">
+        <p class="l ti_n">
+          <span class="icon iconfont icon-Inspectionreport abc"></span>
+          <span>巡检记录</span>
+        </p>
+      </div>
+      <div class="show_exl">
+        <!--table-->
+        <div id="is_table_spid">
+            <el-table
+               :data="records"
+               max-height="300"
+               style="width: 100%"
+               header-row-class-name="el-table-header"
+               :row-class-name="tableRowClassName"
+               >
+               <el-table-column
+                 v-for="item in tableLabel"
+                 :key="item.prop"
+                 :prop="item.prop"
+                 :label="item.label"
+                 show-overflow-tooltip
+                >
+               </el-table-column>
+            </el-table>
+<!--           <ul class="tiso" style="background: none;">
+            <li>巡检对象</li>
+            <li>区域名称</li>
+            <li>巡检项</li>
+            <li>巡检值</li>
+            <li>越限值</li>
+            <li>巡检结果</li>
+            <li>备注</li>
+            <li>巡检时间</li>
+          </ul>
+          <section v-for="(items,key) in records">
+            <ul v-for="(arrs,key2) in items">
+              <li>{{arrs.InspectionObject}}</li>
+              <li>{{arrs.AreaName}}</li>
+              <li>{{arrs.InspectionItem}}</li>
+              <li>{{arrs.InspectionValue}}</li>
+              <li>{{arrs.LimitValue}}</li>
+              <li>{{arrs.InspectionResult}}</li>
+              <li>{{arrs.InspectionNote}}</li>
+              <li>{{arrs.InspectionTime}}</li>
+            </ul>
+          </section> -->
+        </div>
+
+        <!--end of table-->
+        <!--<iframe :src="exl_url"    frameborder="0" scrolling="yes"  class="iframe_tiem"></iframe>-->
+      </div>
     </div>
   </div>
 </template>
@@ -420,7 +529,10 @@
 import html2Canvas from "html2canvas";
 var echarts = require("echarts");
 import * as comm from "../../assets/js/pro_common";
+import {Inspection} from '@/request/api.js'//api接口（接口统一管理）;
+import table from '@/mixins/table' //表格混入数据
 export default {
+  mixins:[table],
   data() {
     return {
       projectNames: localStorage.getItem("projectname"),
@@ -439,8 +551,52 @@ export default {
       currt: 0, //一键巡检遮罩层
 
       all_table: "", //所有表格数据。
-      activeIndex: 0
+      activeIndex: 0,
       // exl_url:"http://www.szqianren.cn/CreateFile/新都汇/新都汇物联巡检记录2018112612.xls",
+      //人工巡检
+      time:new Date(),
+      filterText:'',
+      points:0,//巡检点总数
+      waitingPlan:0,
+      pointsInfo:{},
+      plans:[],
+      active:0,//默认选中第一个计划
+      planID:'',
+      records:[],
+      tableLabel:[
+          {
+              prop: 'InspectionObject',
+              label: '巡检对象'
+          },
+          {
+              prop: 'AreaName',
+              label: '区域名称'
+          },
+          {
+              prop: 'InspectionItem',
+              label: '巡检项'
+          },
+          {
+              prop: 'InspectionValue',
+              label: '巡检值'
+          },
+          {
+              prop: 'LimitValue',
+              label: '越限值'
+          },
+          {
+              prop: 'InspectionResult',
+              label: '巡检结果'
+          },
+          {
+              prop: 'InspectionNote',
+              label: '备注'
+          },
+          {
+              prop: 'InspectionTime',
+              label: '巡检时间'
+          }
+      ],
     };
   },
   methods: {
@@ -550,7 +706,7 @@ export default {
           FVersion: "1.0.0"
         })
         .then(function(jsons) {
-          console.log(jsons.data.FObject);
+          console.log('dd',jsons.data.FObject);
           _this.all_table = jsons.data.FObject;
         })
         .catch(function(err) {});
@@ -617,7 +773,6 @@ export default {
           FVersion: "1.0.0"
         })
         .then(function(jsons) {
-          console.log(jsons.data);
           if (jsons.data.Result != 200) {
             _this.messageShowErr(jsons.data.Result); //如果出错，调用弹出框报错消息
           }
@@ -728,11 +883,142 @@ export default {
           myChart.setOption(option, true);
         }
       }, 50);
+    },
+    /**
+     * 人工巡检选择时间
+     */
+    selectTime(val){
+      this.queryPlanRecord()
+    },
+    /**
+     * 绘制饼图
+     * id 图形容器id
+     * data 数据
+     */
+    showPieChart(id,data){
+        var dom = document.getElementById(id);
+        var myChart = echarts.init(dom);
+        var app = {};
+        var option = null;
+        app.title = "环形图";
+
+        option = {
+          tooltip: {
+            trigger: "item",
+            formatter: "{b}: {c} ({d}%)"
+          },
+          legend: {
+            orient: "vertical",
+            x: "219px",
+            y: "center",
+            textStyle: { color: "#fff" },
+            itemWidth: 13,
+            itemHeight: 13,
+            data: ["正常", "异常"]
+          },
+          series: [
+            {
+              name: "访问来源",
+              type: "pie",
+              radius: ["50", "60"],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: false,
+                  position: "center"
+                },
+                emphasis: {
+                  show: true,
+                  textStyle: {
+                    fontSize: "30",
+                    fontWeight: "bold"
+                  }
+                }
+              },
+              labelLine: {
+                normal: {
+                  show: false
+                }
+              },
+              data: data
+            }
+          ],
+          color: ["#00D294", "#89192E"]
+        };
+        if (option && typeof option === "object") {
+          myChart.setOption(option, true);
+        }
+    },
+    /**
+     * 查询人工巡检信息
+     */
+    queryPlanRecord(){
+        this.active = 0
+        Inspection({
+          FAction:'QueryUInspectionPlanByCount',
+          StartDateTime:this.time,
+          EndDateTime:this.time
+        })
+        .then(data => {
+          this.points = data.FObject.Table?data.FObject.Table[0].Count:0
+          this.pointsInfo = data.FObject.Table1?data.FObject.Table1[0]:{}
+          this.plans = data.FObject.Table2?data.FObject.Table2:{}
+          this.waitingPlan = data.FObject.Table3?data.FObject.Table3[0].WaitingPlanCount:0
+          this.queryPlan(this.plans[0].ID)
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    },
+    /**
+     * 根据计划ID查询巡检记录
+     */
+    queryPlan(id){
+      this.planID = id
+      Inspection({
+        FAction:'QueryUInspectionPlanRecord',
+        ID:id
+      })
+      .then(data => {
+        this.records = data.FObject
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    },
+    /**
+     * exportFile 导出
+     */
+    exportFile(){
+        Inspection({
+            FAction:'QueryExportUInspectionPlanRecord',
+            ID:this.planID
+        })
+        .then(data => {
+            window.location = "http://www.szqianren.com/" + data.FObject;
+        })
+        .catch(error => {
+            this.$message({
+              type: 'error',
+              message: '导出失败!请重试'
+            });
+        })
+    },
+    
+  },
+  watch:{
+    activeIndex(val){
+      if(val===1){
+          let datas = [{value:this.pointsInfo.NormalCount,name:"正常"},{value:this.pointsInfo.FaultCount,name:"异常"}]
+          this.$nextTick(() => {
+            this.showPieChart('record-chart',datas)
+          })
+      }
     }
   },
   created() {
     this.start_barData();
-
+    this.queryPlanRecord()
     let tt = comm.CurentTime().clock.split(" ")[0];
     this.value1 = tt;
   },
@@ -741,7 +1027,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang='scss' scoped>
+$img-url:'/static/image/';
 .Ins_records .top {
   height: 46px;
 }
@@ -1088,4 +1375,34 @@ export default {
 }
 
 /*end of 弹出框html*/
+/* 人工巡检 */
+.Ins_records{
+  .record-header{
+      li{
+        line-height: 46px;
+        margin-right: 20px;
+        .label{
+          font-size: 17px;
+          margin-right: 10px;
+        }
+        .el-date-editor{
+          background: url(#{$img-url}task/time.png)
+        }
+        .search-input {
+          background: #042E74;
+        }
+      }
+      li:last-of-type{
+        margin-left: 100px;
+      }
+  }
+  .status{
+    width:85px;
+    height:123px;
+    line-height:170px;
+    background:url('/static/image/task/icon_1.png');
+    margin: 5px 0 0 12px;
+  }
+}
+
 </style>

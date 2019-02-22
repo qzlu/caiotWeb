@@ -1,7 +1,53 @@
 <template>
     <div class="report plan">
+        <!-- 新增或编辑巡检计划 弹框-->
+        <el-dialog :title="title" :visible.sync="show" :class="{showPointTree:showPointTree,'zw-dialog':true}">
+            <div class="clearfix">
+                <ul class="l clearfix ">
+                    <li>
+                        <span class="label">巡检路线名称</span>
+                        <el-input v-model="addPlanData.InspectionLineName" v-if="type===1" readonly></el-input>
+                        <el-select v-model="road"  filterable value-key="ID"  placeholder="请选择" @change="selectRoad" v-if="type===0">
+                            <el-option v-for="road in roadDatas" :key="road.ID" :label="road.InspectionLineName" :value="road"></el-option>
+                        </el-select>
+                        <button class="zw-btn" @click="showPointTree = !showPointTree">路线详情</button>
+                    </li>
+                    <li>
+                        <span class="label">巡检计划名称</span>
+                        <el-input v-model="addPlanData.InspectionPlanName" readonly></el-input>
+                    </li>
+                    <li>
+                        <span class="label">巡检周期</span>
+                        <el-input v-model="inspectionCycleName" readonly></el-input>
+                    </li>
+                    <li class="plan-time">
+                        <span class="label">计划巡检时间</span>
+                        <el-date-picker
+                          v-model="planTime"
+                          type="datetime"
+                          @change="selectPlanTime"
+                          placeholder="选择日期时间">
+                        </el-date-picker>
+                    </li>
+                    <li>
+                        <span class="label">负责人</span>
+                        <el-select v-model="addPlanData.InspectionUserGUID" filterable  placeholder="请选择">
+                            <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
+                        </el-select>
+                    </li>
+                </ul>
+                <div class="r clearfix tree-content" v-if="showPointTree">
+                    <i class="arrow"></i>       
+                    <zw-tree :data='pointData' :renderContent='renderContent' :defaultProps='defaultProps' v-loading="loading">
+                    </zw-tree>                                                                                                                                       
+                </div>
+            </div>
+            <div style="text-align:center;height:42px;margin-top:37px;">
+                <button class="zw-btn" @click="addPlan()">确定</button>
+            </div>
+        </el-dialog>
         <ul class="report-header plan-header clearfix"> 
-            <li class="l"><button class="zw-btn zw-btn-add">新增</button></li>
+            <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
             <li class="l select-plan-time">
                 <span class="label">生成计划</span>
@@ -93,7 +139,7 @@
                  <template slot-scope="scoped">
                      <div class="role-operation">
                         <span class="pointer" @click="deletePlan(scoped.row)">删除</span>
-                        <span class="pointer" @click="">编辑</span>
+                        <span class="pointer" @click="changePlan(scoped.row)">编辑</span>
                      </div>
                  </template>
                </el-table-column>
@@ -105,7 +151,7 @@
 <script>
 import {system,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination} from '@/zw-components/index'
+import {zwPagination,zwTree} from '@/zw-components/index'
 import * as comm from "../../assets/js/pro_common";
 export default {
     mixins:[table],
@@ -157,7 +203,6 @@ export default {
                 label:'月巡检',
                 value:3
             }],
-            users:[],
             year:'',
             filterText:'',
             defaultFilterObj:{
@@ -177,9 +222,19 @@ export default {
                 EndDateTime:''
             },
             time:'',
+            planTime:'',
             showFilterBox:false,
             queryType:0,//查询方式，0为普通查询，1为高级搜索
             type:0,//0为新增 1为编辑计划
+            show:false, //控制新增或编辑弹框
+            title:'新增巡检计划',
+            users:[], //所有用户
+            roadDatas:[],//所有路线
+            showPointTree:false,
+            inspectionCycleName:'临时巡检',
+            defaultProps:{
+                children:'list'
+            },
             defaultAddPlanData:{
                 InspectionPlanName:null,
                 InspectionLineID:null,
@@ -193,6 +248,17 @@ export default {
                 InspectionDatetime:null,
                 InspectionUserGUID:null,
                 FDescription:''
+            },
+            road:null,
+            loading:false,
+            pointData:[],//巡检路线对应的巡检点
+            pickerOptions:{ //新增或编辑巡检计划只能选择大于当前时间的
+/*                 disabledDate:val => {
+                    if(Date.parse(new Date(val)) < Date.parse(new Date())){
+                        console.log(new Date(val),new Date());
+                        return true
+                    }
+                } */
             },
             pickerOptions2: {
                 shortcuts: [{
@@ -224,7 +290,8 @@ export default {
         }
     },
     components:{
-        zwPagination
+        zwPagination,
+        zwTree
     },
     watch:{
         filterText(val){
@@ -236,11 +303,17 @@ export default {
     created(){
         this.queryData()
         this.queryUser()
+        this.queryRoad()
     },
     mounted(){
 
     },
     methods:{
+        renderContent(h, { node, data, store }){
+            return(
+                <span>{data.Aream?data.Aream:data.InspectionPointName}</span>
+            )
+        },
         /**
          * 查询巡检计划
          * @param { Number } type :1 高级查询 0:普通查询
@@ -276,6 +349,36 @@ export default {
         handleCurrentChange(val){
             this.pageIndex = val
             this.queryData()
+        },
+        /**
+         * 查询巡检路线
+         */
+        queryRoad(){
+
+            let startDateTime = '00:00'
+            let endDateTime = '23:59'
+            Inspection({
+                FAction:'QueryPageUInspectionLineInfo',
+                FName:'',
+                StartDateTime:startDateTime,
+                EndDateTime:endDateTime,
+                InspectionCycle:0,
+                PageIndex:1,
+                PageSize:10000000000
+            })
+            .then(data => {
+                console.log(data);
+                this.roadDatas = data.FObject.Table1
+/*                 this.tableData.forEach(item => {
+                    item.InspectionTime = item.InspectionTime.replace(/,$/ig,'').split(',')
+                    item.InspectionTime = item.InspectionTime.map(obj => {
+                       return obj.split('-')
+                    })
+                }); */
+            })
+            .catch(error => {
+
+            })
         },
         /**
          * 查询所有用户
@@ -362,15 +465,6 @@ export default {
             })
         },
         /**
-         * 新增或编辑巡检计划
-         */
-        addPlan(){
-            Inspection({
-                FAction:this.type?'UpdateUInspectionPlanByID':'AddTempUInspectionPlan',
-                mUInspectionPlan:this.addPlanData
-            })
-        },
-        /**
          * 修改负责人
          */
         changeUser(row){
@@ -410,13 +504,174 @@ export default {
         resetFilter(){
             this.filterObj = Object.assign({},this.defaultFilterObj)
             this.time = ''
-        }
+        },
+        /**
+         * 根据路线id获取巡检点
+         */
+        queryPoints(id){
+            Inspection({
+                FAction:'QueryAreaUInspectionPointBySort',
+                ID:id
+            })
+            .then(data => {
+                this.pointData = data.FObject
+                this.loading = false
+            })
+            .catch(error => {
+                this.loading = false
+                this.pointData = []
+            })
+        },
+        /**
+         * 选择路线
+         */
+        selectRoad(val){
+            this.loading = true
+            this.addPlanData.InspectionLineName = val.InspectionLineName
+            this.addPlanData.InspectionPlanName = val.InspectionLineName + '临时巡检计划'
+            this.addPlanData.InspectionLineID = val.ID
+            this.queryPoints(val.ID)
+        },
+        /**
+         * 新增计划弹框：选择时间
+         */
+        selectPlanTime(val){
+            if(Date.parse(new Date(val))<=Date.parse(new Date())){
+                this.planTime = ''
+                this.$message({
+                  type: 'error',
+                  message: '计划巡检时间应大于当前时间，请重新选择'
+                });
+                return
+            }
+            this.addPlanData.InspectionDatetime = comm.getFormatTime(val)
+        },
+        /**
+         * 新增或编辑巡检计划
+         */
+        addPlan(){
+            if(Date.parse(new Date(this.addPlanData.InspectionDatetime))<=Date.parse(new Date())){
+                this.$message({
+                  type: 'error',
+                  message: '计划巡检时间应大于当前时间，请重新选择'
+                });
+                return
+            }                                                                         
+            Inspection({
+                FAction:this.type?'UpdateUInspectionPlanByID':'AddTempUInspectionPlan',
+                ID:this.type?this.addPlanData.ID:'',
+                mUInspectionPlan:this.type?{InspectionDatetime:this.addPlanData.InspectionDatetime,InspectionUserGUID:this.addPlanData.InspectionUserGUID}:this.addPlanData
+            })
+            .then(data => {
+                console.log(data);
+                this.show = false
+                this.$message({
+                  type: 'success',
+                  message: this.type?'修改成功！':'新增成功！'
+                });
+            })
+            .catch(error => {
 
+            })
+        },
+        /**
+         * 点击新增按钮
+         */
+        beforeAdd(){
+            this.show  = true
+            this.title = '新增巡检计划'
+            this.type = 0
+            this.inspectionCycleName = '临时巡检'
+            this.planTime = ''
+            this.addPlanData = Object.assign({},this.defaultAddPlanData)
+        },
+        /**
+         * 编辑计划
+         */
+        changePlan(row){
+            this.show = true
+            this.title = '编辑巡检计划'
+            this.type = 1
+            this.inspectionCycleName = row.InspectionCycleName
+            this.addPlanData.InspectionPlanName = row.InspectionPlanName
+            this.addPlanData.InspectionUserGUID = row.InspectionUserGUID
+            this.addPlanData.InspectionLineID = row.InspectionLineID
+            this.planTime = new Date(row.InspectionDatetime)
+            this.addPlanData.InspectionDatetime = row.InspectionDatetime
+            this.$set(this.addPlanData,'InspectionLineName',row.InspectionLineName)
+            this.$set(this.addPlanData,'ID',row.ID)
+            this.queryPoints(row.InspectionLineID)
+        }
     }
 }
 </script>
 <style lang="scss">
+$img-url:'/static/image/';
 .plan{
+    .showPointTree{
+        .el-dialog{
+            width: 700px;
+        }
+    }
+    .el-dialog{
+        width: 460px;
+        height: 520px;
+        background: url(#{$img-url}task/inspection.png);
+        background-size: 100% 100%;
+        padding-left: 48px;
+        &__header{
+            text-align: left
+        }
+        li{
+            margin-top: 15px;
+            .zw-btn{
+                height: 40px;
+                line-height: 40px;
+                background:rgba(0,80,153,1);
+            }
+        }
+        li.plan-time{
+            .el-input{
+                width: 220px;
+            }
+        }
+        .label{
+            width: 85px;
+            display: inline-block;
+            text-align: right
+        }
+        .el-input{
+            width: 165px;
+            height: 39px;
+            line-height: 39px;
+            margin-left: 10px;
+            &__inner{
+                background:rgba(24,64,107,1);
+                border:1px solid rgba(5,103,158,1);
+            }
+        }
+        .tree-content{
+            width: 240px;
+            position: relative;
+            margin-top: 16px;
+            .arrow {
+                display: inline-block;
+                width: 22px;
+                height: 16px;
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background: url("#{$img-url}admin/icon_1.png");
+            }
+            .zw-tree{
+                float: right;
+                margin-right: 20px;
+            }
+        }
+        .zw-btn{
+            background: #12559D;
+        }
+    }
     &-header{
         position: relative;
         li.select-plan-time{
