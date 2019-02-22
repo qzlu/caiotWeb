@@ -5,15 +5,8 @@
   	<section class="cout_allitem">
     <section class="ab_container now_coutn_ki" >
     	 <div class="cout_title">
-	       <a :href="xls_adress"> <p class="r btn_01" >导出</p></a>
-	       
-    	 <template>
-			  <el-button
-			    type="primary"
-			    @click="openFullScreen">
-			          刷新
-			  </el-button>
-			</template>
+	       <a :href="xls_adress"> <button class="zw-btn zw-btn-export">导出</button></a>
+	       <button class="zw-btn zw-btn-refrest" @click="openFullScreen" style="margin-left:10px;">刷新</button>
   	<!--<p class="r btn_02" @click="handleCurrentChange(1)">刷新</p>-->
     	 </div>
 
@@ -183,15 +176,7 @@ textarea::-webkit-input-placeholder {
   
  .cout_allitem{ height: 920px; width: 1563px; background: url(/static/image/index/count_back.png);}
  .ab_container{ padding: 5px 20px;}	
- .ab_container .cout_title{ height: 50px; padding: 55px 15px 0 25px ;}
-  .ab_container .cout_title a{ color: #fff;}
-  .ab_container .cout_title p{ height: 46px; line-height: 46px; padding: 0; text-align: center;}
-
- 	
- 	.ab_container .cout_title p.btn_01{ width: 88px; height: 46px; text-indent:25px;background: url(/static/image/count/btn1.png); margin: 0 10px; cursor: pointer;float: left;}
- 	.ab_container .cout_title p.btn_01:hover{background: url(/static/image/count/btn2.png);}
-  .ab_container .cout_title p.btn_02{ width: 88px; height: 46px;text-indent:25px;background: url(/static/image/count/btn3.png);cursor: pointer; float: left;}
- 	.ab_container .cout_title p.btn_02:hover{background: url(/static/image/count/btn4.png);}
+ .ab_container .cout_title{ height: 50px; padding: 55px 15px 0 25px ;text-align: left;}
 
 .table_info{width: 97%; margin: 0 auto; height: 700px;  margin-top: 15px; border: solid 1px #112e6a;  background: #03234c;}
  .table_ltop{ height: 65px; font-size: 14px; }

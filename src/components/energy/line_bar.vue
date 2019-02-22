@@ -137,7 +137,7 @@ export default {
 			        
 			        {
 			            type: 'value',
-			            name: '水量',
+			            name: '电量',
 			            min: 0,
 			            max: 250000,
 			            interval: 50000,

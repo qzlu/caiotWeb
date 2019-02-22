@@ -1,6 +1,6 @@
 //配置axios
 import axios from 'axios';
-import {messageErr} from '../assets/js/pro_common';
+import {messageErr } from '../assets/js/pro_common';
 // 环境的切换
 if (process.env.NODE_ENV == 'development') {    
     axios.defaults.baseURL = 'http://47.106.64.130:56090/Caiot/';} 

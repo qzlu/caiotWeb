@@ -53,7 +53,7 @@ import TaskManagement from '@/components/TaskManagement' //任务警管理
 import FixRecords from '@/components/home/test'//维修管理-子菜单
 
 
-import InspectionStandard from '@/components/TaskManagement/test' //巡检管理-巡检标准
+import InspectionStandard from '@/components/TaskManagement/InspectionStandard' //巡检管理-巡检标准
 import InspectionRecords from '@/components/TaskManagement/InspectionRecords' //巡检管理-巡检记录  
 import InspectionPlan from '@/components/home/test' //巡检管理-巡检计划 
 
@@ -362,7 +362,7 @@ let routers_item=[
 					},
 					{ path: 'workList',
 						name: 'workList',
-						component: () => import('@/components/TaskManagement/workList.vue'),
+						component: () => import('@/components/TaskManagement/workList.vue'),// 工单管理
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,  
@@ -370,7 +370,23 @@ let routers_item=[
 					},
 					{ path: 'InspectionRoad',
 						name: 'InspectionRoad',
-						component: () => import('@/components/TaskManagement/InspectionRoad.vue'),
+						component: () => import('@/components/TaskManagement/InspectionRoad.vue'), //巡检路线
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,  
+						 },
+					},
+					{ path: 'InspectionPlan',
+						name: 'InspectionPlan',
+						component: () => import('@/components/TaskManagement/InspectionPlan.vue'), //新增或编辑巡检路线
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,  
+						 },
+					},
+					{ path: 'InspectionItem',
+						name: 'InspectionItem',
+						component: () => import('@/components/TaskManagement/InspectionItem.vue'), //巡检点管理
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,  

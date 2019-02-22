@@ -4,11 +4,15 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
+
 import './router/handle' //路由拦截、设置title及强制跳转
 import axios from 'axios'
 Vue.prototype.$axios= axios
-
-
+import DeleteMessage from './zw-components/messageBox/index.js'
+Vue.prototype.$DeleteMessage = DeleteMessage
 import '../static/css/common.css' /*引入公共样式*/
 import '../static/css_font/iconfont.css' /*引入公共样式*/
 import './assets/css/reset-el-table.scss' //修改el-table样式
@@ -24,11 +28,6 @@ Vue.use(caito)
 /*引入videojs视频播放器*/
 import 'video.js/dist/video-js.css'
 
-
-
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(ElementUI);
 
 
 

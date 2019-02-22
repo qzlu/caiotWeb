@@ -2,20 +2,24 @@
     height:66px;
 }
 .el-table__empty-block{
-    background: #134FA4;
+    // background: #134FA4;
     .el-table__empty-text{
         color: white;
     }
 }
 .el-table{
+    background: none;
     th{
         font-size:17px;
+        font-weight: normal;
         background:rgba(3,35,74,1)!important;
         color:rgba(241,241,242,1);
         text-align: center!important;
     }
     td{
-        padding: 18px 0!important;
+        height: 60px;
+        line-height: 60px;
+        padding: 0px!important
     }
     td,th.is-leaf{
         border: none!important
