@@ -56,7 +56,7 @@
 			<section class="con_item01">
 				<div class="con_a">
 					  <div class="entitle_">
-					   <p>设备类型</p>
+					   <p>设备类型统计</p>
 					  </div>
 				</div>
 				

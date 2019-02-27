@@ -1,157 +1,157 @@
 <template>
     <div class=" road report">
-        <el-dialog :title="type?'编辑巡检路线':'新增巡检路线'" :visible.sync="show" class="zw-dialog">
-            <div class="clearfix">
-                <ul class="l clearfix ">
-                    <li>
-                        <span class="label">巡检路线名称</span>
-                        <el-input v-model="addRoadData.InspectionLineName"></el-input>
-                        <!-- <button class="zw-btn" @click="showPointTree = !showPointTree">新增巡检点</button> -->
-                    </li>
-                    <li>
-                        <span class="label">巡检周期</span>
-                        <el-select v-model="addRoadData.InspectionCycle"  placeholder="请选择">
-                            <el-option v-for="time in timeList1" :key="time.value" :label="time.label" :value="time.value"></el-option>
-                        </el-select>
-                    </li>
-                    <li>
-                        <span class="label">频次</span>
-                        <div class="date-select"  v-if="addRoadData.InspectionCycle === 1">
-                            <ul class="l clearfix time-content">
-                                <li  style="margin-top:0" v-for="(time, i) in timeArr" :key="i">{{time}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr',i)"></i></li>
-                            </ul>
-                            <el-popover
-                              placement="bottom"
-                              width="200"
-                              trigger="click"
-                              v-model='showPopover'
-                              popper-class='select-time-popover'
-                             >
-                               <i class="el-icon-circle-plus-outline" slot="reference"></i>
-                              <p class="time-title">选择时间</p>
-                              <div class="clearfix">
-                                  <div class="l time-select-main">
-                                    <el-scrollbar>
-                                        <ul class="time-select">
-                                            <li v-for="i in 24" :class="{active:hh==i-1}" :key="i" @click="hh=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="hh==i-1">时</span></li>
-                                        </ul>
-                                    </el-scrollbar>
-                                  </div>
-                                  <div class="r time-select-main">
-                                    <el-scrollbar>
-                                        <ul class="time-select">
-                                            <li v-for="i in 59" :class="{active:mm==i-1}" :key="i" @click="mm=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="mm==i-1">分</span></li>
-                                        </ul>
-                                    </el-scrollbar>
-                                  </div>
-                              </div>
-                              <div class="time-select-footer">
-                                 <a @click="showPopover = false">取消</a>
-                                 <a @click="selectTime()">确定</a>
-                              </div>
-                            </el-popover>
-                        </div>
-                        <div class="date-select"  v-if="addRoadData.InspectionCycle === 2">
+            <el-dialog :title="type?'编辑抄表路线':'新增抄表路线'" :visible.sync="show" class="zw-dialog">
+                <div class="clearfix">
+                    <ul class="l clearfix ">
+                        <li>
+                            <span class="label">抄表路线</span>
+                            <el-input v-model="addRoadData.MeterReadingLineName"></el-input>
+                        </li>
+                        <li>
+                            <span class="label">抄表周期</span>
+                            <el-select v-model="addRoadData.MeterReadingCycle"  placeholder="请选择">
+                                <el-option v-for="time in timeList1" :key="time.value" :label="time.label" :value="time.value"></el-option>
+                            </el-select>
+                        </li>
+                        <li>
+                            <span class="label">频次</span>
+                            <div class="date-select"  v-if="addRoadData.MeterReadingCycle === 1">
+
                                 <ul class="l clearfix time-content">
-                                    <li  style="margin-top:0" v-for="(time, i) in timeArr1" :key="i">{{weekArr[time[0]-1]}}　{{time[1]}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr1',i)"></i></li>
+                                    <li  style="margin-top:0" v-for="(time, i) in timeArr" :key="i">{{time}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr',i)"></i></li>
                                 </ul>
-                            <el-popover
-                              placement="bottom"
-                              width="200"
-                              trigger="click"
-                              v-model='showPopover'
-                              popper-class='select-week-popover'
-                             >
-                               <i class="el-icon-circle-plus-outline" slot="reference"></i>
-                               <div class="clearfix">
-                                    <div class="l" >
-                                         <p class="time-title">选择周</p>
-                                         <el-scrollbar>
-                                             <ul class="week-select">
-                                                 <li v-for="i in 7" :class="{active:week==i}" :key="i" @click="week=i ">{{weekArr[i-1]}}</li>
-                                             </ul>
-                                         </el-scrollbar>
-                                    </div>
-                                    <div class="r" style="width:194px;">
-                                         <p class="time-title">选择时间</p>
-                                         <div class="clearfix">
-                                             <div class="l time-select-main">
-                                               <el-scrollbar>
-                                                   <ul class="time-select">
-                                                       <li v-for="i in 24" :class="{active:h1==i-1}" :key="i" @click="h1=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="h1==i-1">时</span></li>
-                                                   </ul>
-                                               </el-scrollbar>
+                                <el-popover
+                                  placement="bottom"
+                                  width="200"
+                                  trigger="click"
+                                  v-model='showPopover'
+                                  popper-class='select-time-popover'
+                                 >
+                                   <i class="el-icon-circle-plus-outline" slot="reference"></i>
+                                  <p class="time-title">选择时间</p>
+                                  <div class="clearfix">
+                                      <div class="l time-select-main">
+                                        <el-scrollbar>
+                                            <ul class="time-select">
+                                                <li v-for="i in 24" :class="{active:hh==i-1}" :key="i" @click="hh=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="hh==i-1">时</span></li>
+                                            </ul>
+                                        </el-scrollbar>
+                                      </div>
+                                      <div class="r time-select-main">
+                                        <el-scrollbar>
+                                            <ul class="time-select">
+                                                <li v-for="i in 59" :class="{active:mm==i-1}" :key="i" @click="mm=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="mm==i-1">分</span></li>
+                                            </ul>
+                                        </el-scrollbar>
+                                      </div>
+                                  </div>
+                                  <div class="time-select-footer">
+                                     <a @click="showPopover = false">取消</a>
+                                     <a @click="selectTime()">确定</a>
+                                  </div>
+                                </el-popover>
+                            </div>
+                            <div class="date-select"  v-if="addRoadData.MeterReadingCycle === 2">
+                                    <ul class="l clearfix time-content">
+                                        <li  style="margin-top:0" v-for="(time, i) in timeArr1" :key="i">{{weekArr[time[0]-1]}}　{{time[1]}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr1',i)"></i></li>
+                                    </ul>
+                                <el-popover
+                                  placement="bottom"
+                                  width="200"
+                                  trigger="click"
+                                  v-model='showPopover'
+                                  popper-class='select-week-popover'
+                                 >
+                                   <i class="el-icon-circle-plus-outline" slot="reference"></i>
+                                   <div class="clearfix">
+                                        <div class="l" >
+                                             <p class="time-title">选择周</p>
+                                             <el-scrollbar>
+                                                 <ul class="week-select">
+                                                     <li v-for="i in 7" :class="{active:week==i}" :key="i" @click="week=i ">{{weekArr[i-1]}}</li>
+                                                 </ul>
+                                             </el-scrollbar>
+                                        </div>
+                                        <div class="r" style="width:194px;">
+                                             <p class="time-title">选择时间</p>
+                                             <div class="clearfix">
+                                                 <div class="l time-select-main">
+                                                   <el-scrollbar>
+                                                       <ul class="time-select">
+                                                           <li v-for="i in 24" :class="{active:h1==i-1}" :key="i" @click="h1=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="h1==i-1">时</span></li>
+                                                       </ul>
+                                                   </el-scrollbar>
+                                                 </div>
+                                                 <div class="r time-select-main">
+                                                   <el-scrollbar>
+                                                       <ul class="time-select">
+                                                           <li v-for="i in 59" :class="{active:m1==i-1}" :key="i" @click="m1=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="m1==i-1">分</span></li>
+                                                       </ul>
+                                                   </el-scrollbar>
+                                                 </div>
                                              </div>
-                                             <div class="r time-select-main">
-                                               <el-scrollbar>
-                                                   <ul class="time-select">
-                                                       <li v-for="i in 59" :class="{active:m1==i-1}" :key="i" @click="m1=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="m1==i-1">分</span></li>
-                                                   </ul>
-                                               </el-scrollbar>
+                                        </div>
+                                   </div>
+                                  <div class="time-select-footer">
+                                     <a @click="showPopover = false">取消</a>
+                                     <a @click="selectWeek()">确定</a>
+                                  </div>
+                                </el-popover>
+                            </div>
+                            <div class="date-select"  v-if="addRoadData.MeterReadingCycle === 3">
+                                    <ul class="l clearfix time-content">
+                                        <li  style="margin-top:0" v-for="(time, i) in timeArr2" :key="i">{{time[0]}}号　{{time[1]}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr2',i)"></i></li>
+                                    </ul>
+                                <el-popover
+                                  placement="bottom"
+                                  width="200"
+                                  trigger="click"
+                                  v-model='showPopover'
+                                  popper-class='select-week-popover'
+                                 >
+                                   <i class="el-icon-circle-plus-outline" slot="reference"></i>
+                                   <div class="clearfix">
+                                        <div class="l" >
+                                             <p class="time-title">选择日期</p>
+                                             <el-scrollbar>
+                                                 <ul class="week-select">
+                                                     <li v-for="i in 31" :class="{active:month==i}" :key="i" @click="month=i ">{{i}}号</li>
+                                                 </ul>
+                                             </el-scrollbar>
+                                        </div>
+                                        <div class="r" style="width:194px;">
+                                             <p class="time-title">选择时间</p>
+                                             <div class="clearfix">
+                                                 <div class="l time-select-main">
+                                                   <el-scrollbar>
+                                                       <ul class="time-select">
+                                                           <li v-for="i in 24" :class="{active:h2==i-1}" :key="i" @click="h2=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="h2==i-1">时</span></li>
+                                                       </ul>
+                                                   </el-scrollbar>
+                                                 </div>
+                                                 <div class="r time-select-main">
+                                                   <el-scrollbar>
+                                                       <ul class="time-select">
+                                                           <li v-for="i in 59" :class="{active:m2==i-1}" :key="i" @click="m2=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="m2==i-1">分</span></li>
+                                                       </ul>
+                                                   </el-scrollbar>
+                                                 </div>
                                              </div>
-                                         </div>
-                                    </div>
-                               </div>
-                              <div class="time-select-footer">
-                                 <a @click="showPopover = false">取消</a>
-                                 <a @click="selectWeek()">确定</a>
-                              </div>
-                            </el-popover>
-                        </div>
-                        <div class="date-select"  v-if="addRoadData.InspectionCycle === 3">
-                                <ul class="l clearfix time-content">
-                                    <li  style="margin-top:0" v-for="(time, i) in timeArr2" :key="i">{{time[0]}}号　{{time[1]}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr2',i)"></i></li>
-                                </ul>
-                            <el-popover
-                              placement="bottom"
-                              width="200"
-                              trigger="click"
-                              v-model='showPopover'
-                              popper-class='select-week-popover'
-                             >
-                               <i class="el-icon-circle-plus-outline" slot="reference"></i>
-                               <div class="clearfix">
-                                    <div class="l" >
-                                         <p class="time-title">选择日期</p>
-                                         <el-scrollbar>
-                                             <ul class="week-select">
-                                                 <li v-for="i in 31" :class="{active:month==i}" :key="i" @click="month=i ">{{i}}号</li>
-                                             </ul>
-                                         </el-scrollbar>
-                                    </div>
-                                    <div class="r" style="width:194px;">
-                                         <p class="time-title">选择时间</p>
-                                         <div class="clearfix">
-                                             <div class="l time-select-main">
-                                               <el-scrollbar>
-                                                   <ul class="time-select">
-                                                       <li v-for="i in 24" :class="{active:h2==i-1}" :key="i" @click="h2=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="h2==i-1">时</span></li>
-                                                   </ul>
-                                               </el-scrollbar>
-                                             </div>
-                                             <div class="r time-select-main">
-                                               <el-scrollbar>
-                                                   <ul class="time-select">
-                                                       <li v-for="i in 59" :class="{active:m2==i-1}" :key="i" @click="m2=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="m2==i-1">分</span></li>
-                                                   </ul>
-                                               </el-scrollbar>
-                                             </div>
-                                         </div>
-                                    </div>
-                               </div>
-                              <div class="time-select-footer">
-                                 <a @click="showPopover = false">取消</a>
-                                 <a @click="selectMonth()">确定</a>
-                              </div>
-                            </el-popover>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div style="text-align:center;height:42px;margin-top:37px;">
-                <button class="zw-btn" @click="addRoad()">{{type?'确定':'下一步'}}</button>
-            </div>
-        </el-dialog>
+                                        </div>
+                                   </div>
+                                  <div class="time-select-footer">
+                                     <a @click="showPopover = false">取消</a>
+                                     <a @click="selectMonth()">确定</a>
+                                  </div>
+                                </el-popover>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div style="text-align:center;height:42px;margin-top:37px;">
+                    <button class="zw-btn" @click="addRoad()">{{type?'确定':'下一步'}}</button>
+                </div>
+            </el-dialog>
         <ul class="road-head clearfix report-header">
             <li class="l road-head-add" @click="beforeAddNewRoad()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l road-head-export" @click="exportFile()"><button class="zw-btn zw-btn-export">导出</button></li>
@@ -166,17 +166,17 @@
                 <transition>
                     <ul class="search-box"  v-if="showFilterBox">
                         <li class="l">
-                            <span>巡检路线名称</span>
+                            <span>抄表路线名称</span>
                             <el-input v-model="roadName"></el-input>
                         </li>
                         <li class="l">
-                            <span>巡检周期</span>
-                            <el-select v-model="InspectionCycle"  placeholder="请选择">
+                            <span>抄表周期</span>
+                            <el-select v-model="MeterReadingCycle"  placeholder="请选择">
                                 <el-option v-for="time in timeList" :key="time.value" :label="time.label" :value="time.value"></el-option>
                             </el-select>
                         </li>
                         <li class="l">
-                            <span>巡检时间</span>
+                            <span>抄表时间</span>
                             <el-time-picker
                               is-range
                               v-model="time"
@@ -207,6 +207,12 @@
                @row-click = 'changeRoad'
                >
                <el-table-column
+                type="index"
+                label="序号"
+                width="80"
+               >
+               </el-table-column>
+               <el-table-column
                  v-for="item in tableLabel"
                  :key="item.prop"
                  :prop="item.prop"
@@ -216,18 +222,18 @@
                </el-table-column>
                <el-table-column
                  prop=""
-                 label="巡检时间"
+                 label="抄表时间"
                  show-overflow-tooltip
                >
                     <template slot-scope="scoped">
-                        <div v-if="scoped.row.InspectionCycleID == 1">
-                            <span v-for="time in scoped.row.InspectionTime">{{time[1]}}　</span>
+                        <div v-if="scoped.row.MeterReadingCycle == 1">
+                            <span v-for="time in scoped.row.MeterReadingTime">{{time[1]}}　</span>
                         </div>
-                        <div v-if="scoped.row.InspectionCycleID == 2">
-                            <span v-for="time in scoped.row.InspectionTime">{{weekArr[time[0]-1]}}{{time[1]}}　</span>
+                        <div v-if="scoped.row.MeterReadingCycle == 2">
+                            <span v-for="time in scoped.row.MeterReadingTime">{{weekArr[time[0]-1]}}{{time[1]}}　</span>
                         </div>
-                        <div v-if="scoped.row.InspectionCycleID == 3">
-                            <span v-for="time in scoped.row.InspectionTime">{{time[0]}}号{{time[1]}}　</span>
+                        <div v-if="scoped.row.MeterReadingCycle == 3">
+                            <span v-for="time in scoped.row.MeterReadingTime">{{time[0]}}号{{time[1]}}　</span>
                         </div>
                     </template>
                </el-table-column>
@@ -245,16 +251,16 @@
         </div>
         <div class="point-info">
             <div>
-                <button class="zw-btn point">巡检点</button>
-                <button class="zw-btn set-point" @click="beforeSetPoint()">设置巡检点</button>
+                <button class="zw-btn point">抄表点</button>
+                <button class="zw-btn set-point" @click="beforeSetPoint()">设置抄表点</button>
             </div>
             <div class="tree-table">
                 <ul class="tree-table-header">
                     <li class="l">序号</li>
-                    <li class="l">区域名称</li>
-                    <li class="l">巡检点</li>
-                    <li class="l">设备系统</li>
-                    <li class="l">巡检顺序</li>
+                    <li class="l">抄表区域</li>
+                    <li class="l">抄表点</li>
+                    <!-- <li class="l">设备系统</li> -->
+                    <li class="l">抄表顺序</li>
                     <li class="l">排序</li>
                 </ul>
                 <el-scrollbar>
@@ -270,14 +276,14 @@
 
             </div>
         </div>
-            <el-dialog title="设置巡检点" :visible.sync="showPointTree" class="zw-dialog showPointTree">
+            <el-dialog title="设置抄表点" :visible.sync="showPointTree" class="zw-dialog showPointTree">
                 <div style="padding-right: 16px;">
                     <tree-transfer
                      ref="transfer"
                      :data='pointData' 
                      :data1='pointData'
-                     leftTitle="所有巡检点"
-                     rightTitle="已选巡检点"
+                     leftTitle="所有抄表点"
+                     rightTitle="已选抄表点"
                      nodeKey="ID"
                      :filterNode="filterNode"
                       @check-change="checkChange"
@@ -296,35 +302,35 @@
     </div>
 </template>
 <script>
-import {system,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
+import {system,MeterReading,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {zwPagination,treeTransfer} from '@/zw-components/index'
-import * as comm from "../../assets/js/pro_common";
+import * as comm from "@/assets/js/pro_common";
 export default {
     mixins:[table],
     data(){
         return{
             tableLabel:[
-                {
+/*                 {
                     prop: 'RowNum',
                     label: '序号'
+                }, */
+                {
+                    prop: 'MeterReadingLineName',
+                    label: '抄表路线名称'
                 },
                 {
-                    prop: 'InspectionLineName',
-                    label: '路线名称'
+                    prop: 'PointCount',
+                    label: '抄表点数'
                 },
                 {
-                    prop: 'DeviceCount',
-                    label: '巡检点数'
+                    prop: 'MeterReadingCycle',
+                    label: '抄表周期'
                 },
                 {
                     prop: 'Frequency',
                     label: '频次'
                 },
-                {
-                    prop: 'InspectionCycle',
-                    label: '巡检周期'
-                }
             ],
             showFilterBox:false,//是否显示高级搜索框
             timeList:[
@@ -333,39 +339,39 @@ export default {
                 value:0
             },
             {
-                label:'日巡检',
+                label:'日抄表',
                 value:1
             },
             {
-                label:'周巡检',
+                label:'周抄表',
                 value:2
             },
             {
-                label:'月巡检',
+                label:'月抄表',
                 value:3
             }],
             timeList1:[
             {
-                label:'日巡检',
+                label:'日抄表',
                 value:1
             },
             {
-                label:'周巡检',
+                label:'周抄表',
                 value:2
             },
             {
-                label:'月巡检',
+                label:'月抄表',
                 value:3
             }],
             //新增巡检路线
             addRoadData:{
                 ID:'',
                 ProjectID:localStorage.getItem('projectid'),
-                InspectionLineName:'',
-                InspectionPointIDStr:'',
-                InspectionTimeStr:'',
+                MeterReadingLineName:'',
+                MeterReadingPointStr:'',
+                MeterReadingTimeStr:'',
                 AreaIDStr:'',
-                InspectionCycle:1
+                MeterReadingCycle:1
             },
             pointData:[],//所有巡检点
             defaultProps:{
@@ -378,7 +384,7 @@ export default {
             showPopover:false,
             showPointTree:false,
             roadName:'',//巡检路线名称
-            InspectionCycle:0, //巡检周期
+            MeterReadingCycle:0, //巡检周期
             startDateTime:'00:00',
             endDateTime:'23:59',
             time:'', //时间
@@ -446,7 +452,6 @@ export default {
                         <li class='l'>{data.Aream}</li>
                         <li class='l'></li>
                         <li class='l'></li>
-                        <li class='l'></li>
                         <li class='l' v-show={data.index == 0}>
                             <i class='sort sort-down' on-click={ () => this.sortRoad(1,data,this.points[data.i+1])}></i>
                         </li>
@@ -467,7 +472,6 @@ export default {
                         <li class='l'></li>
                         <li class='l'></li>
                         <li class='l'>{data.InspectionPointName}</li>
-                        <li class='l'>{data.Value}</li>
                         <li class='l'>{data.PointSortID}</li>
                         <li class='l' v-show={data.index == 0}>
                             <i class='sort sort-down' on-click={ () => this.sortRoad(0,data,data.father[data.i+1])}></i>
@@ -486,7 +490,7 @@ export default {
             }
         },
         /**
-         * 查询巡检路线
+         * 查询抄表路线
          */
         queryData(){
             if(this.time&&this.time[0]){
@@ -501,20 +505,18 @@ export default {
             }else{
                 this.endDateTime = '23:59'
             }
-            Inspection({
-                FAction:'QueryPageUInspectionLineInfo',
-                FName:this.roadName,
+            MeterReading({
+                FAction:'QueryUMeterReadingLine',
+                SearchKey:this.roadName,
                 StartDateTime:this.startDateTime,
                 EndDateTime:this.endDateTime,
-                InspectionCycle:this.InspectionCycle,
-                PageIndex:1,
-                PageSize:10000000000
+                MeterReadingCycle:this.MeterReadingCycle,
             })
             .then(data => {
-                this.tableData = data.FObject.Table1
+                this.tableData = data.FObject
                 this.tableData.forEach(item => {
-                    item.InspectionTime = item.InspectionTime.replace(/,$/ig,'').split(',')
-                    item.InspectionTime = item.InspectionTime.map(obj => {
+                    item.MeterReadingTime = item.MeterReadingTime.replace(/,$/ig,'').split(',')
+                    item.MeterReadingTime = item.MeterReadingTime.map(obj => {
                        return obj.split('-')
                     })
                 });
@@ -530,7 +532,7 @@ export default {
             Inspection({
                 FAction:'QueryUInspectionPointTree',
                 ID:0,
-                FType:1
+                FType:2
             })
             .then(data => {
                 this.pointData  = data.FObject
@@ -544,10 +546,12 @@ export default {
          * type 0:为新增 1：为修改
          */
         addOrUpdatedRoad(type) {
+            console.log(type);
+            let actionsArr = ['AddUMeterReadingLine','UpdateUMeterReadingLine','UpdateUMeterReadingLinePoint']
             return new Promise((resolve,reject) => {
-                    Inspection({
-                        FAction:type?'UpdateUInspectionLineInfo':'AddUInspectionLineInfo',
-                        mUInspectionLine:this.addRoadData
+                    MeterReading({
+                        FAction:actionsArr[type],
+                        mUMeterReadingLine:this.addRoadData
                     })
                     .then(data => {
                         this.queryData()
@@ -571,14 +575,14 @@ export default {
          * 新增或修改巡检路线
          */
         addRoad(){
-            if(this.addRoadData.InspectionLineName.length ===0 ){
+            if(this.addRoadData.MeterReadingLineName.length ===0 ){
                 this.$message({
                     type:'warning',
                     message:'请填写巡检路线名称'
                 })
                 return
             }
-            if(this.addRoadData.InspectionCycle == 1){
+            if(this.addRoadData.MeterReadingCycle == 1){
                 let arr = this.timeArr.map(item => {
                     return '0-' + item
                 })
@@ -589,8 +593,8 @@ export default {
                     })
                     return
                 }
-                this.addRoadData.InspectionTimeStr = arr.join(',')
-            }else if(this.addRoadData.InspectionCycle == 2){
+                this.addRoadData.MeterReadingTimeStr = arr.join(',')
+            }else if(this.addRoadData.MeterReadingCycle == 2){
                 let arr = this.timeArr1.map(item => {
                     return item[0] + '-' + item[1]
                 })
@@ -601,8 +605,8 @@ export default {
                     })
                     return
                 }
-                this.addRoadData.InspectionTimeStr = arr.join(',')
-            }else if(this.addRoadData.InspectionCycle == 3){
+                this.addRoadData.MeterReadingTimeStr = arr.join(',')
+            }else if(this.addRoadData.MeterReadingCycle == 3){
                 let arr = this.timeArr2.map(item => {
                     return item.join('-')
                 })
@@ -613,13 +617,14 @@ export default {
                     })
                     return
                 }
-                this.addRoadData.InspectionTimeStr = arr.join(',')
+                this.addRoadData.MeterReadingTimeStr = arr.join(',')
             }
             if(this.type){
-                this.addRoadData.InspectionPointIDStr = -1,
+                this.addRoadData.MeterReadingPointStr = -1,
                 this.addRoadData.AreaIDStr = -1
                 return this.addOrUpdatedRoad(this.type)
             }else{
+                console.log(this.addRoadData);
                 this.show = false
                 this.defaultChecked = []
                 this.showPointTree = true
@@ -631,8 +636,8 @@ export default {
         beforeAddNewRoad(){
             this.show = true
             this.type = 0
-            this.addRoadData.InspectionLineName = ''
-            this.addRoadData.InspectionCycle = 1
+            this.addRoadData.MeterReadingLineName = ''
+            this.addRoadData.MeterReadingCycle = 1
             this.addRoadData.ID = ''
             this.timeArr = []
             this.timeArr1 = []
@@ -646,41 +651,41 @@ export default {
         editRoad(item,show){
             this.show = show
             this.type = 1
-            this.addRoadData.InspectionLineName = item.InspectionLineName
-            this.addRoadData.InspectionCycle = item.InspectionCycleID
+            this.addRoadData.MeterReadingLineName = item.MeterReadingLineName
+            this.addRoadData.MeterReadingCycle = item.MeterReadingCycle
             this.addRoadData.ID = item.ID
             //显示弹框时，默认填入时间
             if(show){
-                if(item.InspectionCycleID == 1){
-                    this.timeArr = item.InspectionTime.map(item => {
+                if(item.MeterReadingCycle == 1){
+                    this.timeArr = item.MeterReadingTime.map(item => {
                         return item[1]
                     })
-                }else if(item.InspectionCycleID == 2){
-                    this.timeArr1 = JSON.parse(JSON.stringify(item.InspectionTime))
-                }else if(item.InspectionCycleID == 3){
-                    this.timeArr2 = JSON.parse(JSON.stringify(item.InspectionTime))
+                }else if(item.MeterReadingCycle == 2){
+                    this.timeArr1 = JSON.parse(JSON.stringify(item.MeterReadingTime))
+                }else if(item.MeterReadingCycle == 3){
+                    this.timeArr2 = JSON.parse(JSON.stringify(item.MeterReadingTime))
                 }
             }else{
-                let timeArr = item.InspectionTime.map(item => {
+                let timeArr = item.MeterReadingTime.map(item => {
                     return item.join('-')
                 })
-                this.addRoadData.InspectionTimeStr = timeArr.join(',')
+                this.addRoadData.MeterReadingTime = timeArr.join(',')
             }
         },
         /**
-         * 删除巡检路线
+         * 删除抄表路线
          */
         async deleteRoad(item){
             await new Promise(resolve => {
-                this.$DeleteMessage([`确定要删除　　${item.InspectionLineName}`,'删除路线'])
+                this.$DeleteMessage([`确定要删除　　${item.MeterReadingLineName}`,'删除路线'])
                 .then(() => {
                     resolve()
                 })
                 .catch(() => {
                 })
             })
-            Inspection({
-                FAction:'DeleteUInspectionLine',
+            MeterReading({
+                FAction:'DeleteUMeterReadingLine',
                 ID:item.ID
             })
             .then(data => {
@@ -698,13 +703,13 @@ export default {
          * 点击每一行（修改路线）
          */
         changeRoad(row){
-            this.type = 1
+            this.type = 2
             this.roadObj = row
             this.defaultChecked = []
             Inspection({
                 FAction:'QueryAreaUInspectionPointBySort',
                 ID:row.ID,
-                FType:1
+                FType:2
             })
             .then(data => {
                 this.points = data.FObject
@@ -767,11 +772,12 @@ export default {
          */
         beforeSetPoint(){
             if(this.roadObj){
-                this.type = 1
+                this.type = 2
                 this.showPointTree = true
             }else{
-                this.$DeleteMessage(['请选择巡检路线','提示信息'],false)
+                this.$DeleteMessage(['请选择抄表路线','提示信息'],false)
             }
+            console.log(this.type);
         },
         /**
          * 设置巡检路线（设置巡检点弹框）
@@ -779,7 +785,8 @@ export default {
         async setPoint(){
             //修改路线
             if(this.type){
-                this.editRoad(this.roadObj,false)
+                //this.editRoad(this.roadObj,false)
+                this.addRoadData.ID = this.roadObj.ID
             }
             let arr = []
             let areaArr = []
@@ -800,7 +807,7 @@ export default {
                     message:'请选择巡检点'
                 })
             }
-            this.addRoadData.InspectionPointIDStr = arr.join(',')
+            this.addRoadData.MeterReadingPointStr = arr.join(',')
             this.addRoadData.AreaIDStr = areaArr.join(',')
             await this.addOrUpdatedRoad(this.type)
             this.showPointTree = false
@@ -837,8 +844,8 @@ export default {
                 startIDStr = startObj.UInspectionLinePointID
                 endIDStr = endObj.UInspectionLinePointID                                          
             }
-            Inspection({
-                FAction:'UpdateUInspectionLineBySortID',
+            MeterReading({
+                FAction:'UpdateUMeterReadingLinePointBySortID',
                 StartIDStr:startIDStr,
                 EndIDStr:endIDStr,
                 FType:type
@@ -854,12 +861,12 @@ export default {
          * exportFile 导出
          */
         exportFile(){
-            Inspection({
-                FAction:'QueryExportUInspectionLineInfo',
-                FName:this.roadName,
+            MeterReading({
+                FAction:'QueryExportUMeterReadingLine',
+                SearchKey:this.roadName,
                 StartDateTime:this.startDateTime,
                 EndDateTime:this.endDateTime,
-                InspectionCycle:this.InspectionCycle
+                MeterReadingCycle:this.MeterReadingCycle
             })
             .then(data => {
                 window.location = "http://www.szqianren.com/" + data.FObject;
@@ -936,6 +943,5 @@ export default {
 }
 </script>
 <style lang="scss">
-@import './InspectionRoad.scss'
+@import '../InspectionRoad.scss'
 </style>
-

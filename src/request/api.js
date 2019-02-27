@@ -10,11 +10,17 @@ const system = p => post('System', p)
 const Alarm = p => post('Alarm', p)
 const Inspection = p => post('Inspection',Object.assign({ProjectID:localStorage.getItem('projectid')},p))
 const Report = p => post('Report',p)
+const FileUpLoad = p => post('FileUpLoad', Object.assign({ProjectID:localStorage.getItem('projectid')},p))
+const Orders = p => post('Orders', Object.assign({ProjectID:localStorage.getItem('projectid')},p))
+const MeterReading = p => post('MeterReading',Object.assign({ProjectID:localStorage.getItem('projectid')},p))
 export{
     login,
     project,
     system,
     Alarm,
     Inspection,
-    Report
+    Report,
+    FileUpLoad,
+    Orders,
+    MeterReading
 }

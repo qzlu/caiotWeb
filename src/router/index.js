@@ -60,8 +60,7 @@ import InspectionPlan from '@/components/home/test' //巡检管理-巡检计划
 import MaintenanceRecords from '@/components/home/test'//保养管理-保养记录
 import MaintenancePlan from '@/components/home/test'//保养管理-保养计划 
 import MaintenanceStandard from '@/components/home/test'//保养管理-保养标准 
-
-import MeterReadingRecords from '@/components/home/test'//抄表管理-抄表记录
+/************ 抄表管理 *******************/
 /*----------*/
 
 import Count from '@/components/Count' //统计报表
@@ -435,11 +434,37 @@ let routers_item=[
 						 },
 					},
 					
-					
-					
+					{
+						path: 'MeterReadingPoint',
+						name:'MeterReadingPoint',
+						component: () => import('@/components/TaskManagement/MeterReading/MeterReadingPoint.vue'), //抄表点管理
+						meta:{
+							title: '千仞云平台',
+							requireAuth: true, 
+						}
+					},
+					{
+						path: 'MeterReadingLine',
+						name:'MeterReadingLine',
+						component: () => import('@/components/TaskManagement/MeterReading/MeterReadingLine.vue'), //抄表路线管理
+						meta:{
+							title: '千仞云平台',
+							requireAuth: true, 
+						}
+					},
+					{
+						path: 'MeterReadingPlan',
+						name:'MeterReadingPlan',
+						component: () => import('@/components/TaskManagement/MeterReading/MeterReadingPlan.vue'), //抄表计划管理
+						meta:{
+							title: '千仞云平台',
+							requireAuth: true, 
+						}
+						
+					},
 					{ path: 'MeterReadingRecords',
 						name: 'MeterReadingRecords',// 抄表管理-抄表记录
-						component: MeterReadingRecords,
+						component: () => import('@/components/TaskManagement/MeterReading/MeterReadingRecords.vue'), //抄表计划管理
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true, 

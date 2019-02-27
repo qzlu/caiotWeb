@@ -177,17 +177,15 @@
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
                 <td width="28%">巡检区域</td>
-                <td width="14%">巡检情况</td>
-                <td width="14%">巡检点数</td>
-                <td width="14%">待巡检</td>
-                <td width="14%">正常点数</td>
-                <td width="14%">异常点数</td>
+                <td width="18%">巡检情况</td>
+                <td width="18%">巡检点数</td>
+                <td width="18%">正常点数</td>
+                <td width="18%">异常点数</td>
               </tr>
               <tr v-for="(item,key) in dateReport.Table1">
                 <td>{{item.AreaName}}</td>
                 <td :class="{reding:item.InspectionResult=='异常'}">{{item.InspectionResult}}</td>
                 <td>{{item.ALLPointCount}}</td>
-                <td>{{item.waitingCount}}</td>
                 <td>{{item.NormalCount?item.NormalCount:0}}</td>
                 <td :class="{reding:item.FaultCount>0}">{{item.FaultCount?item.FaultCount:0}}</td>
               </tr>
@@ -605,7 +603,7 @@
 <script>
 import html2Canvas from "html2canvas";
 var echarts = require("echarts");
-import * as comm from "../../assets/js/pro_common";
+import * as comm from "@/assets/js/pro_common";
 import {Inspection,FileUpLoad} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 export default {
@@ -652,10 +650,6 @@ export default {
               label: '区域名称'
           },
           {
-              prop: 'InspectionTime',
-              label: '巡检时间'
-          },
-          {
               prop: 'InspectionItem',
               label: '巡检项'
           },
@@ -674,6 +668,10 @@ export default {
           {
               prop: 'InspectionNote',
               label: '备注'
+          },
+          {
+              prop: 'InspectionTime',
+              label: '巡检时间'
           }
       ],
     };
@@ -1397,8 +1395,6 @@ $img-url:'/static/image/';
   height: 50px;
   font-size: 26px;
   width: 40%;
-  position: relative;
-  top: -38px;
 }
 .Ins_records .ppt_item .hdr .pn03 {
   height: 50px;

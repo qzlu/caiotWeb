@@ -1,9 +1,14 @@
 <template>
     <div class="report inspection-item">
-        <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog">
+        <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog meter-reading-point">
             <el-form :model="addPoint" ref="form">
-                <el-form-item label="巡检点名称"  prop='InspectionPointName' :rules="[{ required: true, message: '请输入巡检点名称'}]">
-                    <el-input v-model="addPoint.InspectionPointName"></el-input>
+                <el-form-item label="抄表点名称"  prop='MeterReadingPointName' :rules="[{ required: true, message: '请输入巡检点名称'}]">
+                    <el-input v-model="addPoint.MeterReadingPointName"></el-input>
+                </el-form-item>
+                <el-form-item label="能耗类型" prop="EnergyTypeID" :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addPoint.EnergyTypeID"   placeholder="请选择">
+                    <el-option v-for="item in energyTypeList" :key="item.ID" :label="item.EnergyTypeName" :value="item.ID"></el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="所属区域" prop="AreaID" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addPoint.AreaID"   placeholder="请选择">
@@ -20,17 +25,10 @@
                 <button class="zw-btn zw-btn-primary" @click="addUInspectionPoint()">确定</button>
             </div>
         </el-dialog>
-        <el-dialog title="导入巡检点" :visible.sync="showImportDialog" class="zw-dialog import-point">
-            <zw-tree title="选择巡检点">
-            </zw-tree>
-            <div class="submit">
-                <button class="zw-btn zw-btn-primary" @click="">确定</button>
-            </div>
-        </el-dialog>
         <ul class="clearfix report-header">
             <li class="l" @click="add()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l" @click="exportFile"><button class="zw-btn zw-btn-export">导出</button></li>
-             <li class="l" @click="showImportDialog = true"><button class="zw-btn zw-btn-import">设备导入</button></li>
+             <li class="l" @click="importDevice"><button class="zw-btn zw-btn-import">设备导入</button></li>
             <li class="l" @click="pageIndex=1;filterText = '';queryData()"><button class="zw-btn zw-btn-refrest">刷新</button></li>
             <li class="r">
                 <el-input class="search-input" placeholder="搜索设备关键字" v-model="filterText">
@@ -69,9 +67,9 @@
     </div>
 </template>
 <script>
-import {system,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
+import {system,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination,zwTree} from '@/zw-components/index'
+import {zwPagination} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -82,30 +80,37 @@ export default {
                     label: '序号'
                 },
                 {
-                    prop: 'InspectionPointName',
-                    label: '巡检点'
+                    prop: 'MeterReadingPointName',
+                    label: '抄表点'
+                },
+                {
+                    prop: 'EnergyTypeName',
+                    label: '能耗类型'
                 },
                 {
                     prop: 'AreaName',
                     label: '所属区域'
                 },
                 {
-                    prop: 'Value',
-                    label: '所属系统'
+                    prop: 'ShortName',
+                    label: '所属项目'
                 }
             ],
             filterText:'',
             title:'新增',
             show:false,
-            defalutAddPoint:{//新增巡检点默认数据
-                InspectionPointName:'',
+            defalutAddPoint:{//新增抄表点默认数据
+                MeterReadingPointName:'',
+                EnergyTypeID:'',
                 ProjectID:localStorage.getItem('projectid'),
                 AreaID:null,
                 FDescription:'',
-                SystemParamID:null
+                SystemParamID:null,
+                ID:null
             },
-            addPoint:{ //新增或编辑巡检点数据
-                InspectionPointName:'',
+            addPoint:{ //新增或编辑抄表点数据
+                MeterReadingPointName:'',
+                EnergyTypeID:'',
                 ProjectID:localStorage.getItem('projectid'),
                 AreaID:null,
                 FDescription:'',
@@ -113,14 +118,13 @@ export default {
                 ID:null
             },
             areaList:[], //区域列表
+            energyTypeList:[], //能源类型分类
             systemTypeList:[], //系统分类
-            type:0,
-            showImportDialog:false
+            type:0
         }
     },
     components:{
-        zwPagination,
-        zwTree
+        zwPagination
     },
     watch:{
         filterText(){
@@ -133,6 +137,7 @@ export default {
     created(){
         this.queryData()
         this.queryAreaType()
+        this.querySEnergyType()
         this.querySystemType()
     },
     mounted(){
@@ -140,7 +145,7 @@ export default {
     },
     methods:{
         /**
-         * 查询巡检点
+         * 查询抄表点
          */
         queryData(name = '', pageIndex = 1){
             const loading = this.$loading({
@@ -148,9 +153,9 @@ export default {
               background: 'rgba(0, 0, 0, 0.7)',
               text:'正在加载......'
             });
-            Inspection({
-                FAction:'QueryPageUInspectionPointInfo',
-                FName:name,
+            MeterReading({
+                FAction:'QueryPageUMeterReadingPoint',
+                SearchKey:name,
                 PageIndex:pageIndex,
                 PageSize:10
             })
@@ -190,6 +195,20 @@ export default {
             })
         },
         /**
+         * 查询能耗类型
+         */
+        querySEnergyType(){
+            MeterReading({
+                FAction:'QuerySEnergyType',
+            })
+            .then(data => {
+                this.energyTypeList = data.FObject
+            })
+            .catch(error => {
+
+            })
+        },
+        /**
          * 查询系统分类
          */
         querySystemType(){
@@ -215,9 +234,9 @@ export default {
                   } 
                 });
             })
-            Inspection({
-                FAction:this.type?'UpdateUInspectionPoint':'AddUInspectionPoint',
-                mUInspectionPoint:this.addPoint
+            MeterReading({
+                FAction:this.type?'UpdateUMeterReadingPoint':'AddUMeterReadingPoint',
+                mUMeterReading:this.addPoint
             })
             .then(data => {
                 this.show = false
@@ -263,15 +282,15 @@ export default {
          */
         async deleteItem(item){
             await new Promise(resolve => {
-                this.$DeleteMessage([`确定要删除　　${item.InspectionPointName}`,'删除巡检点'])
+                this.$DeleteMessage([`确定要删除　　${item.MeterReadingPointName}`,'删除抄表点'])
                 .then(() => {
                     resolve()
                 })
                 .catch(() => {
                 })
             })
-            Inspection({
-                FAction:'DeleteUInspectionPoint',
+            MeterReading({
+                FAction:'DeleteUMeterReadingPoint',
                 ID:item.ID
             })
             .then(data => {
@@ -292,9 +311,9 @@ export default {
          * exportFile 导出
          */
         exportFile(){
-            Inspection({
-                FAction:'QueryExportUInspectionPointInfo',
-                FName:this.filterText,
+            MeterReading({
+                FAction:'QueryExportUMeterReadingPoint',
+                SearchKey:this.filterText,
             })
             .then(data => {
                 window.location = "http://www.szqianren.com/" + data.FObject;
@@ -311,7 +330,7 @@ export default {
          * 
          */
         importDevice(){
-            Inspection({
+            MeterReading({
                 FAction:'AddImportUInspectionPoint',
             })
             .then(data => {
@@ -333,6 +352,12 @@ export default {
 }
 </script>
 <style lang="scss">
-@import 'inspectionItem.scss';
+// 样式同巡检点（InspectionItem）
+@import '../inspectionItem.scss';
+.zw-dialog.meter-reading-point{
+    .el-dialog{
+        height: 420px;
+        background-size: 100% 100%;
+    }
+}
 </style>
-

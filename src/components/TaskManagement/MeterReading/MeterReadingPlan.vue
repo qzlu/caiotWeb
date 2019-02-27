@@ -6,15 +6,15 @@
                 <ul class="l clearfix ">
                     <li>
                         <span class="label">巡检路线名称</span>
-                        <el-input v-model="addPlanData.InspectionLineName" v-if="type===1" readonly></el-input>
+                        <el-input v-model="addPlanData.MeterReadingLineName" v-if="type===1" readonly></el-input>
                         <el-select v-model="road"  filterable value-key="ID"  placeholder="请选择" @change="selectRoad" v-if="type===0">
-                            <el-option v-for="road in roadDatas" :key="road.ID" :label="road.InspectionLineName" :value="road"></el-option>
+                            <el-option v-for="road in roadDatas" :key="road.ID" :label="road.MeterReadingLineName" :value="road"></el-option>
                         </el-select>
                         <button class="zw-btn" @click="showPointTree = !showPointTree">路线详情</button>
                     </li>
                     <li>
                         <span class="label">巡检计划名称</span>
-                        <el-input v-model="addPlanData.InspectionPlanName" readonly></el-input>
+                        <el-input v-model="addPlanData.MeterReadingPlanName" readonly></el-input>
                     </li>
                     <li>
                         <span class="label">巡检周期</span>
@@ -31,7 +31,7 @@
                     </li>
                     <li>
                         <span class="label">负责人</span>
-                        <el-select v-model="addPlanData.InspectionUserGUID" filterable  placeholder="请选择">
+                        <el-select v-model="addPlanData.MeterReadingUserGUID" filterable  placeholder="请选择">
                             <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
                         </el-select>
                     </li>
@@ -70,14 +70,14 @@
                     <ul class="search-box"  v-if="showFilterBox">
                         <li>
                             <span>计划名称</span>
-                            <el-input v-model="filterObj.InspectionPlanName"></el-input>
+                            <el-input v-model="filterObj.MeterReadingPlanName"></el-input>
                         </li>
                         <li>
                             <span>路线名称</span>
-                            <el-input v-model="filterObj.InspectionLineName"></el-input>
+                            <el-input v-model="filterObj.MeterReadingLineName"></el-input>
                         </li>
                         <li class="plan-select-time">
-                            <span>巡检时间</span>
+                            <span>抄表时间</span>
                             <el-date-picker
                               v-model="time"
                               type="datetimerange"
@@ -91,13 +91,13 @@
                         </li>
                         <li >
                             <span>负责人</span>
-                            <el-select v-model="filterObj.InspectionUserGUID"  placeholder="请选择">
+                            <el-select v-model="filterObj.MeterReadingUserGUID"  placeholder="请选择">
                                 <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
                             </el-select>
                         </li>
                         <li>
-                            <span>巡检周期</span>
-                            <el-select v-model="filterObj.InspectionCycle"  placeholder="请选择">
+                            <span>抄表周期</span>
+                            <el-select v-model="filterObj.MeterReadingCycle"  placeholder="请选择">
                                 <el-option v-for="time in timeList" :key="time.value" :label="time.label" :value="time.value"></el-option>
                             </el-select>
                         </li>
@@ -137,7 +137,7 @@
                  show-overflow-tooltip
                  label="负责人">
                  <template slot-scope="scoped">
-                    <el-select v-model="scoped.row.InspectionUserGUID"  placeholder="请选择" @change="changeUser(scoped.row)">
+                    <el-select v-model="scoped.row.MeterReadingUserGUID"  placeholder="请选择" @change="changeUser(scoped.row)">
                         <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
                     </el-select>
                  </template>
@@ -158,10 +158,10 @@
     </div>
 </template>
 <script>
-import {system,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
+import {system,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {zwPagination,zwTree} from '@/zw-components/index'
-import * as comm from "../../assets/js/pro_common";
+import * as comm from "@/assets/js/pro_common";
 export default {
     mixins:[table],
     data(){
@@ -173,7 +173,7 @@ export default {
                     width:80
                 },
                 {
-                    prop: 'InspectionPlanName',
+                    prop: 'MeterReadingPlanName',
                     label: '计划名称'
                 },
                 {
@@ -181,55 +181,55 @@ export default {
                     label: '状态'
                 },
                 {
-                    prop: 'InspectionLineName',
+                    prop: 'MeterReadingLineName',
                     label: '路线名称'
                 },
                 {
                     prop: 'PointCount',
-                    label: '巡检点数',
+                    label: '抄表点数',
                     sortble:true
                 },
                 {
-                    prop: 'InspectionCycleName',
-                    label: '巡检周期'
+                    prop: 'MeterReadingCycleName',
+                    label: '抄表周期'
                 },
 /*                 {
                     prop: 'Frequency',
                     label: '频次'
                 }, */
                 {
-                    prop: 'InspectionDatetime',
-                    label: '计划巡检时间',
+                    prop: 'MeterReadingDatetime',
+                    label: '计划抄表时间',
                     sortble:true
                 }
             ],
             timeList:[{
-                label:'日巡检',
+                label:'日抄表',
                 value:1
             },
             {
-                label:'周巡检',
+                label:'周抄表',
                 value:2
             },
             {
-                label:'月巡检',
+                label:'月抄表',
                 value:3
             }],
             year:'',
             filterText:'',
             defaultFilterObj:{
-                InspectionPlanName:'',
-                InspectionLineName:'',
-                InspectionCycle:1,
-                InspectionUserGUID:'',
+                MeterReadingPlanName:'',
+                MeterReadingLineName:'',
+                MeterReadingCycle:1,
+                MeterReadingUserGUID:'',
                 StartDateTime:'',
                 EndDateTime:''
             },
             filterObj:{ //高级搜索条件
-                InspectionPlanName:'',
-                InspectionLineName:'',
-                InspectionCycle:1,
-                InspectionUserGUID:'',
+                MeterReadingPlanName:'',
+                MeterReadingLineName:'',
+                MeterReadingCycle:1,
+                MeterReadingUserGUID:'',
                 StartDateTime:'',
                 EndDateTime:''
             },
@@ -248,17 +248,17 @@ export default {
                 children:'list'
             },
             defaultAddPlanData:{
-                InspectionPlanName:null,
+                MeterReadingPlanName:null,
                 InspectionLineID:null,
                 InspectionDatetime:null,
-                InspectionUserGUID:null,
+                MeterReadingUserGUID:null,
                 FDescription:''
             },
             addPlanData:{
-                InspectionPlanName:null,
+                MeterReadingPlanName:null,
                 InspectionLineID:null,
                 InspectionDatetime:null,
-                InspectionUserGUID:null,
+                MeterReadingUserGUID:null,
                 FDescription:''
             },
             road:null,
@@ -307,7 +307,7 @@ export default {
     },
     watch:{
         filterText(val){
-            this.filterObj.InspectionPlanName = val
+            this.filterObj.MeterReadingPlanName = val
             this.queryType = 1
             this.queryData()
         }
@@ -334,8 +334,8 @@ export default {
             if(this.queryType ===1){
                 this.showFilterBox = false
             }
-            Inspection({
-                FAction:'QueryPageUInspectionPlan',
+            MeterReading({
+                FAction:'QueryPageUMeterReadingPlan',
                 FType:this.queryType?'Advanced':'Normal',
                 PageIndex:this.pageIndex,
                 PageSize:10,
@@ -345,8 +345,8 @@ export default {
                 this.total = data.FObject.Table?data.FObject.Table[0].FTotalCount:0
                 this.tableData = data.FObject.Table1?data.FObject.Table1:[]
                 this.tableData.forEach(item => {
-                    if(item.InspectionUserGUID=="00000000-0000-0000-0000-000000000000"){
-                        item.InspectionUserGUID = ''
+                    if(item.MeterReadingUserGUID=="00000000-0000-0000-0000-000000000000"){
+                        item.MeterReadingUserGUID = ''
                     }
                     this.$set(item,'InspectionPlanTypeText',item.InspectionPlanType==1?'自动生成':'手动生成')
                 });
@@ -363,18 +363,18 @@ export default {
             this.queryData()
         },
         /**
-         * 查询巡检路线
+         * 查询抄表路线
          */
         queryRoad(){
 
             let startDateTime = '00:00'
             let endDateTime = '23:59'
-            Inspection({
-                FAction:'QueryPageUInspectionLineInfo',
-                FName:'',
+            MeterReading({
+                FAction:'QueryUMeterReadingLine',
+                SearchKey:'',
                 StartDateTime:startDateTime,
                 EndDateTime:endDateTime,
-                InspectionCycle:0,
+                MeterReadingCycle:0,
                 PageIndex:1,
                 PageSize:10000000000
             })
@@ -405,7 +405,7 @@ export default {
          * @param year 年份
          */
         createPlanByYear(year){
-            Inspection({
+            MeterReading({
                 FAction:'CreatePlanByYear',
                 FYear:year
             })
@@ -429,7 +429,7 @@ export default {
          */
         selectYear(val){
             let year = new Date(val).getFullYear()
-            this.$DeleteMessage([`确认生成　　${year}年巡检计划`,'确认信息'])
+            this.$DeleteMessage([`确认生成　　${year}年抄表计划`,'确认信息'])
             .then(() => {
                 this.createPlanByYear(year)
             })
@@ -443,7 +443,7 @@ export default {
          */
         async deletePlan(row){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除　　${row.InspectionPlanName}`,'删除计划'])
+                this.$DeleteMessage([`确认删除　　${row.MeterReadingPlanName}`,'删除计划'])
                 .then(() => {
                     resove()
                 })
@@ -451,8 +451,8 @@ export default {
 
                 })
             })
-            Inspection({
-                FAction:'DeleteUInspectionPlanByID',
+            MeterReading({
+                FAction:'DeleteUMeterReadingPlanByID',
                 ID:row.ID
             })
             .then(data => {
@@ -475,17 +475,17 @@ export default {
         changeUser(row){
             row.showSelectBox=false
             if(Date.parse(new Date(row.InspectionDatetime))<Date.parse(new Date())){
-                row.InspectionUserGUID = ''
+                row.MeterReadingUserGUID = ''
                 this.$message({
                   type: 'error',
                   message: '计划巡检时间已过，无法修改'
                 });
                 return
             }
-            Inspection({
-                FAction:'UpdateUInspectionPlanByID',
+            MeterReading({
+                FAction:'UpdateUMeterReadingPlanByID',
                 ID:row.ID,
-                mUInspectionPlan:{'InspectionDatetime':row.InspectionDatetime,'InspectionUserGUID':row.InspectionUserGUID}
+                mUMeterReadingPlan:{'MeterReadingDatetime':row.MeterReadingDatetime,'MeterReadingUserGUID':row.MeterReadingUserGUID}
             })
             .then(data => {
                 console.log('负责人',data);
@@ -514,7 +514,7 @@ export default {
          * 根据路线id获取巡检点
          */
         queryPoints(id){
-            Inspection({
+            MeterReading({
                 FAction:'QueryAreaUInspectionPointBySort',
                 ID:id,
                 FType:1
@@ -533,8 +533,8 @@ export default {
          */
         selectRoad(val){
             this.loading = true
-            this.addPlanData.InspectionLineName = val.InspectionLineName
-            this.addPlanData.InspectionPlanName = val.InspectionLineName + '临时巡检计划'
+            this.addPlanData.MeterReadingLineName = val.MeterReadingLineName
+            this.addPlanData.MeterReadingPlanName = val.MeterReadingLineName + '临时巡检计划'
             this.addPlanData.InspectionLineID = val.ID
             this.queryPoints(val.ID)
         },
@@ -563,10 +563,10 @@ export default {
                 });
                 return
             }                                                                         
-            Inspection({
-                FAction:this.type?'UpdateUInspectionPlanByID':'AddTempUInspectionPlan',
+            MeterReading({
+                FAction:this.type?'UpdateUMeterReadingPlanByID':'AddTempUMeterReadingPlan',
                 ID:this.type?this.addPlanData.ID:'',
-                mUInspectionPlan:this.type?{InspectionDatetime:this.addPlanData.InspectionDatetime,InspectionUserGUID:this.addPlanData.InspectionUserGUID}:this.addPlanData
+                mUMeterReadingPlan:this.type?{MeterReadingDatetime:this.addPlanData.InspectionDatetime,MeterReadingUserGUID:this.addPlanData.MeterReadingUserGUID}:this.addPlanData
             })
             .then(data => {
                 this.show = false
@@ -586,7 +586,7 @@ export default {
          */
         beforeAdd(){
             this.show  = true
-            this.title = '新增巡检计划'
+            this.title = '新增抄表计划'
             this.type = 0
             this.inspectionCycleName = '临时巡检'
             this.planTime = ''
@@ -597,15 +597,15 @@ export default {
          */
         changePlan(row){
             this.show = true
-            this.title = '编辑巡检计划'
+            this.title = '编辑抄表计划'
             this.type = 1
             this.inspectionCycleName = row.InspectionCycleName
-            this.addPlanData.InspectionPlanName = row.InspectionPlanName
-            this.addPlanData.InspectionUserGUID = row.InspectionUserGUID
+            this.addPlanData.MeterReadingPlanName = row.MeterReadingPlanName
+            this.addPlanData.MeterReadingUserGUID = row.MeterReadingUserGUID
             this.addPlanData.InspectionLineID = row.InspectionLineID
             this.planTime = new Date(row.InspectionDatetime)
             this.addPlanData.InspectionDatetime = row.InspectionDatetime
-            this.$set(this.addPlanData,'InspectionLineName',row.InspectionLineName)
+            this.$set(this.addPlanData,'MeterReadingLineName',row.MeterReadingLineName)
             this.$set(this.addPlanData,'ID',row.ID)
             this.queryPoints(row.InspectionLineID)
         },
@@ -616,5 +616,5 @@ export default {
 }
 </script>
 <style lang="scss">
-@import './InspectionPlan.scss'
+@import '../InspectionPlan.scss'
 </style>

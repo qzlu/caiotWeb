@@ -147,7 +147,6 @@ export default {
                 FAction:'QuerySystemDeviceTypeToTree'
             })
             .then(data => {
-                console.log(data);
                 this.deviceData = data.FObject
             })
             .catch(error => {
@@ -163,7 +162,6 @@ export default {
                 DeviceTypeID:id
             })
             .then(data => {
-                console.log(data);
                 this.allItem = data.FObject
             })
             .catch(error => {
@@ -269,7 +267,6 @@ export default {
                 FName:this.inspectionItem
             })
             .then(data => {
-                console.log(data);
                 this.show1 = false
                 this.querySInspectionDeviceTypeDataItem(this.device.DeviceTypeID)
             })
