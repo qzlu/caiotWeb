@@ -7,7 +7,7 @@
 export default{
     data() {
         return{
-            tableData:null,
+            tableData:[],
             total:0,
             pageIndex:1
         }

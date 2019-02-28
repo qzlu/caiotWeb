@@ -35,6 +35,27 @@ Vue.prototype.Baseurl="https://www.gcy168.com";
 Vue.prototype.mypro="http://47.106.64.130:56090/";
 
 Vue.config.productionTip = false
+Vue.directive('loadmore', {  bind(el, binding) {    
+  var p = 0;
+  var t = 0;   
+  var down = true;    
+  var selectWrap = el.querySelector('.el-table__body-wrapper')    
+  selectWrap.addEventListener('scroll', function() {      
+    //判断是否向下滚动      
+    p = this.scrollTop;      // 
+    if ( t < p){
+      down=true
+    }else{
+      down=false
+    }      
+    t = p;      //判断是否到底      
+    const sign = 10;      
+    const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight      
+    if (scrollDistance <= sign && down) {        
+      binding.value()      
+    }    
+  })  
+}})
 
 /* eslint-disable no-new */
 new Vue({

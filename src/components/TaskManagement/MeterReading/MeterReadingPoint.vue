@@ -25,10 +25,25 @@
                 <button class="zw-btn zw-btn-primary" @click="addUInspectionPoint()">确定</button>
             </div>
         </el-dialog>
+        <el-dialog title="导入抄表点" :visible.sync="showImportDialog" class="zw-dialog import-point">
+            <zw-tree
+            ref='pointTree' 
+             title="选择抄表点" 
+             :data='allDefaultPoint' 
+             :renderContent='renderContent' 
+             :defaultProps='defaultProps'
+             nodeKey='DeviceID'
+             :defaultChecked='defaultChecked'
+             showCheckbox>
+            </zw-tree>
+            <div class="submit">
+                <button class="zw-btn zw-btn-primary" @click="importDevice">确定</button>
+            </div>
+        </el-dialog>
         <ul class="clearfix report-header">
             <li class="l" @click="add()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l" @click="exportFile"><button class="zw-btn zw-btn-export">导出</button></li>
-             <li class="l" @click="importDevice"><button class="zw-btn zw-btn-import">设备导入</button></li>
+             <li class="l" @click="queryAreaTypeDeviceInfo"><button class="zw-btn zw-btn-import">设备导入</button></li>
             <li class="l" @click="pageIndex=1;filterText = '';queryData()"><button class="zw-btn zw-btn-refrest">刷新</button></li>
             <li class="r">
                 <el-input class="search-input" placeholder="搜索设备关键字" v-model="filterText">
@@ -69,7 +84,7 @@
 <script>
 import {system,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination} from '@/zw-components/index'
+import {zwPagination,zwTree} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -120,11 +135,16 @@ export default {
             areaList:[], //区域列表
             energyTypeList:[], //能源类型分类
             systemTypeList:[], //系统分类
-            type:0
+            type:0,
+            showImportDialog:false,
+            allDefaultPoint:[],//设备导入的所有抄表检点
+            defaultProps:{children:'list',disabled:'disabled'},
+            defaultChecked:[]//已经导入的
         }
     },
     components:{
-        zwPagination
+        zwPagination,
+        zwTree
     },
     watch:{
         filterText(){
@@ -144,6 +164,11 @@ export default {
 
     },
     methods:{
+        renderContent(h, { node, data, store }){
+            return(
+                <span>{data.AreaName?data.AreaName:data.DeviceName}</span>
+            )
+        },
         /**
          * 查询抄表点
          */
@@ -218,6 +243,33 @@ export default {
             })
             .then(data => {
                 this.systemTypeList = data.FObject
+            })
+            .catch(error => {
+
+            })
+        },
+        /**
+         * 获取巡检点区域设备
+         */
+        queryAreaTypeDeviceInfo(){
+            this.showImportDialog = true
+            this.defaultChecked = []
+            MeterReading({
+                FAction:'QueryAreaTypeDeviceInfo',
+                FType:2
+            })
+            .then(data => {
+                this.allDefaultPoint = data.FObject
+                this.allDefaultPoint.forEach(item => {
+                    item.list.forEach(node => {
+                        if(node.IsExist == 1){
+                            this.defaultChecked.push(node.DeviceID)
+                            node.disabled = true
+                        }else{
+                            node.disabled = false
+                        }
+                    })
+                })
             })
             .catch(error => {
 
@@ -330,11 +382,20 @@ export default {
          * 
          */
         importDevice(){
+            let arr = this.$refs.pointTree.$refs.tree.getCheckedNodes()
+            //过滤区域节点
+            arr = arr.filter(item => {
+                return item.DeviceID
+            })
+            arr = arr.map(item => {
+                return item.DeviceID
+            })
             MeterReading({
                 FAction:'AddImportUInspectionPoint',
+                IDStr:arr.join(',')
             })
             .then(data => {
-                console.log(data);
+                this.showImportDialog = false
                 this.queryData()
                 this.$message({
                   type: 'success',

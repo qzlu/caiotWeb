@@ -359,8 +359,8 @@ let routers_item=[
 							requireAuth: true,  
 						 },
 					},
-					{ path: 'workList',
-						name: 'workList',
+					{ path: 'Worklist',
+						name: 'Worklist',
 						component: () => import('@/components/TaskManagement/workList.vue'),// 工单管理
 						meta: {
 							title: '千仞云平台',

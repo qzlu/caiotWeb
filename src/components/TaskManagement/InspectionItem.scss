@@ -34,7 +34,12 @@ $img-url:'/static/image/';
             height: 500px;
             background-size: 100% 100%;
             .zw-tree{
+                width:270px;
                 margin: 0 auto;
+                .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner{
+                    background-color: #999999;
+                    color: #999999
+                }
             }
             .submit{
                 margin-top: 20px;

@@ -117,6 +117,7 @@
               header-row-class-name="el-table-header"
               :row-class-name="tableRowClassName"
               @selection-change="handleSelectionChange"
+              @sort-change="sortChange"
             >
                 <el-table-column
                   type="selection"
@@ -158,7 +159,7 @@
     </div>
 </template>
 <script>
-import {system,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
+import {system,MeterReading,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {zwPagination,zwTree} from '@/zw-components/index'
 import * as comm from "@/assets/js/pro_common";
@@ -187,7 +188,7 @@ export default {
                 {
                     prop: 'PointCount',
                     label: '抄表点数',
-                    sortble:true
+                    sortble:'custom'
                 },
                 {
                     prop: 'MeterReadingCycleName',
@@ -200,10 +201,13 @@ export default {
                 {
                     prop: 'MeterReadingDatetime',
                     label: '计划抄表时间',
-                    sortble:true
+                    sortble:'custom'
                 }
             ],
             timeList:[{
+                label:'全部',
+                value:0
+            },{
                 label:'日抄表',
                 value:1
             },
@@ -220,7 +224,7 @@ export default {
             defaultFilterObj:{
                 MeterReadingPlanName:'',
                 MeterReadingLineName:'',
-                MeterReadingCycle:1,
+                MeterReadingCycle:0,
                 MeterReadingUserGUID:'',
                 StartDateTime:'',
                 EndDateTime:''
@@ -228,7 +232,7 @@ export default {
             filterObj:{ //高级搜索条件
                 MeterReadingPlanName:'',
                 MeterReadingLineName:'',
-                MeterReadingCycle:1,
+                MeterReadingCycle:0,
                 MeterReadingUserGUID:'',
                 StartDateTime:'',
                 EndDateTime:''
@@ -249,15 +253,17 @@ export default {
             },
             defaultAddPlanData:{
                 MeterReadingPlanName:null,
-                InspectionLineID:null,
-                InspectionDatetime:null,
+                MeterReadingLineName:null,
+                MeterReadingLineID:null,
+                MeterReadingDatetime:null,
                 MeterReadingUserGUID:null,
                 FDescription:''
             },
             addPlanData:{
                 MeterReadingPlanName:null,
-                InspectionLineID:null,
-                InspectionDatetime:null,
+                MeterReadingLineID:null,
+                MeterReadingLineName:null,
+                MeterReadingDatetime:null,
                 MeterReadingUserGUID:null,
                 FDescription:''
             },
@@ -339,7 +345,7 @@ export default {
                 FType:this.queryType?'Advanced':'Normal',
                 PageIndex:this.pageIndex,
                 PageSize:10,
-                mSearchInspectionPlan:this.queryType?this.filterObj:{}
+                mSearchMeterReadingPlan:this.queryType?this.filterObj:{}
             })
             .then(data => {
                 this.total = data.FObject.Table?data.FObject.Table[0].FTotalCount:0
@@ -352,7 +358,7 @@ export default {
                 });
             })
             .catch(error => {
-
+            
             })
         },
         /**
@@ -375,11 +381,9 @@ export default {
                 StartDateTime:startDateTime,
                 EndDateTime:endDateTime,
                 MeterReadingCycle:0,
-                PageIndex:1,
-                PageSize:10000000000
             })
             .then(data => {
-                this.roadDatas = data.FObject.Table1
+                this.roadDatas = data.FObject
             })
             .catch(error => {
 
@@ -474,7 +478,7 @@ export default {
          */
         changeUser(row){
             row.showSelectBox=false
-            if(Date.parse(new Date(row.InspectionDatetime))<Date.parse(new Date())){
+            if(Date.parse(new Date(row.MeterReadingDatetime))<Date.parse(new Date())){
                 row.MeterReadingUserGUID = ''
                 this.$message({
                   type: 'error',
@@ -488,7 +492,6 @@ export default {
                 mUMeterReadingPlan:{'MeterReadingDatetime':row.MeterReadingDatetime,'MeterReadingUserGUID':row.MeterReadingUserGUID}
             })
             .then(data => {
-                console.log('负责人',data);
             })
             .catch(error => {
 
@@ -500,7 +503,6 @@ export default {
         selectTime(val){
             this.filterObj.StartDateTime = comm.getFormatTime(val[0])
             this.filterObj.EndDateTime = comm.getFormatTime(val[1])
-            console.log(this.filterObj);
 
         },
         /**
@@ -514,10 +516,10 @@ export default {
          * 根据路线id获取巡检点
          */
         queryPoints(id){
-            MeterReading({
+            Inspection({
                 FAction:'QueryAreaUInspectionPointBySort',
                 ID:id,
-                FType:1
+                FType:2
             })
             .then(data => {
                 this.pointData = data.FObject
@@ -534,8 +536,8 @@ export default {
         selectRoad(val){
             this.loading = true
             this.addPlanData.MeterReadingLineName = val.MeterReadingLineName
-            this.addPlanData.MeterReadingPlanName = val.MeterReadingLineName + '临时巡检计划'
-            this.addPlanData.InspectionLineID = val.ID
+            this.addPlanData.MeterReadingPlanName = val.MeterReadingLineName + '临时抄表计划'
+            this.addPlanData.MeterReadingLineID = val.ID
             this.queryPoints(val.ID)
         },
         /**
@@ -550,13 +552,13 @@ export default {
                 });
                 return
             }
-            this.addPlanData.InspectionDatetime = comm.getFormatTime(val)
+            this.addPlanData.MeterReadingDatetime = comm.getFormatTime(val)
         },
         /**
          * 新增或编辑巡检计划
          */
         addPlan(){
-            if(Date.parse(new Date(this.addPlanData.InspectionDatetime))<=Date.parse(new Date())){
+            if(Date.parse(new Date(this.addPlanData.MeterReadingDatetime))<=Date.parse(new Date())){
                 this.$message({
                   type: 'error',
                   message: '计划巡检时间应大于当前时间，请重新选择'
@@ -566,7 +568,7 @@ export default {
             MeterReading({
                 FAction:this.type?'UpdateUMeterReadingPlanByID':'AddTempUMeterReadingPlan',
                 ID:this.type?this.addPlanData.ID:'',
-                mUMeterReadingPlan:this.type?{MeterReadingDatetime:this.addPlanData.InspectionDatetime,MeterReadingUserGUID:this.addPlanData.MeterReadingUserGUID}:this.addPlanData
+                mUMeterReadingPlan:this.type?{MeterReadingDatetime:this.addPlanData.MeterReadingDatetime,MeterReadingUserGUID:this.addPlanData.MeterReadingUserGUID}:this.addPlanData
             })
             .then(data => {
                 this.show = false
@@ -590,6 +592,7 @@ export default {
             this.type = 0
             this.inspectionCycleName = '临时巡检'
             this.planTime = ''
+            this.road = null
             this.addPlanData = Object.assign({},this.defaultAddPlanData)
         },
         /**
@@ -599,18 +602,21 @@ export default {
             this.show = true
             this.title = '编辑抄表计划'
             this.type = 1
-            this.inspectionCycleName = row.InspectionCycleName
+            this.MeterReadingCycleName = row.MeterReadingCycleName
             this.addPlanData.MeterReadingPlanName = row.MeterReadingPlanName
             this.addPlanData.MeterReadingUserGUID = row.MeterReadingUserGUID
-            this.addPlanData.InspectionLineID = row.InspectionLineID
-            this.planTime = new Date(row.InspectionDatetime)
-            this.addPlanData.InspectionDatetime = row.InspectionDatetime
+            this.addPlanData.MeterReadingLineID = row.MeterReadingLineID
+            this.planTime = new Date(row.MeterReadingDatetime)
+            this.addPlanData.MeterReadingDatetime = row.MeterReadingDatetime
             this.$set(this.addPlanData,'MeterReadingLineName',row.MeterReadingLineName)
             this.$set(this.addPlanData,'ID',row.ID)
-            this.queryPoints(row.InspectionLineID)
+            this.queryPoints(row.MeterReadingLineID)
         },
         handleSelectionChange(rows){
             console.log(rows);
+        },
+        sortChange(column, prop, order){
+            console.log(column, prop, order);
         }   
     }
 }
