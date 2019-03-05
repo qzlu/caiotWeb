@@ -13,7 +13,7 @@
 	 <source src="http://hls.open.ys7.com/openlive/9afe414a6dfe481aad4a1d154d3dc954.m3u8" type="application/x-mpegURL">
     </video>-->
     <ul>
-      <li v-for="(item, index) in datalist" :class="lisetclass(item.TopValue.length)">
+      <li v-for="(item, index) in datalist" :key="index" :class="{'show_warn_class':item.TopValue.length,'no_warn_class':!item.TopValue.length,}">
         <div class="hover_bg" style="margin: 0 5px 0 0;">
           <router-link :to="{ name: 'detail_info',params:{ id:item.AreaID,SingleType:2}}">
             <p class="fi_ts">{{item.AreaTitle}}</p>
@@ -34,7 +34,7 @@
             </div>
           </div>
           <div class="pi_itm_out">
-            <div class="pi_itm" :id="setid(index)"></div>
+            <div class="pi_itm" :id="setdocID + index"></div>
           </div>
           <div class="manu_li">
             <p class="l" v-if="item.VedioAddress">
@@ -63,7 +63,7 @@
 
           <div class="numb_fd">
             <div v-for="(abc, k) in item.TargetDetail" class="posi">
-              <p :class="setClass(k)">{{abc.STargetValue}}</p>
+              <p :class="'abc' + k">{{abc.STargetValue}}</p>
             </div>
           </div>
         </div>
@@ -142,7 +142,6 @@
   position: absolute;
   top: 19px;
   right: 15px;
-  display: ;
   font-size: 14px;
 }
 .chg_ground ul li .manu_li i {
@@ -184,27 +183,21 @@
 </style>
 <script>
 import videojs from "video.js";
-import "videojs-contrib-hls";
+//import "videojs-contrib-hls";
 var echarts = require("echarts");
-import * as comm from "../../assets/js/pro_common";
+import * as comm from "@/assets/js/pro_common";
 import {project} from '@/request/api';
 export default {
   data() {
     return {
       datalist: [],
       setdocID: "nfs_",
-      video_div: 0
+      video_div: 0,
+      timer:null,//实时刷新定时器
     };
   },
   created() {},
   methods: {
-    lisetclass(x) {
-      if (x) {
-        return "show_warn_class";
-      } else {
-        return "no_warn_class";
-      }
-    },
     opens_video(urls) {
       //播放视频地址
 
@@ -241,28 +234,20 @@ export default {
         document.getElementById("innerVideo").innerHTML = "";
       }
     },
-
-    setClass(x) {
-      return "abc" + x;
-    },
-    setid(x) {
-      return this.setdocID + x;
-    },
     Pro() {
-	  //返回一个Promise对象
-	  return new  Promise((resolve,reject) => {
-		  project({
-			FAction: "GetPrjAreaInfo",
-			ProjectID: localStorage.getItem("projectid")
-		  })
-		  .then(data => {
-            this.datalist = data.FObject;
-            resolve("succ");
-		  })
-		  .catch(error => {
-			  reject(error)
-		  })
-	  })
+	    //返回一个Promise对象
+	    return new  Promise((resolve,reject) => {
+		    project({
+		  	  FAction: "GetPrjAreaInfo"
+		    })
+		    .then(data => {
+              this.datalist = data.FObject;
+              resolve("succ");
+		    })
+		    .catch(error => {
+		  	  reject(error)
+		    })
+	    })
     },
 
     Pro2() {
@@ -366,25 +351,28 @@ export default {
   mounted: function() {
     let _this = this;
     function settimeouts_data_a() {
-      _this
-        .Pro()
-        .then(function(d) {
-          return _this.Pro2(d);
-        })
-        .catch(function(err) {
-          console.log(err);
-          //  throw new Error(err)
-        });
-      let timeoutId_a = setTimeout(settimeouts_data_a, 4000);
+      _this.Pro()
+      .then(function(d) {
+        return _this.Pro2(d);
+      })
+      .catch(function(err) {
+        console.log(err);
+        //  throw new Error(err)
+      });
+      _this.timer = setTimeout(settimeouts_data_a, 4000);
+     /*  let timeoutId_a = setTimeout(settimeouts_data_a, 4000);
       let router_currt = _this.$route.name;
       if (router_currt != "product") {
         clearTimeout(timeoutId_a);
-      }
+      } */
     }
 
     settimeouts_data_a();
   },
-  computed: {}
+  computed: {},
+  beforeDestroy(){
+    clearTimeout(this.timer)
+  }
 };
 </script>
 

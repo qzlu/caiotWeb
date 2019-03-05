@@ -58,14 +58,14 @@ export default {
        	   	 	//console.log(bs.CurEnergy)
        	   	 }
        	   	 if(i==1){
-       	   	 	arrs.push(bs.HisavgEnergy)
+       	   	 	arrs.push(bs.PriorEnergy)
        	   	 }
        	   	 
-       	   	 if(i==2){
+/*        	   	 if(i==2){
        	   	 	o.type="line";
        	   	 //	o.yAxisIndex= 1;
        	   	 	arrs.push(bs.PriorEnergy)
-       	   	 }
+       	   	 } */
        	   	 
        	   }
        	  o.data= arrs;
@@ -131,9 +131,9 @@ export default {
 			        {
 			            type: 'value',
 			            name: '能耗',
-			           min: 0,
-			            max: 25000,
-			            interval: 5000,
+			        //    min: 0,
+			        //     max: 25000,
+			        //     interval: 5000,
 			            splitLine:{show: false},//去除网格线
 			            axisLabel: {
 			               // formatter: '{value} ml'

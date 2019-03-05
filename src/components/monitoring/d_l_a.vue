@@ -71,7 +71,8 @@
 <style>
 </style>
 <script>
-import * as comm from "../../assets/js/pro_common";
+import * as comm from "@/assets/js/pro_common";
+import {project} from '@/request/api';
 export default {
   data() {
     return {
@@ -85,27 +86,19 @@ export default {
   },
   methods: {
     ajaxd() {
-      let _this = this;
-      //返回一个Promise对象
-      return new Promise(function(resolve, reject) {
-        _this.$axios
-          .post(_this.mypro + "Caiot/Project", {
-            FTokenID: localStorage.getItem("Token"),
-            FAction: "GetDeviceMemorabilia",
-            FVersion: "1.0.0",
-            ProjectID: localStorage.getItem("projectid"),
-            DeviceID: _this.$route.params.id //产品自己id
-          })
-          .then(function(jsons) {
-            //console.log(jsons.data)
-            //comm.messageErr(jsons.data.Result) //公共状态提示
-            _this.dl_datalist = jsons.data.FObject;
-            if (jsons) {
-              resolve("succ");
-            }
-          })
-          .catch(function(err) {});
-      });
+      return new Promise((resolve, reject) => {
+        project({
+          FAction: "GetDeviceMemorabilia",
+          DeviceID: this.$route.params.id //产品自己id
+        })
+        .then(data => {
+          this.dl_datalist = data.FObject;
+          resolve("succ");
+        })
+        .catch(err => {
+          reject()
+        })
+      })
     }
   },
   mounted: function() {

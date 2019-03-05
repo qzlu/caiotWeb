@@ -2,7 +2,7 @@
     <div class="report inspection-item">
         <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog meter-reading-point">
             <el-form :model="addPoint" ref="form">
-                <el-form-item label="抄表点名称"  prop='MeterReadingPointName' :rules="[{ required: true, message: '请输入巡检点名称'}]">
+                <el-form-item label="抄表点名称"  prop='MeterReadingPointName' :rules="[{ required: true, message: '请输入抄表点名称'}]">
                     <el-input v-model="addPoint.MeterReadingPointName"></el-input>
                 </el-form-item>
                 <el-form-item label="能耗类型" prop="EnergyTypeID" :rules="[{ required: true, message: '请选择'}]">
@@ -276,7 +276,7 @@ export default {
             })
         },
         /**
-         * 新增或编辑巡检点
+         * 新增或编辑抄表点
          */
         async addUInspectionPoint(){
             await new Promise(resolve => {

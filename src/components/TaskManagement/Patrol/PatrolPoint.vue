@@ -1,0 +1,264 @@
+<template>
+    <div class="report inspection-item">
+        <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog patrol-point">
+            <el-form :model="addPointData" ref="form">
+                <el-form-item label="巡更点名称"  prop='PointName' :rules="[{ required: true, message: '请输入巡更点名称'}]">
+                    <el-input v-model="addPointData.PointName"></el-input>
+                </el-form-item>
+            </el-form>
+            <div class="submit">
+                <button class="zw-btn zw-btn-primary" @click="addOrUpdatedPoint()">确定</button>
+            </div>
+        </el-dialog>
+        <ul class="clearfix report-header">
+            <li class="l" @click="add()"><button class="zw-btn zw-btn-add">新增</button></li>
+            <li class="l" @click="exportFile"><button class="zw-btn zw-btn-export">导出</button></li>
+            <!-- <li class="l" @click="queryAreaTypeDeviceInfo"><button class="zw-btn zw-btn-import">设备导入</button></li> -->
+            <li class="l" @click="pageIndex=1;filterText = '';queryData()"><button class="zw-btn zw-btn-refrest">刷新</button></li>
+            <li class="r">
+                <el-input class="search-input" placeholder="搜索设备关键字" v-model="filterText">
+                    <i class="el-icon-search" slot="suffix"></i>
+                </el-input>
+                <button class="zw-btn zw-btn-primary" @click="filterText = '' ">重置</button>
+            </li>
+        </ul>
+        <div class="zw-table">
+            <el-table
+               :data="tableData"
+               style="width: 100%"
+               header-row-class-name="el-table-header"
+               :row-class-name="tableRowClassName"
+               >
+               <el-table-column
+                 v-for="item in tableLabel"
+                 :key="item.prop"
+                 :prop="item.prop"
+                 :label="item.label"
+                >
+               </el-table-column>
+               <el-table-column
+                 prop=""
+                 label="操作">
+                 <template slot-scope="scoped">
+                     <div class="role-operation">
+                        <span class="pointer" @click="deleteItem(scoped.row)">删除</span>
+                        <span class="pointer" @click="update(scoped.row)">编辑</span>
+                     </div>
+                 </template>
+               </el-table-column>
+            </el-table>
+        </div>
+        <zw-pagination @pageIndexChange='handleCurrentChange' :pageIndex='pageIndex' :total='total'></zw-pagination>
+    </div>
+</template>
+<script>
+import {system,Patrol} from '@/request/api.js'//api接口（接口统一管理）;
+import table from '@/mixins/table' //表格混入数据
+import {zwPagination,zwTree} from '@/zw-components/index'
+export default {
+    mixins:[table],
+    data(){
+        return{
+            tableLabel:[
+                {
+                    prop: 'RowNum',
+                    label: '序号'
+                },
+                {
+                    prop: 'PatrolPointName',
+                    label: '巡更点'
+                },
+                {
+                    prop: 'ShortName',
+                    label: '所属项目'
+                }
+            ],
+            filterText:'',
+            title:'新增',
+            show:false,
+            addPointData:{ //新增或编辑巡更点数据
+                PointName:'',
+            },
+            areaList:[], //区域列表
+            energyTypeList:[], //能源类型分类
+            systemTypeList:[], //系统分类
+            type:0,
+            showImportDialog:false,
+            allDefaultPoint:[],//设备导入的所有抄表检点
+            defaultProps:{children:'list',disabled:'disabled'},
+            defaultChecked:[]//已经导入的
+        }
+    },
+    components:{
+        zwPagination,
+        zwTree
+    },
+    watch:{
+        filterText(){
+            clearTimeout(timer)
+            var timer = setTimeout(() => {
+                this.queryData(this.filterText)
+            },500)
+        }
+    },
+    created(){
+        this.queryData()
+    },
+    mounted(){
+
+    },
+    methods:{
+        renderContent(h, { node, data, store }){
+            return(
+                <span>{data.AreaName?data.AreaName:data.DeviceName}</span>
+            )
+        },
+        /**
+         * 查询巡更点
+         */
+        queryData(name = '', pageIndex = 1){
+            const loading = this.$loading({
+              customClass: 'hahahah',
+              background: 'rgba(0, 0, 0, 0.7)',
+              text:'正在加载......'
+            });
+            Patrol({
+                FAction:'QueryPageUPatrolPoint',
+                SearchKey:name,
+                PageIndex:pageIndex,
+                PageSize:10
+            })
+            .then(data => {
+                this.total = data.FObject.Table[0].Count
+                this.tableData = data.FObject.Table1
+            })
+            .catch(error => {
+                console.log(error);
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    loading.close()
+                },200)
+            })
+        },
+        /**
+         * handleCurrentChange 页码改变时触发
+         */
+        handleCurrentChange(val){
+            this.pageIndex = val
+            this.queryData(this.filterText,val)
+        },
+        /**
+         * 新增或编辑巡更点
+         */
+        async addOrUpdatedPoint(){
+            await new Promise(resolve => {
+                this.$refs.form.validate((valid) => {
+                  if (valid) {
+                      resolve()
+                  } 
+                });
+            })
+            Patrol({
+                FAction:this.type?'UpdateUPatrolPoint':'AddUPatrolPoint',
+                FName:this.addPointData.PointName,
+                FDescription:'',
+                ID:this.addPointData.ID
+            })
+            .then(data => {
+                this.show = false
+                this.$message({
+                  type: 'success',
+                  message: this.type?'修改成功！':'新增成功！'
+                });
+                this.pageIndex = 1
+                this.queryData()
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: error
+                });
+            })
+        },
+         /**
+         * add 点击新增按钮
+         */
+        add(){
+            this.title = '新增'
+            this.type = 0
+            this.show = true,
+            this.addPointData.PointName = null
+        },
+        /**
+         * update 修改巡检点
+         */
+        update(item) {
+            this.title = '修改'
+            this.show = true
+            this.type = 1
+            this.addPointData.PointName = item.PatrolPointName
+            this.addPointData.ID = item.ID
+        },
+        /**
+         * deleteItem 删除巡检点
+         * @param {type Object} item 巡检点
+         */
+        async deleteItem(item){
+            await new Promise(resolve => {
+                this.$DeleteMessage([`确定要删除　　${item.PointName}`,'删除抄表点'])
+                .then(() => {
+                    resolve()
+                })
+                .catch(() => {
+                })
+            })
+            Patrol({
+                FAction:'DeleteUPatrolPoint',
+                ID:item.ID
+            })
+            .then(data => {
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                });
+                this.queryData()
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: '删除失败!'
+                });
+            })
+        },
+        /**
+         * exportFile 导出
+         */
+        exportFile(){
+            Patrol({
+                FAction:'QueryExportUPatrolPoint',
+                SearchKey:this.filterText,
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: '导出失败!请重试'
+                });
+            })
+        },
+    }
+}
+</script>
+<style lang="scss">
+// 样式同巡检点（InspectionItem）
+@import '../inspectionItem.scss';
+.zw-dialog.patrol-point{
+    .el-dialog{
+        height: 260px;
+        background-size: 100% 100%;
+    }
+}
+</style>

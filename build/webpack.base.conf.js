@@ -3,7 +3,7 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
-
+// let BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
@@ -13,7 +13,7 @@ function resolve (dir) {
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './src/main.js'
+    app: './src/main.js',
   },
   output: {
     path: config.build.assetsRoot,
@@ -29,6 +29,12 @@ module.exports = {
       '@': resolve('src'),
     }
   },
+  externals: {
+    echarts: 'echarts',
+    'video.js':'videojs',
+    'videojs-contrib-hls.js':'videojs-contrib-hls'
+  },
+  // plugins: [new BundleAnalyzerPlugin()],
   module: {
     rules: [
       {

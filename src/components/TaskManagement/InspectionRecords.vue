@@ -648,19 +648,11 @@ export default {
       this.centerDialogVisible = true; //弹出-弹出框
       /*生成pdf名称*/
       let now_times = ""; //如果日期为空，默认为昨天的
-      if (this.value1 == "" || this.value1 == null) {
-        now_times =
-          comm
-            .CurentTime()
-            .clock.split(" ")[0]
-            .replace(/-/gi, "") - 1;
-      } else {
-        now_times = this.value1.replace(/-/gi, "");
-      }
+      now_times = this.value1.toJSON().split('T')[0].replace(/-/gi, "");
       /*生成pdf名称*/
         if (this.Dialog_table2 != "") {
           //如果没有数据，就不生成pdf文件
-          let fileName = localStorage.getItem("projectname") + '物联巡检' +  now_times.replace(/-/ig,'')
+          let fileName = localStorage.getItem("projectname") + '物联巡检' +  now_times
           await new Promise(resolve => {
             this.$nextTick(() => {
               resolve()

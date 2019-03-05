@@ -50,23 +50,17 @@ export default {
   	  	for(let ab of d){
   	  		this.typeName.push(ab.DeviceItemName) //组装分类名称["中央空调","电梯","照明"....]
   	  	}
-      
        for(var i=0;i<legend_name.length;i++){
          	let arrs=[],o={type:"bar",barWidth : 30};
-        	   o.name=legend_name[i];
+			   o.name=legend_name[i];
        	   for(let bs of d){
        	   	 if(i==0){
        	   	 	arrs.push(bs.CurEnergy)
        	   	 	//console.log(bs.CurEnergy)
        	   	 }
        	   	 if(i==1){
-       	   	 	arrs.push(bs.HisavgEnergy)
-       	   	 }
-       	   	 if(i==2){
-       	   	 	o.type="line";
        	   	 	arrs.push(bs.PriorEnergy)
        	   	 }
-       	   	 
        	   }
        	  o.data= arrs;
        	  this.message.push(o)
@@ -74,7 +68,6 @@ export default {
        	   
        }
       // console.log(legend_name)
-      //console.log(this.message)
 
        this.line_barEg()
        
@@ -138,9 +131,9 @@ export default {
 			        {
 			            type: 'value',
 			            name: '电量',
-			            min: 0,
-			            max: 250000,
-			            interval: 50000,
+			            // min: 0,
+			            // max: 250000,
+			            // interval: 50000,
 			            splitLine:{show: false},//去除网格线
 			            axisLabel: {
 			               // formatter: '{value} ml'

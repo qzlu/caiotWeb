@@ -61,17 +61,16 @@ export default {
     };
   },
   created() {
-    let _this = this;
     /*显示时间*/
-    var gettimes = function countdown() {
+    const gettimes = () => {
       let CurentTime = comm.CurentTime(); //显示时间
-      _this.time = CurentTime;
+      this.time = CurentTime;
       setTimeout(gettimes, 1000);
-    };
+    }
     gettimes();
 
     /*显示天气*/
-	this.getWeather()
+	  this.getWeather()
   },
   methods: {
     /**
@@ -80,17 +79,15 @@ export default {
      */
     getWeather: function() {
       project({
-		FAction: "GetPrjWeatherData",
-		ProjectID: localStorage.getItem("projectid")
-	  })
-	  .then(data => {
+		    FAction: "GetPrjWeatherData",
+	    })
+	    .then(data => {
         this.weathers.h = data.FObject[0].HighTemp;
         this.weathers.s = data.FObject[0].LowTemp;
         this.weathers.img_id = data.FObject[0].WeatherIconID;
-	  })
-	  .catch(error => {
-
-	  })
+	    })
+	    .catch(error => {
+	    })
     }
   },
   components: { "my-componentLeft": cm_left },

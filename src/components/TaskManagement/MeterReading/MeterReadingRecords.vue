@@ -1,6 +1,6 @@
 <template>
   <div class="Ins_records">
-    <!--弹出框(物联巡检)-->
+    <!--弹出框(物联抄表)-->
     <!-- <el-button type="text" @click="make_paf">点击打开 Dialog</el-button>-->
     <el-dialog :visible.sync="centerDialogVisible" width="1350px">
       <!--html-->
@@ -8,12 +8,12 @@
         <div class="htbn">
           <section v-for="(item,key) in Dialog_table0">
             <div class="hdr">
+              <p class="pn02">物联抄表日报</p>
               <p class="l pn">
                 项目名称：{{projectNames}}
                 <!--新都汇-->
               </p>
-              <p class="l pn02">物联巡检日报</p>
-              <p class="l pn03">日期：
+              <p class="r pn03">日期：
                 <!--2018-09-20-->
                 {{item.InspectionDate.split(" ")[0]}}
               </p>
@@ -31,14 +31,14 @@
               >
               <div class="r list">
                 <ul>
-                  <li>巡检次数:
+                  <li>抄表次数:
                     <span>
                       {{item.InspectionCount}}
                       <!--4-->
                       次
                     </span>
                   </li>
-                  <li>巡检点数:
+                  <li>抄表点数:
                     <span>
                       {{item.InspectionDeviceCount}}
                       <!--4-->
@@ -67,9 +67,9 @@
           <div class="table-c">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
-                <td width="28%">巡检区域</td>
-                <td width="18%">巡检情况</td>
-                <td width="18%">巡检点数</td>
+                <td width="28%">抄表区域</td>
+                <td width="18%">抄表情况</td>
+                <td width="18%">抄表点数</td>
                 <td width="18%">正常点数</td>
                 <td width="18%">异常点数</td>
               </tr>
@@ -86,7 +86,7 @@
           <div class="table-red">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
-                <td width="25%">异常巡检点名称</td>
+                <td width="25%">异常抄表点名称</td>
                  <td width="25%">时间</td>
                 <td width="25%">异常描述</td>
                 <td width="25%">处理情况</td>
@@ -102,7 +102,7 @@
 
           <div class="person">备注：</div>
           <div class="person_pg">
-            <span style="width: 180px; height: 30px; display: inline-block; text-align: left;">巡检人:</span>
+            <span style="width: 180px; height: 30px; display: inline-block; text-align: left;">抄表人:</span>
             <span style="width: 180px;height: 30px;display: inline-block;text-align: left;">审核人:</span>
             <span style="width: 180px;height: 30px;display: inline-block;text-align: left;">管理员:</span>
           </div>
@@ -110,19 +110,19 @@
       </section>
       <!--html-->
     </el-dialog>
-    <!-- 人工巡检日报 -->
+    <!-- 人工抄表月报 -->
     <el-dialog :visible.sync="showReport" width="1350px">
       <!--html-->
-      <section class="ppt_item" id="date-report" v-if="dateReport">
+      <section class="ppt_item month-report" id="month-report" v-if="monthReport.Table">
         <div class="htbn">
           <section>
             <div class="hdr">
+              <p class="pn02">人工抄表月报</p>
               <p class="l pn">
                 项目名称：{{projectNames}}
                 <!--新都汇-->
               </p>
-              <p class="l pn02">人工巡检日报</p>
-              <p class="l pn03">日期：
+              <p class="r pn03">日期：
                 <!--2018-09-20-->
                 {{time.toJSON().split('T')[0]}}
               </p>
@@ -131,43 +131,20 @@
               <img
                 src="/static/image/task/bicon_1.png"
                 class="pimg"
-                :class="{nnor:dateReport.Table[0].FaultCount>0}"
+                :class="{nnor:monthReport.Table2.length>0}"
               >
               <img
                 src="/static/image/task/bicon_2.png"
                 class="pimg"
-                :class="{nnor:dateReport.Table[0].FaultCount==0}"
+                :class="{nnor:monthReport.Table2.length==0}"
               >
               <div class="r list">
-                <ul>
-                  <li>巡检次数:
-                    <span>
-                      {{dateReport.Table[0].InspectionCount}}
-                      <!--4-->
-                      次
-                    </span>
-                  </li>
-                  <li>待巡检:
-                    <span>
-                      {{dateReport.Table[0].WaitingCount}}
-                      <!--4-->
-                      个
-                    </span>
-                  </li>
-                  <li>正常点数:
-                    <span>
-                      {{dateReport.Table[0].NormalCount}}
-                      <!--4-->
-                      个
-                    </span>
-                  </li>
-                  <li>异常点数:
-                    <span class="no">
-                      {{dateReport.Table[0].FaultCount}}
-                      <!--4-->
-                      个
-                    </span>
-                  </li>
+                <ul v-for="item in monthReport.Table">
+                  <li class="l">{{item.EnergyTypeName}}　<span>{{item.EnergyTypeUnit}}</span></li>
+                  <li class="l">抄表点数　<span>{{item.PointCount}}</span></li>
+                  <li class="l">能耗正常　<span>{{item.MeterReadingDataNormalCount}}</span></li>
+                  <li class="l">能耗异常　<span>{{item.MeterReadingDataFaultCount}}</span></li>
+                  <li class="l">设备异常　<span>{{item.DeviceFaultCount}}</span></li>
                 </ul>
               </div>
             </div>
@@ -176,18 +153,24 @@
           <div class="table-c">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
-                <td width="28%">巡检区域</td>
-                <td width="18%">巡检情况</td>
-                <td width="18%">巡检点数</td>
-                <td width="18%">正常点数</td>
-                <td width="18%">异常点数</td>
+                <td width="12.5%">能源类型</td>
+                <td width="12.5%">分区能耗</td>
+                <td width="12.5%">抄表情况</td>
+                <td width="12.5%">能耗值</td>
+                <td width="12.5%">抄表点数</td>
+                <td width="12.5%">正常点数</td>
+                <td width="12.5%">异常点数</td>
+                <td width="12.5%">设备异常</td>
               </tr>
-              <tr v-for="(item,key) in dateReport.Table1">
-                <td>{{item.AreaName}}</td>
-                <td :class="{reding:item.InspectionResult=='异常'}">{{item.InspectionResult}}</td>
-                <td>{{item.ALLPointCount}}</td>
-                <td>{{item.NormalCount?item.NormalCount:0}}</td>
-                <td :class="{reding:item.FaultCount>0}">{{item.FaultCount?item.FaultCount:0}}</td>
+              <tr v-for="(item,key) in monthReport.Table1">
+                <td>{{item.EnergyTypeName}}</td>
+                <td>{{item.EnergyTypeValueDiffCount}}</td>
+                <td :class="{reding:item.MeterReadingDataFaultCount>0||item.DeviceFaultCount>0}">{{(item.MeterReadingDataFaultCount>0||item.DeviceFaultCount>0)?'异常':'正常'}}</td>
+                <td>{{item.EnergyTypeValueDiffCount}}</td>
+                <td>{{item.AreaPointCount}}</td>
+                <td>{{item.MeterReadingDataNormalCount?item.MeterReadingDataNormalCount:0}}</td>
+                <td :class="{reding:item.MeterReadingDataFaultCount>0}">{{item.MeterReadingDataFaultCount?item.MeterReadingDataFaultCount:0}}</td>
+                <td :class="{reding:item.DeviceFaultCount>0}">{{item.DeviceFaultCount?item.DeviceFaultCount:0}}</td>
               </tr>
             </table>
           </div>
@@ -195,37 +178,38 @@
           <div class="table-red">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
-                <td width="25%">异常巡检点名称</td>
-                 <td width="25%">时间</td>
-                <td width="25%">异常描述</td>
-                <td width="25%">处理情况</td>
+                <td width="33%">异常抄表点名称</td>
+                 <td width="33%">时间</td>
+                <td width="33%">异常描述</td>
+                <!-- <td width="25%">处理情况</td> -->
               </tr>
-              <tr v-for="(item,key) in  dateReport.Table2">
-                <td>{{item.InspectionObject}}</td>
-                <td>{{item.InspectionTime}}</td>
-                <td style="color: red;">{{item.InspectionNote}}</td>
-                <td></td>
+              <tr v-for="(item,key) in  monthReport.Table2">
+                <td>{{item.MeterReadingObject}}</td>
+                <td>{{item.MeterReadingTime}}</td>
+                <td style="color: red;">{{item.PointResult}}</td>
+                <!-- <td></td> -->
               </tr>
             </table>
           </div>
 
           <div class="person">备注：</div>
           <div class="person_pg">
-            <span style="width: 180px; height: 30px; display: inline-block; text-align: left;">巡检人:</span>
+            <span style="width: 180px; height: 30px; display: inline-block; text-align: left;">抄表人:</span>
             <span style="width: 180px;height: 30px;display: inline-block;text-align: left;">审核人:</span>
             <span style="width: 180px;height: 30px;display: inline-block;text-align: left;">管理员:</span>
           </div>
         </div>
       </section>
+      <p v-else style="padding:50px">暂无数据</p>
       <!--html-->
     </el-dialog>
     <!--弹出框-->
-    <!---巡检记录-->
+    <!---抄表记录-->
     <div class="top">
       <ul>
-        <li :class="{active:activeIndex === 0}" @click="activeIndex = 0">物联巡检</li>
-        <li :class="{active:activeIndex === 1}" @click="activeIndex = 1">人工巡检</li>
-        <!-- <li>综合巡检</li> -->
+        <!-- <li :class="{active:activeIndex === 0}" @click="activeIndex = 0">物联抄表</li> -->
+        <li :class="{active:activeIndex === 1}" @click="activeIndex = 1">人工抄表</li>
+        <!-- <li>综合抄表</li> -->
       </ul>
     </div>
     <div class="bg_are" v-show="activeIndex === 0">
@@ -263,8 +247,8 @@
           :class="{isod:exl_hef!=''}"
           style="position: absolute; top: 57px; left: 741px; height: 46px; width: 86px; background: #093b7c; opacity: 0.8;"
         ></div>
-        <div class="ntb01" @click="one_change">一键巡检</div>
-        <div class="ntb02">自动巡检</div>
+        <div class="ntb01" @click="one_change">一键抄表</div>
+        <div class="ntb02">自动抄表</div>
         <div class="ntb03" @click="make_paf">报告预览</div>
         <a :href="exl_hef">
           <div class="ntb04">导出</div>
@@ -275,7 +259,7 @@
       <div class="title">
         <p class="l ti_n">
           <span class="icon iconfont icon-Automaticinspection abc"></span>
-          <span>巡检总况</span>
+          <span>抄表总况</span>
         </p>
       </div>
       <section class="btn_baritems">
@@ -283,13 +267,13 @@
           <section id="show_bar" style="height:183px; width: 90%;"></section>
           <div>
             <div class="atc_title">
-              <p>巡检点数</p>
+              <p>抄表点数</p>
               <p>
                 {{bar_value.InspectionDeviceCount}}
                 <!--100-->
               </p>
             </div>
-            <div class="act_num">巡检次数：
+            <div class="act_num">抄表次数：
               <span>
                 <!--6-->
                 {{bar_value.InspectionCount}}次
@@ -342,7 +326,7 @@
               </span>
               <span>
                 {{item.InspectionBy}}
-                <!--自动巡检-->
+                <!--自动抄表-->
               </span>
             </p>
           </li>
@@ -356,7 +340,7 @@
 	  		  			<p><span class="colors colors_red"></span><span class="igh">异常</span><span class="hgy">30</span></p>
 	  		  		</div>
 	  		  		</section>
-	  		  		<p class="ghj_time"><span >04:00</span><span>自动巡检</span></p>
+	  		  		<p class="ghj_time"><span >04:00</span><span>自动抄表</span></p>
 	  		  	</li>		
           -->
         </ul>
@@ -365,7 +349,7 @@
       <div class="title">
         <p class="l ti_n">
           <span class="icon iconfont icon-Inspectionreport abc"></span>
-          <span>巡检记录</span>
+          <span>抄表记录</span>
         </p>
       </div>
       <div class="show_exl">
@@ -373,7 +357,7 @@
         <div id="is_table_spid">
             <el-table
                :data="all_table"
-               max-height="300"
+               max-height="360"
                style="width: 100%"
                header-row-class-name="el-table-header"
                :row-class-name="tableRowClassName"
@@ -400,14 +384,13 @@
           <el-date-picker
             class=""
             v-model="time"
-            value-format="yyyy-MM-dd"
-            type="date"
+            type="month"
             @change="selectTime"
             placeholder="选择日期"
           ></el-date-picker>
         </li>
 <!--         <li class="l">
-          <span class="label">巡检路线名称</span>
+          <span class="label">抄表路线名称</span>
           <el-input class="search-input" v-model="filterText" placeholder="搜索路线关键字">
               <i class="el-icon-search" slot="suffix"></i>
           </el-input>
@@ -421,34 +404,34 @@
       <div class="title">
         <p class="l ti_n">
           <span class="icon iconfont icon-Automaticinspection abc"></span>
-          <span>巡检总况</span>
+          <span>抄表总况</span>
         </p>
       </div>
       <section class="btn_baritems">
-        <div class="l showitem01" v-if="bar_value">
+        <div class="l showitem01">
           <section id="record-chart" style="height:183px; width: 90%;"></section>
           <div>
             <div class="atc_title">
-              <p>巡检点数</p>
+              <p>抄表点数</p>
               <p>
-                {{points}}
+                {{totalInfo.MeterReadingPointCount}}
                 <!--100-->
               </p>
             </div>
-            <div class="act_num">待巡检计划：
+            <div class="act_num">待抄表计划：
               <span>
                 <!--6-->
-                {{waitingPlan}}个
+                {{totalInfo.WaitingCount}}个
               </span>
             </div>
             <div class="act_num02">
               <p>
                 <!--70-->
-                {{pointsInfo.NormalCount?pointsInfo.NormalCount:0}}
+                {{totalInfo.NormalCount?totalInfo.NormalCount:0}}
               </p>
               <p>
                 <!--50-->
-                {{pointsInfo.FaultCount?pointsInfo.FaultCount:0}}
+                {{totalInfo.FaultCount?totalInfo.FaultCount:0}}
               </p>
             </div>
           </div>
@@ -457,20 +440,22 @@
         <ul>
           <li
             v-for="(item,key) in plans"
+            :key="item.ID"
             :class="{currt_ing:active==key}"
             @click="active=key;queryPlan(item.ID)"
           >
             <section class="ui_box">
+              <h5>{{item.MeterReadingPlanName}}</h5>
               <div class="l status">
-                  {{item.InspectionState}}
+                  {{inspectionStateArr[item.MeterReadingState]}}
               </div>
               <div class="r itext">
                 <p>
                   <span class="colors"></span>
-                  <span class="igh">待巡检</span>
+                  <span class="igh">待抄表</span>
                   <span class="hgy">
                     <!--70-->
-                    {{item.InspectionCount - item.NormalCount - item.FaultCount}}
+                    {{item.MeterReadingPointCount - item.NormalCount - item.FaultCount}}
                   </span>
                 </p>
                 <p>
@@ -494,11 +479,11 @@
             <p class="ghj_time">
               <span>
                 <!--00:00-->
-                {{item.InspectionDatetime.split(' ')[1]}}
+                {{item.MeterReadingStartDateTime?item.MeterReadingStartDateTime.split(' ')[1]:"--"}}
               </span>
               <span>
-                {{item.FContacts}}
-                <!--自动巡检-->
+                {{item.FUserNickname}}
+                <!--自动抄表-->
               </span>
             </p>
           </li>
@@ -508,7 +493,7 @@
       <div class="title">
         <p class="l ti_n">
           <span class="icon iconfont icon-Inspectionreport abc"></span>
-          <span>巡检记录</span>
+          <span>抄表记录</span>
         </p>
       </div>
       <div class="show_exl">
@@ -516,8 +501,9 @@
         <div id="is_table_spid">
             <el-table
                :data="records"
-               max-height="300"
+               max-height="360"
                style="width: 100%"
+               v-loadmore='loadMore'
                header-row-class-name="el-table-header"
                :row-class-name="tableRowClassName"
                >
@@ -526,6 +512,7 @@
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
+                 :width="item.width"
                  show-overflow-tooltip
                 >
                </el-table-column>
@@ -542,7 +529,7 @@
 import html2Canvas from "html2canvas";
 var echarts = require("echarts");
 import * as comm from "@/assets/js/pro_common";
-import {Inspection,FileUpLoad} from '@/request/api.js'//api接口（接口统一管理）;
+import {Inspection,FileUpLoad,project,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 export default {
   mixins:[table],
@@ -550,26 +537,26 @@ export default {
     return {
       projectNames: localStorage.getItem("projectname"),
       centerDialogVisible: false, //用于弹出框
-      htmlTitle: "巡检报告", //巡检报告生成名称
-      Dialog_table0: [], //巡检报告弹出框正常、框异值-总数表格
-      Dialog_table1: [], //巡检报告弹出框正常值-表格
-      Dialog_table2: [], //巡检报告弹出框异常值-表格
+      htmlTitle: "抄表报告", //抄表报告生成名称
+      Dialog_table0: [], //抄表报告弹出框正常、框异值-总数表格
+      Dialog_table1: [], //抄表报告弹出框正常值-表格
+      Dialog_table2: [], //抄表报告弹出框异常值-表格
 
-      value1: "", //时间选择值
+      value1: new Date(), //时间选择值
       bar_value: "", //把环形图值付给这里
       table2: "",
-      ings: 0, //点击巡检li标签高亮
+      ings: 0, //点击抄表li标签高亮
       exl_url: "", //用于在div内浏览的地址
       exl_hef: "", //用于导出exl，用split()分割后，得到直接地址
-      currt: 0, //一键巡检遮罩层
+      currt: 0, //一键抄表遮罩层
 
       all_table: [], //所有表格数据。
-      activeIndex: 0,
-      // exl_url:"http://www.szqianren.cn/CreateFile/新都汇/新都汇物联巡检记录2018112612.xls",
-      //人工巡检
+      activeIndex: 1,
+      // exl_url:"http://www.szqianren.cn/CreateFile/新都汇/新都汇物联抄表记录2018112612.xls",
+      //人工抄表
       time:new Date(),
       filterText:'',
-      points:0,//巡检点总数
+      totalInfo:0,//抄表总况统计信息
       waitingPlan:0,
       pointsInfo:{},
       plans:[],
@@ -577,124 +564,124 @@ export default {
       planID:'',
       records:[],
       showReport:false,
-      dateReport:null,
+      monthReport:{},
       tableLabel:[
           {
-              prop: 'InspectionObject',
-              label: '巡检对象'
+            prop: 'RowNum',
+            label: '序号'
           },
           {
-              prop: 'AreaName',
-              label: '区域名称'
+            prop: 'AreaName',
+            label: '抄表区域'
           },
           {
-              prop: 'InspectionItem',
-              label: '巡检项'
+              prop: 'MeterReadingObject',
+              label: '抄表点'
           },
           {
-              prop: 'InspectionValue',
-              label: '巡检值'
+              prop: 'EnergyTypeName',
+              label: '能耗类型'
           },
           {
-              prop: 'LimitValue',
-              label: '越限值'
+              prop: 'EnergyTypeUnit',
+              label: '单位'
           },
           {
-              prop: 'InspectionResult',
-              label: '巡检结果'
+              prop: 'LastMeterReadingValue',
+              label: '上次读数'
           },
           {
-              prop: 'InspectionNote',
-              label: '备注'
+              prop: 'MeterReadingValue',
+              label: '本次读数'
           },
           {
-              prop: 'InspectionTime',
-              label: '巡检时间'
+              prop: 'UseValue',
+              label: '本期用量'
+          },
+          {
+              prop: 'MeterReadingTime',
+              label: '抄表时间',
+              width:160
+          },
+          {
+              prop: 'MeterReadingResult',
+              label: '设备状态'
+          },
+          {
+              prop: 'ComparedValue',
+              label: '同比用量'
+          },
+          {
+              prop: 'MeterReadingNote',
+              label: '异常描述'
           }
       ],
+      inspectionStateArr:['待抄表','抄表中','已完成','逾期'],
+      table:[
+        {EnergyTypeName:'电',EnergyTypeUnit:'3000Kw/h',PointCount:40,MeterReadingDataNormalCount:38,MeterReadingDataFaultCount:0,DeviceFaultCount:0},
+        {EnergyTypeName:'水',EnergyTypeUnit:'3000Kw/h',PointCount:40,MeterReadingDataNormalCount:38,MeterReadingDataFaultCount:0,DeviceFaultCount:0},
+        {EnergyTypeName:'气',EnergyTypeUnit:'3000Kw/h',PointCount:40,MeterReadingDataNormalCount:38,MeterReadingDataFaultCount:0,DeviceFaultCount:0},
+      ]
     };
   },
   methods: {
-    make_paf() {
+    async make_paf() {
       //生成pdf文件的方法
-      let _this = this;
-      /*巡检报告弹ajax请求数据*/
+      /*抄表报告弹ajax请求数据*/
       let ch_time = "";
       if (this.value1 == "" || this.value1 == null) {
         ch_time = comm.CurentTime().clock.split(" ")[0]; //默认为当天
       } else {
         ch_time = this.value1;
       }
-
-      _this.$axios
-        .post(_this.mypro + "Caiot/Inspection", {
-          FTokenID: localStorage.getItem("Token"),
+      await new Promise((resolve,reject) => {
+        Inspection({
           FAction: "QueryInspectionReportByDate",
-          FVersion: "1.0.0",
-          ProjectID: localStorage.getItem("projectid"),
           FDateTime: ch_time
         })
-        .then(function(jsons) {
-          console.log(jsons.data);
-          if (jsons.data.Result != 200) {
-            _this.messageShowErr(jsons.data.Result); //如果出错，调用弹出框报错消息
-          }
-
-          _this.Dialog_table0 = jsons.data.FObject.Table;
-          _this.Dialog_table1 = jsons.data.FObject.Table1;
-          _this.Dialog_table2 = jsons.data.FObject.Table2;
+        .then(data => {
+          this.Dialog_table0 = data.FObject.Table;
+          this.Dialog_table1 = data.FObject.Table1;
+          this.Dialog_table2 = data.FObject.Table2;
+          resolve()
         })
-        .catch(function(err) {});
-
-      /*巡检报告弹ajax请求数据*/
+        .catch(error => {
+          reject()
+        })
+      })
+      /*抄表报告弹ajax请求数据*/
 
       this.centerDialogVisible = true; //弹出-弹出框
       /*生成pdf名称*/
       let now_times = ""; //如果日期为空，默认为昨天的
-      if (this.value1 == "" || this.value1 == null) {
-        now_times =
-          comm
-            .CurentTime()
-            .clock.split(" ")[0]
-            .replace(/-/gi, "") - 1;
-      } else {
-        now_times = this.value1.replace(/-/gi, "");
-      }
-      //	console.log(now_times)
-
-      this.htmlTitle = localStorage.getItem("projectname") + now_times; //生成pdf名称
-      //console.log(now_times)
+      now_times = this.value1.toJSON().split('T')[0].replace(/-/gi, "");
       /*生成pdf名称*/
-
-      setTimeout(function() {
-        //console.log(_this.Dialog_table2)
-        if (_this.Dialog_table2 != "") {
+        if (this.Dialog_table2 != "") {
           //如果没有数据，就不生成pdf文件
-          _this.getPdf();
+          let fileName = localStorage.getItem("projectname") + '物联抄表' +  now_times
+          await new Promise(resolve => {
+            this.$nextTick(() => {
+              resolve()
+            })
+          })
+          this.getPdf('#pdf_htmls',fileName);
           /* 生成base64传给后台 */
           html2Canvas(document.querySelector("#pdf_htmls")).then(canvas => {
             var srccc = canvas.toDataURL("image/png");
-            //  console.log(srccc)
-            // document.querySelector("#iimgs").src=srccc
             /*生成图片传给服务器*/
-            _this.$axios
-              .post(_this.mypro + "Caiot/FileUpLoad", {
-                FTokenID: localStorage.getItem("Token"),
-                FAction: "SaveInspectionReportJpg2Pdf",
-                FVersion: "1.0.0",
-                ProjectID: localStorage.getItem("projectid"),
+            FileUpLoad({
+                FAction:'SaveInspectionReportJpg2Pdf',
                 FData: srccc.replace("data:image/png;base64,", ""),
-                FName: localStorage.getItem("projectname") + now_times //
-              })
-              .then(function(jsons) {
-                console.log(jsons.data);
-              })
-              .catch(function(err) {});
-
+                FName: fileName
+            })
+            .then(data => {
+            })
+            .catch(error => {
+              console.log('cuowu',error);
+            })
             /*end of 生成图片传给服务器*/
           });
         }
-      }, 200);
     },
 
     logTimeChange(val) {
@@ -703,31 +690,22 @@ export default {
     },
 
     li_item_click(x = 0, gettime, id) {
-      //点击巡检总况 列表事件,把id带过来，去查列表数据
-      let _this = this;
-      // console.log(id)
-      /*if(!gettime){
-     			gettime=comm.CurentTime().clock.split(" ")[0]+" "+"00:00:00"  //默认第一个点击事件
-     		}*/
-
-      //console.log(gettime)
+      //点击抄表总况 列表事件,把id带过来，去查列表数据
       this.ings = x; //当前的点击的li高亮
-      _this.all_table = [];
-      _this.$axios
-        .post(_this.mypro + "Caiot/Inspection", {
-          FTokenID: localStorage.getItem("Token"),
-          FAction: "QueryInspectionRecordByInfoID",
-          ID: id,
-          FVersion: "1.0.0"
-        })
-        .then(function(jsons) {
-          let obj = jsons.data.FObject
+      this.all_table = [];
+      Inspection({
+        FAction: "QueryInspectionRecordByInfoID",
+        ID: id,
+      })
+      .then(data => {
+          let obj = data.FObject
           Object.keys(obj).forEach(key => {
-            _this.all_table = _this.all_table.concat(obj[key])
+            this.all_table = this.all_table.concat(obj[key])
           })
-        })
-        .catch(function(err) {});
+      })
+      .catch(error => {
 
+      })
       if (this.table2 != "" && x == 0) {
         gettime = this.table2[0].InspectionTime; //默认为第一个li的时间值
       }
@@ -739,7 +717,7 @@ export default {
         gettime.split(" ")[1].split(":")[1]; //加上时分秒
       let groud_time = dates + hour;
       let urls =
-        "https://view.officeapps.live.com/op/view.aspx?src=http://www.szqianren.cn/CreateFile/PID/ABC物联巡检记录time.xls";
+        "https://view.officeapps.live.com/op/view.aspx?src=http://www.szqianren.cn/CreateFile/PID/ABC物联抄表记录time.xls";
       let reg_urls = urls
         .replace(/ABC/gi, localStorage.getItem("projectname"))
         .replace(/time/i, groud_time)
@@ -759,139 +737,56 @@ export default {
     },
     start_barData(val) {
       //初始化取数据及点击时间选择器
-
-      let _this = this;
       let timesh = "";
       if (!val) {
         timesh = comm.CurentTime().clock.split(" ")[0] + " " + "00:00:00"; //传当前时间
       } else {
         timesh = val + " " + "00:00:00"; //传当前时间
-        /*如果选择时间为今天时间，一键巡检就可以点击*/
+        /*如果选择时间为今天时间，一键抄表就可以点击*/
 
         if (val == comm.CurentTime().clock.split(" ")[0]) {
-          _this.currt = 0;
+          this.currt = 0;
         } else {
-          _this.currt = 1;
+          this.currt = 1;
         }
-        /*enf of 如果选择时间为今天时间，一键巡检就可以点击*/
+        /*enf of 如果选择时间为今天时间，一键抄表就可以点击*/
       }
-
-      // console.log(timesh)
-      //console.log(times.clock)
-      _this.$axios
-        .post(_this.mypro + "Caiot/Project", {
-          FTokenID: localStorage.getItem("Token"),
-          FAction: "GetPrjInspection",
-          // "FDateTime":"2018-11-26",
-          // "ProjectID":3,
-          ProjectID: localStorage.getItem("projectid"),
-          FDateTime: timesh,
-
-          FVersion: "1.0.0"
-        })
-        .then(function(jsons) {
-          if (jsons.data.Result != 200) {
-            _this.messageShowErr(jsons.data.Result); //如果出错，调用弹出框报错消息
+      project({
+        FAction: "GetPrjInspection",
+        ProjectID: localStorage.getItem("projectid"),
+        FDateTime: timesh,
+      })
+      .then(data => {
+          this.bar_value = data.FObject.Table[0]; //把环形图值付给它。再在页面读取总数等值
+          this.table2 = data.FObject.Table1; //把抄表总况列表值付给table2。
+          let datas = [{value:data.FObject.Table[0].NormalCount,name:"正常"},{value:data.FObject.Table[0].FaultCount,name:"异常"}]
+          this.$nextTick(()=>{
+            this.showPieChart('show_bar',datas)
+          })
+          if (data.FObject.Table1.length > 0) {
+            this.li_item_click("0", timesh, data.FObject.Table1[0].ID); //默认第一个li点击，把第一个id带过去
           }
+      })
+      .catch(error => {
 
-          _this.bar_value = jsons.data.FObject.Table[0]; //把环形图值付给它。再在页面读取总数等值
-          _this.table2 = jsons.data.FObject.Table1; //把巡检总况列表值付给table2。
-
-          _this.bar_show(jsons.data.FObject.Table[0]); //生成环形图,一定执行在最后，否则不执行
-          if (jsons.data.FObject.Table1.length > 0) {
-            _this.li_item_click("0", timesh, jsons.data.FObject.Table1[0].ID); //默认第一个li点击，把第一个id带过去
-          }
-        })
-        .catch(function(err) {});
+      })
     },
 
     one_change() {
-      //一键巡检只能查当前的
-      let _this = this;
-      let ii = 0;
-      _this.$axios
-        .post(_this.mypro + "Caiot/Project", {
-          FTokenID: localStorage.getItem("Token"),
-          FAction: "CreateCaiotInspectionByProject",
-          ProjectID: localStorage.getItem("projectid"),
-          FVersion: "1.0.0"
-        })
-        .then(function(jsons) {
-          console.log(jsons.data);
-          if (jsons.data.Result == 200) {
-            _this.start_barData();
-          }
-        })
-        .catch(function(err) {});
-    },
-
-    bar_show(x) {
-      if (!x) {
-        return; //如果没有数据，就直接不执行下面的，防止没有取得getAttribute报错
-      }
-
-      setTimeout(function() {
-        var dom = document.getElementById("show_bar");
-        var myChart = echarts.init(dom);
-        var app = {};
-        var option = null;
-        app.title = "环形图";
-
-        option = {
-          tooltip: {
-            trigger: "item",
-            formatter: "{b}: {c} ({d}%)"
-          },
-          legend: {
-            orient: "vertical",
-            x: "219px",
-            y: "center",
-            textStyle: { color: "#fff" },
-            itemWidth: 13,
-            itemHeight: 13,
-            data: ["正常", "异常"]
-          },
-          series: [
-            {
-              name: "访问来源",
-              type: "pie",
-              radius: ["50", "60"],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {
-                  show: false,
-                  position: "center"
-                },
-                emphasis: {
-                  show: true,
-                  textStyle: {
-                    fontSize: "30",
-                    fontWeight: "bold"
-                  }
-                }
-              },
-              labelLine: {
-                normal: {
-                  show: false
-                }
-              },
-              data: [
-                { value: x.NormalCount, name: "正常" },
-                { value: x.FaultCount, name: "异常" }
-                /* {value:100, name:'正常'},
-					                  {value:10, name:'异常'},*/
-              ]
-            }
-          ],
-          color: ["#00D294", "#89192E"]
-        };
-        if (option && typeof option === "object") {
-          myChart.setOption(option, true);
-        }
-      }, 50);
+      //一键抄表只能查当前的
+      project({
+        FAction: "CreateCaiotInspectionByProject",
+        ProjectID: localStorage.getItem("projectid"),
+      })
+      .then(data => {
+        ProjectID: localStorage.getItem("projectid")
+      })
+      .catch(error => {
+        
+      })
     },
     /**
-     * 人工巡检选择时间
+     * 人工抄表选择时间
      */
     selectTime(val){
       this.queryPlanRecord()
@@ -956,72 +851,103 @@ export default {
         }
     },
     /**
-     * 查询人工巡检信息
+     * 查询人工抄表信息
      */
     queryPlanRecord(){
         this.active = 0
-        Inspection({
-          FAction:'QueryUInspectionPlanByCount',
-          StartDateTime:this.time,
-          EndDateTime:this.time
+        MeterReading({
+          FAction:'QueryUMeterReadingPlanByCount',
+          StartDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1),
+          EndDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1)
         })
         .then(data => {
-          this.points = data.FObject.Table?data.FObject.Table[0].Count:0
-          this.pointsInfo = data.FObject.Table1?data.FObject.Table1[0]:{}
-          this.plans = data.FObject.Table2?data.FObject.Table2:{}
-          this.waitingPlan = data.FObject.Table3?data.FObject.Table3[0].WaitingPlanCount:0
+          this.totalInfo = data.FObject.Table?data.FObject.Table[0]:{}
+          this.plans = data.FObject.Table1?data.FObject.Table1:{}
           this.queryPlan(this.plans[0].ID)
+          let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"}]
+          this.$nextTick(() => {
+            this.showPieChart('record-chart',datas)
+          })
         })
         .catch(error => {
           console.log(error);
         })
     },
     /**
-     * 根据计划ID查询巡检记录
+     * 根据计划ID查询抄表记录
+     * id 计划ID
+     * scroll 为true时是滚动加载
      */
-    queryPlan(id){
-      this.planID = id
-      Inspection({
-        FAction:'QueryUInspectionPlanRecord',
-        ID:id
-      })
-      .then(data => {
-        this.records = data.FObject
-      })
-      .catch(error => {
-        console.log(error);
-      })
+    queryPlan(id,scroll = false){
+        if(!scroll){
+          this.pageIndex = 1
+        }
+        this.planID = id
+        MeterReading({
+          FAction:'QueryUMeterReadingPlanRecord',
+          FDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1),
+          ID:id,
+          PageIndex:this.pageIndex,
+          PageSize:'20'
+        })
+        .then(data => {
+          if(scroll){
+            if(data.FObject.length !==0){
+              this.records = this.records.concat(data.FObject)
+            }else{
+              this.pageIndex--
+            }
+          }else{
+            this.records = data.FObject
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
     },
     /**
-     * 查询人工巡检日报
+     * 滚动加载
+     */
+    loadMore(){
+      this.pageIndex ++
+      this.queryPlan(this.planID,true)
+    },
+    /**
+     * 查询人工抄表月报
      */
     async queryDateReport(){
       await new Promise((resolve,reject) => {
-        Inspection({
-          FAction:'QueryUInspectionDaily',
-          StartDateTime:this.time,
-          EndDateTime:this.time,
+        MeterReading({
+          FAction:'QueryUMeterReadingCountByMoneth',
+          FDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1) + '-01'
         })
         .then(data => {
-          this.dateReport = data.FObject
+          this.monthReport = data.FObject
           this.showReport = true
-          resolve()
         })
         .catch(error => {
           reject()
         })
       })
+      return
+      if(this.monthReport.Table.length ===0){
+        return
+      }
+      let fileName = localStorage.getItem("projectname") + '人工抄表' +  this.time.toJSON().split('T')[0].replace(/-/ig,'')
+      await new Promise(resolve => {
+        this.$nextTick(() => {
+          resolve()
+        })
+      })
+      this.getPdf('#date-report', fileName);
       html2Canvas(document.querySelector("#date-report")).then(canvas => {
         var srccc = canvas.toDataURL("image/png");
-        let fileName = localStorage.getItem("projectname") + '人工巡检' +  this.time.toJSON().split('T')[0]
         FileUpLoad({
             FAction:'SaveInspectionReportJpg2Pdf',
             FData: srccc.replace("data:image/png;base64,", ""),
             FName: fileName
         })
         .then(data => {
-          console.log('object',data);
-          // window.location = "http://www.szqianren.com/" + data.FObject;
         })
         .catch(error => {
           console.log('cuowu',error);
@@ -1032,9 +958,11 @@ export default {
      * exportFile 导出
      */
     exportFile(){
-        Inspection({
-            FAction:'QueryExportUInspectionPlanRecord',
-            ID:this.planID
+        MeterReading({
+            FAction:'QueryExportUMeterReadingPlanRecord',
+            ID:this.planID,
+            FDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1),
+            FName:''
         })
         .then(data => {
             window.location = "http://www.szqianren.com/" + data.FObject;
@@ -1051,7 +979,7 @@ export default {
   watch:{
     activeIndex(val){
       if(val===1){
-          let datas = [{value:this.pointsInfo.NormalCount,name:"正常"},{value:this.pointsInfo.FaultCount,name:"异常"}]
+          let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"}]
           this.$nextTick(() => {
             this.showPieChart('record-chart',datas)
           })
@@ -1059,16 +987,26 @@ export default {
     }
   },
   created() {
-    this.start_barData();
+    // this.start_barData();
     this.queryPlanRecord()
     let tt = comm.CurentTime().clock.split(" ")[0];
-    this.value1 = tt;
   },
   mounted() {}
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang='scss' scoped>
-@import '../InspectionRecords.scss'
+<style lang='scss'>
+@import '../InspectionRecords.scss';
+.Ins_records .ppt_item.month-report .ng_item{
+  height: 150px;
+  padding-bottom: 10px;
+  overflow: hidden;
+  .pimg{
+    top: 0;
+  }
+  .list ul li{
+    width: 20%
+  }
+}
 </style>

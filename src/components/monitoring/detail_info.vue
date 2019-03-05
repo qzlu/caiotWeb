@@ -90,8 +90,9 @@
 	 			  		<div class="jg">
 	 			  			<!--后端要求，PossionID为默认的第一个（三相线电压）id，带过去,还要把整个点击的当前数组带过去getalldata-->
 	 			  			<router-link :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}">
-	 			  			<p class="t">{{suList.DeviceName}}<!--1#变压器--></p>
+	 			  			<p class="t" :title="suList.DeviceName">{{suList.DeviceName}}<!--1#变压器--></p>
 	 			  			</router-link>
+								 <i :class="{r:true, 'el-icon-star-off':!suList.IsFocus,'el-icon-star-on':suList.IsFocus}" @click="addOrDeleteUFocusMonitor(suList)"></i>
 	 			  		</div>
 	 			  		<!--三相线电压数据-->
 	 			  		<div v-for="(c,key) in suList.DataDetail" :class="setclass(c.SDataID)" >
@@ -153,15 +154,23 @@
         background: #fff;
     }
 
-
-
-
+[class*="el-icon-star-"]{
+	font-size:24px;
+	cursor: pointer;
+}  
+.el-icon-star-off{
+	color:#525E7E
+}
+.el-icon-star-on{
+	color:#2a91fc
+}
 </style>
 <script>
 import videojs from 'video.js'
-import 'videojs-contrib-hls'
+// import 'videojs-contrib-hls'
  var echarts = require('echarts');
  import * as comm from '../../assets/js/pro_common';
+import {project, Monitor} from '@/request/api';
  export default {
       data() {
         return {
@@ -199,7 +208,6 @@ import 'videojs-contrib-hls'
 		 opens_video(urls){//播放视频地址
 				
 				if(urls){ 
-					console.log(urls)
 					var obj="<video id='my-video'  class='video-js vjs-big-play-centered' controls preload='auto' poster='/static/image/index/video_start.jpg'>"
 					 +"<source src='adress_src' type='application/x-mpegURL'></video>"
 					obj=obj.replace("adress_src",urls)
@@ -455,19 +463,23 @@ import 'videojs-contrib-hls'
 		     series:o.series_arr,
 		     color:o.color_change
 		   
-		};;
+		};
 		if (option && typeof option === "object") {
 		    myChart.setOption(option, true);
-		}
-		
-					
-					
-				    
-			
-		
-		
-			//console.log()
-			  
+		} 
+		},
+		/**
+		 * 162.标记或取消重点监测设备
+		 */
+		addOrDeleteUFocusMonitor(item){
+			Monitor({
+				FAction:'AddOrDeleteUFocusMonitor',
+				DeviceID:item.DeviceID
+			})
+			.then(data => {
+				item.IsFocus = !item.IsFocus
+			})
+			.catch(err => {})
 		}																
 				
 	},
@@ -654,8 +666,8 @@ a {
 .det_itemList .deo_list ul li .a1 .pui_7{ position: absolute; top: 138px; right: -144px;width: 140px; }
 
 
-.det_itemList .deo_list ul li .a1 .jg{position:relative; height: 35px;}
-.det_itemList .deo_list ul li .a1 .jg .t{ position: absolute; top: 0px; left: 0px; height: 35px; width: 205px; overflow: hidden; font-size: 18px; color: #525E7E;}
+.det_itemList .deo_list ul li .a1 .jg{position:relative; height: 35px;width: 320px;}
+.det_itemList .deo_list ul li .a1 .jg .t{ position: absolute; top: 0px; left: 0px; height: 35px; width: 210px; overflow: hidden; font-size: 18px; color: #525E7E;white-space: nowrap;text-overflow:ellipsis}
 .det_itemList .deo_list ul li .a1 .gre{ color: #03CD82; font-size: 17px;padding: 1px 0; }
 .det_itemList .deo_list ul li .a1 .grd{  font-size: 13px; color: #737373;}
 .det_itemList .deo_list ul li .a1 .line{ height: 1px;}
@@ -673,7 +685,6 @@ a {
 .det_itemList .deo_list ul li .lrn .line{ height: 18px;}
 
   
-  
-  
+
 
 </style>

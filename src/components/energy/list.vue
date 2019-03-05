@@ -400,7 +400,6 @@ export default {
           FDateTime: gettime
         })
         .then(function(jsons) {
-          console.log(jsons.data.FObject);
           //jsons.data.FObject数据：1.Table：总能耗统计数据 ，2Table1：能耗曲线数据，3.Table2：分项能耗数据，4.Table3：重点能耗数据（根据FType为天、周、月、年返回对应值）
           _this.table_data01 = jsons.data.FObject.Table[0]; //左上1
           _this.table_data02 = jsons.data.FObject.Table1; //右上1
@@ -408,7 +407,6 @@ export default {
           _this.table_data04 = jsons.data.FObject.Table3; //底下
           _this.table_data02_value = [];
           _this.table_data02_name = [];
-          console.log("数据", _this.table_data01);
           for (let obj of jsons.data.FObject.Table1) {
             _this.table_data02_name.push(obj.Cycle); //把分类名称写入数组[今日,昨日,平均值]
           }
@@ -424,7 +422,7 @@ export default {
 
           for (let obj2 of jsons.data.FObject.Table1) {
             let arrs = [],
-              o = { type: "line", stack: "总量" };
+              o = { type: "line" };
             let arrs_x = [];
             for (let i in obj2) {
               arrs.push(obj2[i]);
@@ -442,7 +440,7 @@ export default {
           _this.e_line01();
 
           //this.table_data03,this.table_data02_name 子组件1
-          console.log(_this.table_data02_name);
+          //console.log(_this.table_data02_name);
           _this.$refs.editchi.getMessage(
             _this.table_data03,
             _this.table_data02_name
@@ -520,26 +518,6 @@ export default {
           splitLine: { show: false } //去除网格线
         },
         series: this.table_data02_value,
-        /* series: [
-			        {
-			            name:'当日',
-			            type:'line',
-			            stack: '总量',
-			            data:[120, 132, 101, 134, 90, 230, 210, 310, 210]
-			        },
-			        {
-			            name:'昨日',
-			            type:'line',
-			            stack: '总量',
-			            data:[220, 182, 191, 234, 290, 330, 310]
-			        },
-			        {
-			            name:'历史平均',
-			            type:'line',
-			            stack: '总量',
-			            data:[150, 232, 201, 154, 190, 330, 410]
-			        }
-			    ],*/
         color: ["#1385f7", "#18d094", "#ff7206"]
       };
       if (option && typeof option === "object") {

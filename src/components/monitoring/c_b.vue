@@ -3,7 +3,7 @@
 			<div class="ght_listn">
 				<section  class="png_ygts">
 				<ul class="gpn_siItem">
-						<li v-for="(item, index) in datalist" :class="setclass(item.TopValue.length)">
+						<li v-for="(item, index) in datalist" :key="index" :class="{'show_warn_class':item.TopValue.length,'no_warn_class':!item.TopValue.length}">
 						<router-link :to="{ name: 'detail_info',params:{ id:item.DeviceItemID,SingleType:1}}">
 						<p class="u_tle">{{item.DeviceItemTitle}}</p>
 						
@@ -19,7 +19,7 @@
 								<div class="numb_t">
 									<p v-for="(abc, key) in item.TargetDetail">{{abc.STargetValue}}</p>
 								</div>							
-							 <div class="u_acr"  :id='setid(index)'> </div>
+							 <div class="u_acr"  :id='settitle+index'> </div>
 						</div>
 						</router-link>
 						</li>
@@ -35,7 +35,8 @@
 </style>
 <script>
 	var echarts = require('echarts');
-	import * as comm from '../../assets/js/pro_common';
+	import * as comm from '@/assets/js/pro_common';
+	import {project} from '@/request/api';
  export default {
       data() {
         return {
@@ -49,38 +50,21 @@
 			  
 			},
 			methods: {
-				setclass(x){
-					if(x){
-						return "show_warn_class"
-					}else{
-						return "no_warn_class"
-					}
-				},
 				
 				Pro() {
-					
-				 	let _this=this;
-				   //返回一个Promise对象
-				   return new Promise(function (resolve, reject) {
-				           _this.$axios.post(_this.mypro+'Caiot/Project',{
-						        "FTokenID":localStorage.getItem("Token"),
-						        "FAction":"GetPrjDeviceItemInfo",
-						        "FVersion":"1.0.0",
-						        "ProjectID":localStorage.getItem("projectid")
-							}).then(function(jsons){
-								 //console.log(jsons.data)
-								
-								  comm.messageErr(jsons.data.Result) //公共状态提示
-								if(jsons){
-									_this.datalist=jsons.data.FObject
-									resolve("succ")
-								} 
-								
-							}).catch(function(err){
-							
-							});
-				    
-				   })
+					 //返回一个Promise对象
+					 return new Promise((resolve, reject) => {
+						 project({
+							 FAction:"GetPrjDeviceItemInfo"
+						 })
+						 .then(data => {
+								this.datalist=data.FObject
+								resolve("succ")
+						 })
+						 .catch(err => {
+							 reject()
+						 })
+					 })
 				  
 				  },
 				
@@ -125,10 +109,6 @@
 				     
 							
 				   })
-				},
-				
-				setid(x){
-					return this.settitle+x;	
 				},
 				
 				
