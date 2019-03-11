@@ -183,9 +183,9 @@ export default {
         .then(data => {
           /*设置默认项目 FIsDefault==1为默认项目*/
           let projects = data.FObject; //所有项目
-          let fist = projects.filter(item => item.FIsDefault == 1);
-          localStorage.setItem("projectid", fist[0].ProjectID);
-          localStorage.setItem("projectname", fist[0].ShortName);
+          let fist = projects.find(item => item.FIsDefault);
+          localStorage.setItem("projectid", fist.ProjectID);
+          localStorage.setItem("projectname", fist.ShortName);
           /*设置默认项目*/
         })
         .catch(error => {});

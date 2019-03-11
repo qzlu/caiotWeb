@@ -277,7 +277,7 @@ export default {
         PossionID: x //_this.$route.params.PossionID默认第一个（三相电压id）
 			})
 			.then(data => {
-        this.linedata = jsons.data.FObject;
+        this.linedata = data.FObject;
         this.line_data_reset();
 			})
 			.catch(err => {})
@@ -294,11 +294,10 @@ export default {
       arr_name = d.map(item => item.DataItemName);
       let ggg = d[0].ProjectChartLineDatas; //x轴是一样的，把第一个X轴的数据写入数组
       x_arr = ggg.map(item => item.X);
-
       /*组装成line图表相应的格式数据*/
       y_arr = d.map(item => {
         let data = item.ProjectChartLineDatas.map(obj => {
-          return { value: obj.Y, name: obj.X };
+          return  obj.Y
         });
         return {
           type: "line",

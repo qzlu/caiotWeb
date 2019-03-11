@@ -214,7 +214,7 @@ a {
   top: 0px;
   left: 0;
   width: 170px;
-  overflow: hidden;
+  white-space: nowrap;
   text-align:center;
 }
 .pr_top .pr_are ul li .gt {

@@ -4,61 +4,38 @@
     <!-- <el-button type="text" @click="make_paf">点击打开 Dialog</el-button>-->
     <el-dialog :visible.sync="centerDialogVisible" width="1350px">
       <!--html-->
-      <section class="ppt_item" id="pdf_htmls">
+      <section class="ppt_item month-report" id="pdf_htmls" v-if="monthReport1.Table">
         <div class="htbn">
-          <section v-for="(item,key) in Dialog_table0">
+          <section>
             <div class="hdr">
-              <p class="pn02">物联抄表日报</p>
+              <p class="pn02">物联抄表月报</p>
               <p class="l pn">
                 项目名称：{{projectNames}}
                 <!--新都汇-->
               </p>
               <p class="r pn03">日期：
                 <!--2018-09-20-->
-                {{item.InspectionDate.split(" ")[0]}}
+                {{time.getFullYear() + '-' + (time.getMonth()+1)}}
               </p>
             </div>
             <div class="ng_item">
               <img
                 src="/static/image/task/bicon_1.png"
                 class="pimg"
-                :class="{nnor:Dialog_table2.length>0}"
+                :class="{nnor:monthReport1.Table2.length>0}"
               >
               <img
                 src="/static/image/task/bicon_2.png"
                 class="pimg"
-                :class="{nnor:Dialog_table2.length==0}"
+                :class="{nnor:monthReport1.Table2.length==0}"
               >
               <div class="r list">
-                <ul>
-                  <li>抄表次数:
-                    <span>
-                      {{item.InspectionCount}}
-                      <!--4-->
-                      次
-                    </span>
-                  </li>
-                  <li>抄表点数:
-                    <span>
-                      {{item.InspectionDeviceCount}}
-                      <!--4-->
-                      个
-                    </span>
-                  </li>
-                  <li>正常点数:
-                    <span>
-                      {{item.NormalCount}}
-                      <!--4-->
-                      个
-                    </span>
-                  </li>
-                  <li>异常点数:
-                    <span class="no">
-                      {{item.FaultCount}}
-                      <!--4-->
-                      个
-                    </span>
-                  </li>
+                <ul v-for="item in monthReport1.Table">
+                  <li class="l">{{item.EnergyTypeName}}　<span>{{item.EnergyTypeUnit}}</span></li>
+                  <li class="l">抄表点数　<span>{{item.PointCount}}</span></li>
+                  <li class="l">能耗正常　<span>{{item.NormalCount}}</span></li>
+                  <li class="l">能耗异常　<span>{{item.FaultCount}}</span></li>
+                  <!-- <li class="l">设备异常　<span>{{item.DeviceFaultCount}}</span></li> -->
                 </ul>
               </div>
             </div>
@@ -67,18 +44,20 @@
           <div class="table-c">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
-                <td width="28%">抄表区域</td>
-                <td width="18%">抄表情况</td>
-                <td width="18%">抄表点数</td>
-                <td width="18%">正常点数</td>
-                <td width="18%">异常点数</td>
+                <td width="12.5%">能源类型</td>
+                <td width="12.5%">分区能耗</td>
+                <td width="12.5%">上次读数</td>
+                <td width="12.5%">本次读数</td>
+                <td width="12.5%">用量</td>
+                <td width="12.5%">能耗情况</td>
               </tr>
-              <tr v-for="(item,key) in Dialog_table1">
-                <td>{{item.AreaName}}</td>
-                <td :class="{reding:item.InspectionState=='异常'}">{{item.InspectionState}}</td>
-                <td>{{item.InspectionDeviceCount}}</td>
-                <td>{{item.NormalCount}}</td>
-                <td :class="{reding:item.FaultCount>0}">{{item.FaultCount}}</td>
+              <tr v-for="(item,key) in monthReport1.Table1">
+                <td>{{item.EnergyTypeName}}</td>
+                <td>{{item.CountName}}</td>
+                <td >{{item.LastMeterReadingValueSum}} {{item.EnergyTypeUnit}}</td>
+                <td>{{item.NowMeterReadingValueSum}} {{item.EnergyTypeUnit}}</td>
+                <td>{{item.NowDiffValueSum}} {{item.EnergyTypeUnit}}</td>
+                <td>{{item.MeterReadingResult}}</td>
               </tr>
             </table>
           </div>
@@ -86,16 +65,16 @@
           <div class="table-red">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
-                <td width="25%">异常抄表点名称</td>
-                 <td width="25%">时间</td>
-                <td width="25%">异常描述</td>
-                <td width="25%">处理情况</td>
+                <td width="33%">异常抄表点名称</td>
+                 <td width="33%">时间</td>
+                <td width="33%">异常描述</td>
+                <!-- <td width="25%">处理情况</td> -->
               </tr>
-              <tr v-for="(item,key) in  Dialog_table2">
-                <td>{{item.InspectionObject}}</td>
-                <td>{{item.InspectionTime}}</td>
-                <td style="color: red;">{{item.InspectionResult}}</td>
-                <td></td>
+              <tr v-for="(item,key) in  monthReport1.Table2">
+                <td>{{item.MeterReadingObject}}</td>
+                <td>{{item.MeterReadingTime}}</td>
+                <td style="color: red;">{{item.PointResult}}</td>
+                <!-- <td></td> -->
               </tr>
             </table>
           </div>
@@ -117,14 +96,14 @@
         <div class="htbn">
           <section>
             <div class="hdr">
-              <p class="pn02">人工抄表月报</p>
+              <p class="pn02">物联抄表月报</p>
               <p class="l pn">
                 项目名称：{{projectNames}}
                 <!--新都汇-->
               </p>
               <p class="r pn03">日期：
                 <!--2018-09-20-->
-                {{time.toJSON().split('T')[0]}}
+                {{time.getFullYear() + '-' + (time.getMonth()+1)}}
               </p>
             </div>
             <div class="ng_item">
@@ -142,9 +121,9 @@
                 <ul v-for="item in monthReport.Table">
                   <li class="l">{{item.EnergyTypeName}}　<span>{{item.EnergyTypeUnit}}</span></li>
                   <li class="l">抄表点数　<span>{{item.PointCount}}</span></li>
-                  <li class="l">能耗正常　<span>{{item.MeterReadingDataNormalCount}}</span></li>
-                  <li class="l">能耗异常　<span>{{item.MeterReadingDataFaultCount}}</span></li>
-                  <li class="l">设备异常　<span>{{item.DeviceFaultCount}}</span></li>
+                  <li class="l">能耗正常　<span>{{item.NormalCount}}</span></li>
+                  <li class="l">能耗异常　<span>{{item.FaultCount}}</span></li>
+                  <!-- <li class="l">设备异常　<span>{{item.DeviceFaultCount}}</span></li> -->
                 </ul>
               </div>
             </div>
@@ -155,22 +134,18 @@
               <tr class="gg">
                 <td width="12.5%">能源类型</td>
                 <td width="12.5%">分区能耗</td>
-                <td width="12.5%">抄表情况</td>
-                <td width="12.5%">能耗值</td>
-                <td width="12.5%">抄表点数</td>
-                <td width="12.5%">正常点数</td>
-                <td width="12.5%">异常点数</td>
-                <td width="12.5%">设备异常</td>
+                <td width="12.5%">上次读数</td>
+                <td width="12.5%">本次读数</td>
+                <td width="12.5%">用量</td>
+                <td width="12.5%">能耗情况</td>
               </tr>
               <tr v-for="(item,key) in monthReport.Table1">
                 <td>{{item.EnergyTypeName}}</td>
-                <td>{{item.EnergyTypeValueDiffCount}}</td>
-                <td :class="{reding:item.MeterReadingDataFaultCount>0||item.DeviceFaultCount>0}">{{(item.MeterReadingDataFaultCount>0||item.DeviceFaultCount>0)?'异常':'正常'}}</td>
-                <td>{{item.EnergyTypeValueDiffCount}}</td>
-                <td>{{item.AreaPointCount}}</td>
-                <td>{{item.MeterReadingDataNormalCount?item.MeterReadingDataNormalCount:0}}</td>
-                <td :class="{reding:item.MeterReadingDataFaultCount>0}">{{item.MeterReadingDataFaultCount?item.MeterReadingDataFaultCount:0}}</td>
-                <td :class="{reding:item.DeviceFaultCount>0}">{{item.DeviceFaultCount?item.DeviceFaultCount:0}}</td>
+                <td>{{item.CountName}}</td>
+                <td >{{item.LastMeterReadingValueSum}} {{item.EnergyTypeUnit}}</td>
+                <td>{{item.NowMeterReadingValueSum}} {{item.EnergyTypeUnit}}</td>
+                <td>{{item.NowDiffValueSum}} {{item.EnergyTypeUnit}}</td>
+                <td>{{item.MeterReadingResult}}</td>
               </tr>
             </table>
           </div>
@@ -183,7 +158,7 @@
                 <td width="33%">异常描述</td>
                 <!-- <td width="25%">处理情况</td> -->
               </tr>
-              <tr v-for="(item,key) in  monthReport.Table2">
+              <tr v-for="(item,key) in  monthReport1.Table2">
                 <td>{{item.MeterReadingObject}}</td>
                 <td>{{item.MeterReadingTime}}</td>
                 <td style="color: red;">{{item.PointResult}}</td>
@@ -203,57 +178,98 @@
       <p v-else style="padding:50px">暂无数据</p>
       <!--html-->
     </el-dialog>
+    <!-- 设置自动抄表 -->
+    <el-dialog title="设置自动抄表" :visible.sync="showSetTimeDialog" top="350px" class="zw-dialog set-time-dialog">
+      <div style="margin-top:30px;">
+        <span>抄表时间</span>
+        <el-select v-model="month" multiple collapse-tags placeholder="请选择">
+          <el-option
+            v-for="n in 12"
+            :key="n"
+            :label="n+'月'"
+            :value="n">
+          </el-option>
+        </el-select>
+        <div class="date-select">
+                <ul class="l clearfix time-content">
+                    <li  style="margin-top:0" v-for="(time, i) in timeArr" :key="i">{{time[0]}}号　{{time[1]}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr',i)"></i></li>
+                </ul>
+            <el-popover
+              placement="bottom"
+              width="200"
+              trigger="click"
+              v-model='showPopover'
+              popper-class='select-week-popover'
+             >
+               <i class="el-icon-circle-plus-outline" slot="reference"></i>
+               <div class="clearfix">
+                    <div class="l" >
+                         <p class="time-title">选择日期</p>
+                         <el-scrollbar>
+                             <ul class="week-select">
+                                 <li v-for="i in 28" :class="{active:date==i}" :key="i" @click="date=i ">{{i}}号</li>
+                             </ul>
+                         </el-scrollbar>
+                    </div>
+                    <div class="r" style="width:194px;">
+                         <p class="time-title">选择时间</p>
+                         <div class="clearfix">
+                             <div class="l time-select-main">
+                               <el-scrollbar>
+                                   <ul class="time-select">
+                                       <li v-for="i in 24" :class="{active:h==i-1}" :key="i" @click="h=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="h==i-1">时</span></li>
+                                   </ul>
+                               </el-scrollbar>
+                             </div>
+                             <div class="r time-select-main">
+                               <el-scrollbar>
+                                   <ul class="time-select">
+                                       <li v-for="i in 60" :class="{active:m==i-1}" :key="i" @click="m=i-1">{{((i-1)<10)?'0'+(i-1):i-1}} <span v-if="m==i-1">分</span></li>
+                                   </ul>
+                               </el-scrollbar>
+                             </div>
+                         </div>
+                    </div>
+               </div>
+              <div class="time-select-footer">
+                 <a @click="showPopover = false">取消</a>
+                 <a @click="selectDate()">确定</a>
+              </div>
+            </el-popover>
+        </div>
+      </div>
+      <div style="margin-top:20px;text-align:center"><button class="zw-btn zw-btn-primary" @click="AddUMeterReadingConfig">确定</button></div>
+    </el-dialog>
     <!--弹出框-->
     <!---抄表记录-->
     <div class="top">
       <ul>
-        <!-- <li :class="{active:activeIndex === 0}" @click="activeIndex = 0">物联抄表</li> -->
+        <li :class="{active:activeIndex === 0}" @click="activeIndex = 0">物联抄表</li>
         <li :class="{active:activeIndex === 1}" @click="activeIndex = 1">人工抄表</li>
         <!-- <li>综合抄表</li> -->
       </ul>
     </div>
     <div class="bg_are" v-show="activeIndex === 0">
       <div class="ich">
-        <div
-          class="gre_btns"
-          style="position: absolute; top: 57px; left: 485px; height: 46px; width: 119px; background: #093b7c; opacity: 0.8;"
-        ></div>
-        <div
-          class="gre_btns02"
-          style="position: absolute; top: 57px; left: 839px; height: 46px; width: 84px; background: #093b7c; opacity: 0.8;"
-        ></div>
-
         <div class="time">
           <p class="l name">日期</p>
           <div class="date_chs">
             <div class="block" style="margin-top: 5px; height: 20px;">
               <el-date-picker
                 v-model="value1"
-                value-format="yyyy-MM-dd"
-                type="date"
+                type="month"
                 @change="start_barData"
                 placeholder="选择日期"
               ></el-date-picker>
             </div>
           </div>
         </div>
-        <div
-          class="ntb01_pp"
-          :class="{divsh:currt==0}"
-          style="position: absolute; top: 57px; left: 358px; height: 46px; width: 119px; background: #093b7c; opacity: 0.8;"
-        ></div>
-        <div
-          class="ntb01_pp yuh"
-          :class="{isod:exl_hef!=''}"
-          style="position: absolute; top: 57px; left: 741px; height: 46px; width: 86px; background: #093b7c; opacity: 0.8;"
-        ></div>
+
         <div class="ntb01" @click="one_change">一键抄表</div>
-        <div class="ntb02">自动抄表</div>
+        <div class="ntb02" @click="showSetTimeDialog = true">设置自动抄表</div>
         <div class="ntb03" @click="make_paf">报告预览</div>
-        <a :href="exl_hef">
-          <div class="ntb04">导出</div>
-        </a>
-        <div class="ntb05">审核</div>
+        <div class="ntb04" @click="queryExportUMeterReadingRecordInfo">导出</div>
+        <!-- <div class="ntb05">审核</div> -->
       </div>
 
       <div class="title">
@@ -269,14 +285,14 @@
             <div class="atc_title">
               <p>抄表点数</p>
               <p>
-                {{bar_value.InspectionDeviceCount}}
+                {{bar_value.MeterReadingCount}}
                 <!--100-->
               </p>
             </div>
             <div class="act_num">抄表次数：
               <span>
                 <!--6-->
-                {{bar_value.InspectionCount}}次
+                {{bar_value.PlanCount}}次
               </span>
             </div>
             <div class="act_num02">
@@ -296,7 +312,7 @@
           <li
             v-for="(item,key) in table2"
             :class="{currt_ing:ings==key}"
-            @click="li_item_click(key,item.InspectionTime,item.ID)"
+            @click="li_item_click(key,item.ID)"
           >
             <section class="ui_box">
               <img src="/static/image/task/icon_1.png" class="l" style="margin: 5px 0 0 12px;">
@@ -322,11 +338,11 @@
             <p class="ghj_time">
               <span>
                 <!--00:00-->
-                {{item.InspectionTime.split(" ")[1]}}
+                {{item.MeterReadingTime}}
               </span>
               <span>
-                {{item.InspectionBy}}
-                <!--自动抄表-->
+                <!-- {{item.MeterReadingType}} -->
+                自动抄表
               </span>
             </p>
           </li>
@@ -359,14 +375,18 @@
                :data="all_table"
                max-height="360"
                style="width: 100%"
+               v-loadmore='loadMore1'
                header-row-class-name="el-table-header"
                :row-class-name="tableRowClassName"
                >
+               <el-table-column type="index" width="80" label="序号">
+               </el-table-column>
                <el-table-column
-                 v-for="item in tableLabel"
+                 v-for="item in tableLabel1"
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
+                 :width="item.width"
                  show-overflow-tooltip
                 >
                </el-table-column>
@@ -551,7 +571,7 @@ export default {
       currt: 0, //一键抄表遮罩层
 
       all_table: [], //所有表格数据。
-      activeIndex: 1,
+      activeIndex: 0,
       // exl_url:"http://www.szqianren.cn/CreateFile/新都汇/新都汇物联抄表记录2018112612.xls",
       //人工抄表
       time:new Date(),
@@ -565,6 +585,7 @@ export default {
       records:[],
       showReport:false,
       monthReport:{},
+      monthReport1:{},
       tableLabel:[
           {
             prop: 'RowNum',
@@ -616,33 +637,73 @@ export default {
               label: '异常描述'
           }
       ],
+      tableLabel1:[
+          {
+            prop: 'AreaName',
+            label: '抄表区域'
+          },
+          {
+              prop: 'DeviceName',
+              label: '抄表点'
+          },
+          {
+              prop: 'EnergyTypeName',
+              label: '能耗类型'
+          },
+          {
+              prop: 'EnergyTypeUnit',
+              label: '单位'
+          },
+          {
+              prop: 'LastMeterReadingValue',
+              label: '上次读数'
+          },
+          {
+              prop: 'NowMeterReadingValue',
+              label: '本次读数'
+          },
+          {
+              prop: 'NowDiffValue',
+              label: '本期用量'
+          },
+          {
+              prop: 'NowMeterReadingDateTime',
+              label: '抄表时间',
+              width:160
+          },
+          {
+              prop: 'NowLastDiffPercent',
+              label: '同比用量'
+          },
+          {
+              prop: 'MeterReadingNote',
+              label: '异常描述'
+          }
+      ],
       inspectionStateArr:['待抄表','抄表中','已完成','逾期'],
-      table:[
-        {EnergyTypeName:'电',EnergyTypeUnit:'3000Kw/h',PointCount:40,MeterReadingDataNormalCount:38,MeterReadingDataFaultCount:0,DeviceFaultCount:0},
-        {EnergyTypeName:'水',EnergyTypeUnit:'3000Kw/h',PointCount:40,MeterReadingDataNormalCount:38,MeterReadingDataFaultCount:0,DeviceFaultCount:0},
-        {EnergyTypeName:'气',EnergyTypeUnit:'3000Kw/h',PointCount:40,MeterReadingDataNormalCount:38,MeterReadingDataFaultCount:0,DeviceFaultCount:0},
-      ]
+      showSetTimeDialog:false,
+      showPopover:false,
+      month:[],
+      timeArr:[],
+      date:'',
+      h:null,
+      m:null,
+      pageIndex1:1,
+      planID1:''
     };
   },
   methods: {
     async make_paf() {
       //生成pdf文件的方法
       /*抄表报告弹ajax请求数据*/
-      let ch_time = "";
-      if (this.value1 == "" || this.value1 == null) {
-        ch_time = comm.CurentTime().clock.split(" ")[0]; //默认为当天
-      } else {
-        ch_time = this.value1;
-      }
+      let ch_time = this.value1.getFullYear() + '-' + comm.formatNumber(this.value1.getMonth()+1)
       await new Promise((resolve,reject) => {
-        Inspection({
-          FAction: "QueryInspectionReportByDate",
+        MeterReading({
+          FAction: "QueryUMeterReadingInfoByMonthly",
           FDateTime: ch_time
         })
         .then(data => {
-          this.Dialog_table0 = data.FObject.Table;
-          this.Dialog_table1 = data.FObject.Table1;
-          this.Dialog_table2 = data.FObject.Table2;
+          this.monthReport1 = data.FObject
           resolve()
         })
         .catch(error => {
@@ -652,12 +713,13 @@ export default {
       /*抄表报告弹ajax请求数据*/
 
       this.centerDialogVisible = true; //弹出-弹出框
+      if(this.monthReport1.Table.length ===0){
+        return
+      }
       /*生成pdf名称*/
       let now_times = ""; //如果日期为空，默认为昨天的
-      now_times = this.value1.toJSON().split('T')[0].replace(/-/gi, "");
+      now_times = this.value1.getFullYear()+comm.formatNumber(this.value1.getMonth()+1);
       /*生成pdf名称*/
-        if (this.Dialog_table2 != "") {
-          //如果没有数据，就不生成pdf文件
           let fileName = localStorage.getItem("projectname") + '物联抄表' +  now_times
           await new Promise(resolve => {
             this.$nextTick(() => {
@@ -680,8 +742,7 @@ export default {
               console.log('cuowu',error);
             })
             /*end of 生成图片传给服务器*/
-          });
-        }
+          })
     },
 
     logTimeChange(val) {
@@ -689,100 +750,138 @@ export default {
       //console.log(this.value1)
     },
 
-    li_item_click(x = 0, gettime, id) {
+    li_item_click(x, id, scroll = false) {
       //点击抄表总况 列表事件,把id带过来，去查列表数据
       this.ings = x; //当前的点击的li高亮
-      this.all_table = [];
-      Inspection({
-        FAction: "QueryInspectionRecordByInfoID",
+      this.planID1 = id
+      if(!scroll){
+        this.pageIndex1 = 1
+      }
+      MeterReading({
+        FAction: "QueryUMeterReadingRecordInfo",
         ID: id,
+        PageIndex:this.pageIndex1,
+        PageSize:20
       })
       .then(data => {
-          let obj = data.FObject
-          Object.keys(obj).forEach(key => {
-            this.all_table = this.all_table.concat(obj[key])
-          })
+        if(scroll){
+          this.all_table.push(...data.FObject)
+          if(!data.FObject.length){
+            this.pageIndex1 --
+          }
+        }else{
+          this.all_table = data.FObject
+        }
       })
       .catch(error => {
 
       })
-      if (this.table2 != "" && x == 0) {
-        gettime = this.table2[0].InspectionTime; //默认为第一个li的时间值
-      }
-
-      let dates = gettime.split(" ")[0];
-      dates = dates.replace(/-/gi, "");
-      let hour =
-        gettime.split(" ")[1].split(":")[0] +
-        gettime.split(" ")[1].split(":")[1]; //加上时分秒
-      let groud_time = dates + hour;
-      let urls =
-        "https://view.officeapps.live.com/op/view.aspx?src=http://www.szqianren.cn/CreateFile/PID/ABC物联抄表记录time.xls";
-      let reg_urls = urls
-        .replace(/ABC/gi, localStorage.getItem("projectname"))
-        .replace(/time/i, groud_time)
-        .replace(/PID/i, localStorage.getItem("projectid"));
-      //console.log(this.table2)
-      if (this.table2 == "") {
-        //如果没有数据，exl路径就清空
-        reg_urls = "";
-        this.exl_hef = ""; //如果没有数据，导出exl的a href="" 路径就清空
-      } else {
-        this.exl_hef = reg_urls.split("=")[1]; //分割地址，用于导出exl文档
-      }
-
-      this.exl_url = reg_urls;
-
-      //  console.log(reg_urls)
     },
-    start_barData(val) {
-      //初始化取数据及点击时间选择器
-      let timesh = "";
-      if (!val) {
-        timesh = comm.CurentTime().clock.split(" ")[0] + " " + "00:00:00"; //传当前时间
-      } else {
-        timesh = val + " " + "00:00:00"; //传当前时间
-        /*如果选择时间为今天时间，一键抄表就可以点击*/
-
-        if (val == comm.CurentTime().clock.split(" ")[0]) {
-          this.currt = 0;
-        } else {
-          this.currt = 1;
-        }
-        /*enf of 如果选择时间为今天时间，一键抄表就可以点击*/
-      }
-      project({
-        FAction: "GetPrjInspection",
-        ProjectID: localStorage.getItem("projectid"),
-        FDateTime: timesh,
+      /**
+     * 滚动加载
+     */
+    loadMore1(){
+      this.pageIndex1 ++
+      this.li_item_click(this.ings,this.planID1,true)
+    },
+    /**
+     * 173.物联抄表查询
+     */
+    start_barData() {
+      MeterReading({
+        FAction: "QueryUMeterReadingInfo",
+        FDateTime: this.value1.getFullYear() + '-' + comm.formatNumber(this.value1.getMonth()+1)
       })
       .then(data => {
           this.bar_value = data.FObject.Table[0]; //把环形图值付给它。再在页面读取总数等值
           this.table2 = data.FObject.Table1; //把抄表总况列表值付给table2。
-          let datas = [{value:data.FObject.Table[0].NormalCount,name:"正常"},{value:data.FObject.Table[0].FaultCount,name:"异常"}]
+          let datas = [{value:this.bar_value.NormalCount,name:"正常"},{value:this.bar_value.FaultCount,name:"异常"}]
           this.$nextTick(()=>{
             this.showPieChart('show_bar',datas)
           })
           if (data.FObject.Table1.length > 0) {
-            this.li_item_click("0", timesh, data.FObject.Table1[0].ID); //默认第一个li点击，把第一个id带过去
+            this.li_item_click("0", data.FObject.Table1[0].ID); //默认第一个li点击，把第一个id带过去
+          }else{
+            this.all_table = []
           }
       })
       .catch(error => {
-
+        console.log(error);
       })
     },
-
+    /**
+     * 一键抄表
+     */
     one_change() {
-      //一键抄表只能查当前的
-      project({
-        FAction: "CreateCaiotInspectionByProject",
-        ProjectID: localStorage.getItem("projectid"),
+      MeterReading({
+        FAction: "AddUMeterReadingInfoAndRecord",
       })
       .then(data => {
-        ProjectID: localStorage.getItem("projectid")
+        this.start_barData()
       })
       .catch(error => {
         
+      })
+    },
+    /**
+     * 设置自动抄表时间
+     */
+    AddUMeterReadingConfig(){
+      console.log(this.month,this.timeArr)
+      if(!this.month.length||!this.timeArr.length){
+        this.$message({
+          type: 'error',
+          message: '请选择时间'
+        });
+        return
+      }
+      let year = new Date().getFullYear(),date = []
+      this.month.forEach(month => {
+        this.timeArr.forEach(time => {
+          date.push(year + '-' + comm.formatNumber(month) + '-' + comm.formatNumber(time[0]) +'-'+time[1])
+        })
+      })
+      MeterReading({
+        FAction:'AddUMeterReadingConfig',
+        mUMeterReadingConfig:{
+          ProjectID:localStorage.getItem('projectid'),
+          MeterReadingDateStr:date.join(','),
+          EnergyTypeID:0,
+          FDescription:''
+        }
+      })
+      .then(data => {
+        this.$message({
+          type: 'success',
+          message: '设置成功'
+        });
+      })
+      .catch(err => {
+        this.$message({
+          type: 'error',
+          message: '设置失败'
+        });
+      })
+      .finally(() => {
+        this.showSetTimeDialog = false
+      })
+    },
+    /**
+     * 导出（物联抄表）
+     */
+    queryExportUMeterReadingRecordInfo(){
+      MeterReading({
+        FAction:'QueryExportUMeterReadingRecordInfo',
+        ID:this.planID1
+      })
+      .then(data => {
+          window.location = "http://www.szqianren.com/" + data.FObject;
+      })
+      .catch(error => {
+          this.$message({
+            type: 'error',
+            message: '导出失败!请重试'
+          });
       })
     },
     /**
@@ -862,12 +961,16 @@ export default {
         })
         .then(data => {
           this.totalInfo = data.FObject.Table?data.FObject.Table[0]:{}
-          this.plans = data.FObject.Table1?data.FObject.Table1:{}
-          this.queryPlan(this.plans[0].ID)
+          this.plans = data.FObject.Table1?data.FObject.Table1:[]
           let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"}]
-          this.$nextTick(() => {
+/*           this.$nextTick(() => {
             this.showPieChart('record-chart',datas)
-          })
+          }) */
+          if(this.plans[0]){
+            this.queryPlan(this.plans[0].ID)
+          }else{
+            this.records = []
+          }
         })
         .catch(error => {
           console.log(error);
@@ -893,7 +996,7 @@ export default {
         .then(data => {
           if(scroll){
             if(data.FObject.length !==0){
-              this.records = this.records.concat(data.FObject)
+              this.records.push(...data.FObject)
             }else{
               this.pageIndex--
             }
@@ -924,16 +1027,16 @@ export default {
         .then(data => {
           this.monthReport = data.FObject
           this.showReport = true
+          resolve()
         })
         .catch(error => {
           reject()
         })
       })
-      return
       if(this.monthReport.Table.length ===0){
         return
       }
-      let fileName = localStorage.getItem("projectname") + '人工抄表' +  this.time.toJSON().split('T')[0].replace(/-/ig,'')
+      let fileName = localStorage.getItem("projectname") + '人工抄表' +  this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1)
       await new Promise(resolve => {
         this.$nextTick(() => {
           resolve()
@@ -953,6 +1056,28 @@ export default {
           console.log('cuowu',error);
         })
       });
+    },
+    /**
+     * 设置自动抄表时间
+     */
+    selectDate(){
+        if(this.date==null||this.h == null||this.m == null){
+            this.$message({
+                type:'warning',
+                message:'请选择时间'
+            })
+            return
+        }
+        let  hh = this.h <10?'0'+this.h:this.h
+        let  mm = this.m <10?'0'+this.m:this.m
+        this.timeArr.push([this.date,hh+':'+mm])
+        this.showPopover = false
+    },
+    /**
+     * 删除时间
+     */
+    deleteTime(arr,i){
+        this[arr].splice(i,1)
     },
     /**
      * exportFile 导出
@@ -987,7 +1112,7 @@ export default {
     }
   },
   created() {
-    // this.start_barData();
+    this.start_barData();
     this.queryPlanRecord()
     let tt = comm.CurentTime().clock.split(" ")[0];
   },
@@ -996,17 +1121,50 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang='scss'>
+<style lang='scss' >
 @import '../InspectionRecords.scss';
-.Ins_records .ppt_item.month-report .ng_item{
-  height: 150px;
-  padding-bottom: 10px;
-  overflow: hidden;
-  .pimg{
-    top: 0;
+@import '../InspectionRoad.scss';
+$img-url:'/static/image/';
+.Ins_records  {
+  .ppt_item.month-report{
+    .ng_item{
+      height: 150px;
+      padding-bottom: 10px;
+      overflow: hidden;
+      .pimg{
+        top: 0;
+      }
+      .list ul li{
+        width: 25%
+      }
+    }
   }
-  .list ul li{
-    width: 20%
+
+  .bg_are{
+    .ich{
+      .ntb02{
+        background-size: 100% 100%;
+        padding-left: 14px;
+      }
+      .ntb02:hover,.ntb02:active{
+        background-size: 100% 100%;
+      }
+    }
+  }
+  .zw-dialog.set-time-dialog{
+    .el-dialog{
+      width: 530px;
+      height: 262px;
+      background: url('#{$img-url}admin/btn3.png') center no-repeat;
+      background-size: 100% 100%;
+      .el-input{
+        width: 140px;
+        &__inner{
+          background:rgba(24,64,107,1);
+          border:1px solid rgba(5,103,158,1);
+        }
+      }
+    }
   }
 }
 </style>

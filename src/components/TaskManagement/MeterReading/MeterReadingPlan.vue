@@ -1,11 +1,11 @@
 <template>
     <div class="report plan">
-        <!-- 新增或编辑巡检计划 弹框-->
+        <!-- 新增或编辑抄表计划 弹框-->
         <el-dialog :title="title" :visible.sync="show" :class="{showPointTree:showPointTree,'zw-dialog':true}">
             <div class="clearfix">
                 <ul class="l clearfix ">
                     <li>
-                        <span class="label">巡检路线名称</span>
+                        <span class="label">抄表路线名称</span>
                         <el-input v-model="addPlanData.MeterReadingLineName" v-if="type===1" readonly></el-input>
                         <el-select v-model="road"  filterable value-key="ID"  placeholder="请选择" @change="selectRoad" v-if="type===0">
                             <el-option v-for="road in roadDatas" :key="road.ID" :label="road.MeterReadingLineName" :value="road"></el-option>
@@ -13,15 +13,15 @@
                         <button class="zw-btn" @click="showPointTree = !showPointTree">路线详情</button>
                     </li>
                     <li>
-                        <span class="label">巡检计划名称</span>
+                        <span class="label">抄表计划名称</span>
                         <el-input v-model="addPlanData.MeterReadingPlanName" readonly></el-input>
                     </li>
                     <li>
-                        <span class="label">巡检周期</span>
+                        <span class="label">抄表周期</span>
                         <el-input v-model="inspectionCycleName" readonly></el-input>
                     </li>
                     <li class="plan-time">
-                        <span class="label">计划巡检时间</span>
+                        <span class="label">计划抄表时间</span>
                         <el-date-picker
                           v-model="planTime"
                           type="datetime"
@@ -243,11 +243,11 @@ export default {
             queryType:0,//查询方式，0为普通查询，1为高级搜索
             type:0,//0为新增 1为编辑计划
             show:false, //控制新增或编辑弹框
-            title:'新增巡检计划',
+            title:'新增抄表计划',
             users:[], //所有用户
             roadDatas:[],//所有路线
             showPointTree:false,
-            inspectionCycleName:'临时巡检',
+            inspectionCycleName:'临时抄表',
             defaultProps:{
                 children:'list'
             },
@@ -269,8 +269,10 @@ export default {
             },
             road:null,
             loading:false,
-            pointData:[],//巡检路线对应的巡检点
-            pickerOptions:{ //新增或编辑巡检计划只能选择大于当前时间的
+            pointData:[],//抄表路线对应的抄表点
+            orderProp:'',
+            order:'',
+            pickerOptions:{ //新增或编辑抄表计划只能选择大于当前时间的
 /*                 disabledDate:val => {
                     if(Date.parse(new Date(val)) < Date.parse(new Date())){
                         console.log(new Date(val),new Date());
@@ -333,8 +335,10 @@ export default {
             )
         },
         /**
-         * 查询巡检计划
+         * 查询抄表计划
          * @param { Number } type :1 高级查询 0:普通查询
+         * prop 排序字段
+         * order 升序或降序
          */
         queryData(){
             if(this.queryType ===1){
@@ -345,6 +349,8 @@ export default {
                 FType:this.queryType?'Advanced':'Normal',
                 PageIndex:this.pageIndex,
                 PageSize:10,
+                Field:this.orderProp,
+                FOrder:this.order,
                 mSearchMeterReadingPlan:this.queryType?this.filterObj:{}
             })
             .then(data => {
@@ -405,7 +411,7 @@ export default {
             })
         },
         /**
-         * 根据年份一键生成巡检计划
+         * 根据年份一键生成抄表计划
          * @param year 年份
          */
         createPlanByYear(year){
@@ -442,7 +448,7 @@ export default {
             })
         },
         /**
-         * 删除巡检计划
+         * 删除抄表计划
          * @param {Object} row 删除的计划
          */
         async deletePlan(row){
@@ -482,7 +488,7 @@ export default {
                 row.MeterReadingUserGUID = ''
                 this.$message({
                   type: 'error',
-                  message: '计划巡检时间已过，无法修改'
+                  message: '计划抄表时间已过，无法修改'
                 });
                 return
             }
@@ -513,7 +519,7 @@ export default {
             this.time = ''
         },
         /**
-         * 根据路线id获取巡检点
+         * 根据路线id获取抄表点
          */
         queryPoints(id){
             Inspection({
@@ -548,20 +554,20 @@ export default {
                 this.planTime = ''
                 this.$message({
                   type: 'error',
-                  message: '计划巡检时间应大于当前时间，请重新选择'
+                  message: '计划抄表时间应大于当前时间，请重新选择'
                 });
                 return
             }
             this.addPlanData.MeterReadingDatetime = comm.getFormatTime(val)
         },
         /**
-         * 新增或编辑巡检计划
+         * 新增或编辑抄表计划
          */
         addPlan(){
             if(Date.parse(new Date(this.addPlanData.MeterReadingDatetime))<=Date.parse(new Date())){
                 this.$message({
                   type: 'error',
-                  message: '计划巡检时间应大于当前时间，请重新选择'
+                  message: '计划抄表时间应大于当前时间，请重新选择'
                 });
                 return
             }                                                                         
@@ -590,7 +596,7 @@ export default {
             this.show  = true
             this.title = '新增抄表计划'
             this.type = 0
-            this.inspectionCycleName = '临时巡检'
+            this.inspectionCycleName = '临时抄表'
             this.planTime = ''
             this.road = null
             this.addPlanData = Object.assign({},this.defaultAddPlanData)
@@ -616,7 +622,9 @@ export default {
             console.log(rows);
         },
         sortChange(column, prop, order){
-            console.log(column, prop, order);
+            this.orderProp = column.prop
+            this.order = column.order
+            this.queryData()
         }   
     }
 }

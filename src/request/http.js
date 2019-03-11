@@ -58,8 +58,9 @@ export function get(url, params){
 export function post(url, params) {
     return new Promise((resolve, reject) => {
         let obj = {
-            "FTokenID":localStorage.getItem("Token"),
-            "FVersion":"1.0.0",		
+            FTokenID:localStorage.getItem("Token"),
+            FVersion:"1.0.0",
+            ProjectID:localStorage.getItem('projectid')		
         }
         axios.post(url,Object.assign(obj,params))
         .then(res => {

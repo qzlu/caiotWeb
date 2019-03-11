@@ -34,10 +34,12 @@
               <div class="errMessage_list">
                 <div class="cc rowup" id="pin_wanr">
                   <div class="item" v-for="(items,key) in datalist">
-                    <div>
-                      <p class="l">{{items.AlarmText}}</p>
-                      <p class="r">{{items.AlarmTime}}</p>
-                    </div>
+                    <router-link :to="{name:'now_count'}">
+                      <div>
+                        <p class="l">{{items.AlarmText}}</p>
+                        <p class="r">{{items.AlarmTime}}</p>
+                      </div>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -58,7 +60,7 @@
               </span>
             </p>
             <div class="list_sel">
-              <p v-for="(item,key) in selecdata" @click="ccName(item)">{{item.ShortName}}</p>
+                  <p v-for="(item,key) in selecdata" @click="ccName(item)">{{item.ShortName}}</p>
             </div>
           </div>
         </div>
@@ -163,7 +165,7 @@ export default {
       this.curr_selectdata = obj.ShortName;
 
       location.reload();
-      this.$router.push({ path: "/" });
+      // this.$router.push({ path: "/" });
     },
     ccName_item(x) {
       this.curr_selectdata02 = x;
@@ -246,15 +248,19 @@ export default {
     getProjects() {
       project({
         FAction: "GetProject"
-	  })
-	  .then(data => {
-		this.selecdata = data.FObject;
+	    })
+	    .then(data => {
+		    this.selecdata = data.FObject;
         let defalutProject = this.selecdata.find(item => {
           return item.FIsDefault;
-		});
-        localStorage.setItem("projectid", defalutProject.ProjectID);
-        localStorage.setItem("projectname", defalutProject.ShortName);
-        this.curr_selectdata = defalutProject.ShortName;
+        });
+        if(!localStorage.getItem('projectid')){
+          localStorage.setItem("projectid", defalutProject.ProjectID);
+          localStorage.setItem("projectname", defalutProject.ShortName);
+          this.curr_selectdata = defalutProject.ShortName;
+        }else{
+          this.curr_selectdata = localStorage.getItem('projectname');
+        }
       });
     },
   },

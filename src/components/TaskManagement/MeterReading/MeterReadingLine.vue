@@ -324,7 +324,7 @@ export default {
                     label: '抄表点数'
                 },
                 {
-                    prop: 'MeterReadingCycle',
+                    prop: 'MeterReadingCycleName',
                     label: '抄表周期'
                 },
                 {
@@ -510,7 +510,7 @@ export default {
                 SearchKey:this.roadName,
                 StartDateTime:this.startDateTime,
                 EndDateTime:this.endDateTime,
-                MeterReadingCycle:this.MeterReadingCycle,
+                InspectionCycle:this.MeterReadingCycle,
             })
             .then(data => {
                 this.tableData = data.FObject

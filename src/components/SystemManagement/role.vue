@@ -55,6 +55,7 @@
                     <tree-transfer
                         :data='menuData'
                         :data1='menuData'
+                        :checkStrictly="checkStrictly"
                         leftTitle='所有权限'
                         rightTitle='已选权限'
                         nodeKey="FGUID"
@@ -195,7 +196,8 @@ export default {
                 children: 'list',
                 label: 'FMenuName'
             },
-            showDelete:false
+            showDelete:false,
+            checkStrictly:false
         }
     },
     components:{
@@ -355,9 +357,10 @@ export default {
                 //递归获取树形菜单已有权限的菜单
                 function findTree(data) {
                     data.forEach(item => {
-                        if(item.IsExist == 1){
+                        if(item.IsExist == 1&&(!item.list||!item.list.length)){
                             _this.defaultCheckedMenu.push(item.FGUID)
-                        }else if(item.list){
+                        } 
+                        if(item.list){
                             findTree(item.list)
                         }
                     })
@@ -468,11 +471,14 @@ export default {
         },
         /**
          * 修改菜单权限
+         * menuArr全√菜单
+         * halfMenuArr 半选中菜单
          */
         updateTRoleMenu(){
-            let menuArr = []
+            let menuArr = [], halfMenuArr = []
             this.findTree(this.menuData,'list','FGUID',menuArr)
-            console.log('所有菜单',menuArr)
+            halfMenuArr = this.$refs.transfer.$refs.tree.getHalfCheckedNodes().map(item => item.FGUID)
+            menuArr.push(...halfMenuArr)
             system({
                 FAction:'UpdateTRoleMenu',
                 FGUID:this.roleGuid,

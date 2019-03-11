@@ -2,10 +2,10 @@
     <div class="work-list">
         <ul class="tab-header clearfix">
             <li :class="{active:tabIndex === 1}" @click="tabIndex = 1">全部</li>
-            <li :class="{active:tabIndex === 2}" @click="tabIndex = 2">待派单</li>
-            <li :class="{active:tabIndex === 3}" @click="tabIndex = 3">待接单</li>
-            <li :class="{active:tabIndex === 4}" @click="tabIndex = 4">待完成</li>
-            <li :class="{active:tabIndex === 5}" @click="tabIndex = 5">已完成</li>
+            <li :class="{active:tabIndex === 2}" @click="tabIndex = 2">待完成</li>
+            <li :class="{active:tabIndex === 3}" @click="tabIndex = 3">已完成</li>
+            <li :class="{active:tabIndex === 4}" @click="tabIndex = 4">待接单</li>
+            <li :class="{active:tabIndex === 5}" @click="tabIndex = 5">待派单</li>
             <li :class="{active:tabIndex === 6}" @click="tabIndex = 6">已逾期</li>
             <li class="select">
                 <span>工单类型</span> 
@@ -276,47 +276,30 @@ export default {
                 {
                     prop: 'RowNum',
                     label: '序号',
-                    width: 80
                 },
                 {
                     prop: 'OrderTypeName',
                     label: '工单类型',
-                    width: 100
                 },
                 {
                     prop: 'OrderStateName',
                     label: '工单状态',
-                    width: 100
                 },
                 {
                     prop: 'OrderContent',
-                    label: '工单内容',
-                    width: 160
-                },
-                {
-                    prop: 'OrderCreateDateTime',
-                    label: '创建时间',
-                    width: 170
+                    label: '工单名称',
                 },
                 {
                     prop: 'SendOrderDateTime',
-                    label: '派单时间',
-                    width: 170
-                },
-                {
-                    prop: 'ReceivingOrderDateTime',
-                    label: '接单时间',
-                    width: 170
+                    label: '创建时间',
                 },
                 {
                     prop: 'RunningOrderDateTime',
-                    label: '巡检时间',
-                    width: 170
+                    label: '计划时间',
                 },
                 {
                     prop: 'EndOrderDateTime',
                     label: '完成时间',
-                    width: 170
                 },
                 {
                     prop: 'FContacts',
@@ -327,42 +310,26 @@ export default {
                 {
                     prop: 'RowNum',
                     label: '序号',
-                    width: 80
                 },
                 {
                     prop: 'OrderTypeName',
                     label: '工单类型',
-                    width: 100
                 },
                 {
                     prop: 'OrderContent',
-                    label: '工单内容',
-                    width: 160
-                },
-                {
-                    prop: 'OrderCreateDateTime',
-                    label: '创建时间',
-                    width: 170
+                    label: '工单名称',
                 },
                 {
                     prop: 'SendOrderDateTime',
-                    label: '派单时间',
-                    width: 170
-                },
-                {
-                    prop: 'ReceivingOrderDateTime',
-                    label: '接单时间',
-                    width: 170
+                    label: '创建时间',
                 },
                 {
                     prop: 'RunningOrderDateTime',
-                    label: '巡检时间',
-                    width: 170
+                    label: '计划时间',
                 },
                 {
                     prop: 'EndOrderDateTime',
                     label: '完成时间',
-                    width: 170
                 },
                 {
                     prop: 'FContacts',
@@ -418,51 +385,6 @@ export default {
             showDetail:false,
             workInfo:null,
             areaArr:[],
-/*             arr:[{
-                WaitingCount:10,
-                NormalCount:20,
-                FaultCount:0,
-                AreaName:'1#配电房',
-                AreaState:1,
-                FStartInspectionTime:'2019-02-26 10:11',
-                FLastInspectionTime:'2019-02-26 10:11'
-            },
-            {
-                WaitingCount:10,
-                NormalCount:20,
-                FaultCount:1,
-                AreaName:'2#配电房',
-                AreaState:1,
-                FStartInspectionTime:'2019-02-26 10:11',
-                FLastInspectionTime:'2019-02-26 10:11'
-            },
-            {
-                WaitingCount:10,
-                NormalCount:20,
-                FaultCount:0,
-                AreaName:'2#配电房',
-                AreaState:2,
-                FStartInspectionTime:'2019-02-26 10:11',
-                FLastInspectionTime:'2019-02-26 10:11'
-            },
-            {
-                WaitingCount:10,
-                NormalCount:20,
-                FaultCount:1,
-                AreaName:'2#配电房',
-                AreaState:3,
-                FStartInspectionTime:'2019-02-26 10:11',
-                FLastInspectionTime:'2019-02-26 10:11'
-            },
-            {
-                WaitingCount:10,
-                NormalCount:20,
-                FaultCount:1,
-                AreaName:'2#配电房',
-                AreaState:3,
-                FStartInspectionTime:'2019-02-26 10:11',
-                FLastInspectionTime:'2019-02-26 10:11'
-            }] */
         }
     },
     components:{

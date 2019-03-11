@@ -137,9 +137,9 @@ let routers_item=[
 						},
 					},
 				/*-------实时监测-子菜单----*/	
-					{ path: 'searchdata', //实时监测-子菜单1
+					{ path: 'searchdata', //实时监测-数据查询
 					 	name: 'searchdata',
-					 	component: () => import('@/components/home/test'),
+					 	component: () => import('@/components/monitoring/searchdata.vue'),
 					 	meta: {
 							title: '千仞云平台',
 							requireAuth: true, 
@@ -153,7 +153,7 @@ let routers_item=[
 							requireAuth: true, 
 						},
 					},
-					{ path: 'KeyEquipment', //实时监测-子菜单3
+					{ path: 'KeyEquipment', //实时监测-重点监测
 					 	name: 'KeyEquipment',
 					 	component: () => import('@/components/monitoring/KeyEquipment.vue'),
 					 	meta: {
@@ -220,7 +220,7 @@ let routers_item=[
 				 requireAuth: true,  
 				 },
 				 children: [
-					{ path: '/home/ConfigPage_list/:guid', //实时告警
+					{ path: '/home/ConfigPage_list/:guid', 
 					  name: 'ConfigPage_list',
 					  component: () => import('@/components/commonPage/list'),
 					  meta: {
@@ -242,7 +242,7 @@ let routers_item=[
 				children: [
 					{ path: '/',   //设备台账
 						name: 'EquipmentDeskAccount',
-						component: () => import('@/components/home/test'),  
+						redirect: '/home/ConfigPage_list/:guid',  
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,  
@@ -474,14 +474,30 @@ let routers_item=[
 					{
 						path: 'PatrolLine',
 						name:'PatrolLine',
-						component: () => import('@/components/TaskManagement/Patrol/PatrolLine.vue'), //巡更点管理
+						component: () => import('@/components/TaskManagement/Patrol/PatrolLine.vue'), //巡更路线管理
 						meta:{
 							title: '千仞云平台',
 							requireAuth: true, 
 						}
 					},
-					
-					
+					{
+						path: 'UPatrolPlan',
+						name:'UPatrolPlan',
+						component: () => import('@/components/TaskManagement/Patrol/PatrolPlan.vue'), //巡更计划管理
+						meta:{
+							title: '千仞云平台',
+							requireAuth: true, 
+						}
+					},
+					{
+						path: 'PatrolPlanRecord',
+						name:'PatrolPlanRecord',
+						component: () => import('@/components/TaskManagement/Patrol/PatrolRecord.vue'), //巡更记录管理
+						meta:{
+							title: '千仞云平台',
+							requireAuth: true, 
+						}
+					},
 					]
 				
 				

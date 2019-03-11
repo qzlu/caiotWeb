@@ -124,7 +124,7 @@
               </p>
               <p class="r pn03">日期：
                 <!--2018-09-20-->
-                {{time.toJSON().split('T')[0]}}
+                {{time.toLocaleDateString().replace(/\//ig,'-')}}
               </p>
             </div>
             <div class="ng_item">
@@ -379,7 +379,11 @@
                style="width: 100%"
                header-row-class-name="el-table-header"
                :row-class-name="tableRowClassName"
+               v-loadmore="loadMore"
                >
+               <el-table-column type="index" label="序号" width="80">
+
+               </el-table-column>
                <el-table-column
                  v-for="item in tableLabel"
                  :key="item.prop"
@@ -578,9 +582,11 @@ export default {
       plans:[],
       active:0,//默认选中第一个计划
       planID:'',
+      planID1:'',
       records:[],
       showReport:false,
       dateReport:null,
+      pageIndex1:1,
       tableLabel:[
           {
               prop: 'AreaName',
@@ -648,7 +654,7 @@ export default {
       this.centerDialogVisible = true; //弹出-弹出框
       /*生成pdf名称*/
       let now_times = ""; //如果日期为空，默认为昨天的
-      now_times = this.value1.toJSON().split('T')[0].replace(/-/gi, "");
+      now_times = this.value1.toLocaleDateString().replace(/\//gi, "");
       /*生成pdf名称*/
         if (this.Dialog_table2 != "") {
           //如果没有数据，就不生成pdf文件
@@ -683,19 +689,28 @@ export default {
       //console.log(this.value1)
     },
 
-    li_item_click(x = 0, gettime, id) {
+    li_item_click(x = 0, gettime, id,scroll = false) {
       //点击巡检总况 列表事件,把id带过来，去查列表数据
       this.ings = x; //当前的点击的li高亮
-      this.all_table = [];
+      this.planID1 = id
+      if(!scroll){
+        this.pageIndex1 = 1
+      }
       Inspection({
-        FAction: "QueryInspectionRecordByInfoID",
+        FAction: "QueryInspectionRecord",
         ID: id,
+        PageIndex:this.pageIndex1,
+        PageSize:20
       })
       .then(data => {
-          let obj = data.FObject
-          Object.keys(obj).forEach(key => {
-            this.all_table = this.all_table.concat(obj[key])
-          })
+        if(scroll){
+          this.all_table.push(...data.FObject)
+          if(!data.FObject.length){
+            this.pageIndex1 --
+          }
+        }else{
+          this.all_table = data.FObject
+        }
       })
       .catch(error => {
 
@@ -728,6 +743,10 @@ export default {
       this.exl_url = reg_urls;
 
       //  console.log(reg_urls)
+    },
+    loadMore(){
+      this.pageIndex1 ++
+      this.li_item_click(this.ings,this.value1,this.planID1,true)
     },
     start_barData(val) {
       //初始化取数据及点击时间选择器
@@ -903,7 +922,7 @@ export default {
       if(this.dateReport.length ===0){
         return
       }
-      let fileName = localStorage.getItem("projectname") + '人工巡检' +  this.time.toJSON().split('T')[0].replace(/-/ig,'')
+      let fileName = localStorage.getItem("projectname") + '人工巡检' +  this.time.toLocaleDateString().replace(/\//ig,'')
       await new Promise(resolve => {
         this.$nextTick(() => {
           resolve()

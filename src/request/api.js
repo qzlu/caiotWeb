@@ -8,16 +8,16 @@
  */
 import { get, post } from './http';
 const login = p => post('Check', p);
-const project = p => post('Project', Object.assign({ProjectID:localStorage.getItem('projectid')},p))
+const project = p => post('Project', p)
 const system = p => post('System', p)
 const Alarm = p => post('Alarm', p)
-const Inspection = p => post('Inspection',Object.assign({ProjectID:localStorage.getItem('projectid')},p))
+const Inspection = p => post('Inspection', p)
 const Report = p => post('Report',p)
-const FileUpLoad = p => post('FileUpLoad', Object.assign({ProjectID:localStorage.getItem('projectid')},p))
-const Orders = p => post('Orders', Object.assign({ProjectID:localStorage.getItem('projectid')},p))
-const MeterReading = p => post('MeterReading',Object.assign({ProjectID:localStorage.getItem('projectid')},p))
-const Patrol = p => post('Patrol',Object.assign({ProjectID:localStorage.getItem('projectid')},p))
-const Monitor = p => post('Monitor',Object.assign({ProjectID:localStorage.getItem('projectid')},p))
+const FileUpLoad = p => post('FileUpLoad', p)
+const Orders = p => post('Orders', p)
+const MeterReading = p => post('MeterReading', p)
+const Patrol = p => post('Patrol', p)
+const Monitor = p => post('Monitor',p)
 export{
     login,
     project,

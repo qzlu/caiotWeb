@@ -26,7 +26,7 @@
 	 			<span v-for="(lis, key) in item.TopValue" >
 	 				<span>
 	 					<!--<input v-model="colortype"  v-model.number="lis.AlarmType" value="lis.AlarmType">-->
-	 					<i class="icon iconfont" :class="[lis.AlarmWebIcon]"  :data="lis.AlarmType"></i>&nbsp;&nbsp;{{lis.AlarmCount}}&nbsp;&nbsp;&nbsp;</span>
+	 					<i :class="['icon','iconfont',lis.AlarmWebIcon]"  :data="lis.AlarmType"></i>&nbsp;&nbsp;{{lis.AlarmCount}}&nbsp;&nbsp;&nbsp;</span>
 	 			</span>
 	 			
 	 			
@@ -83,7 +83,7 @@
 
 	 		<div class="deo_list">
 	 			<ul>
-	 			  <li  v-for="(suList,key) in gitem.item" >
+	 			  <li  v-for="(suList,key) in gitem.item" :class="{alarm:suList.IsAlarm}">
 	 			  	<div :id="suList.DeviceID">
 	 			  	<div class="inner_bg_sh">
 	 			  	<div class="a1">
@@ -327,8 +327,6 @@ import {project, Monitor} from '@/request/api';
 				      //arrs02.push()
 				    //  _this.abc_datalist04=arrs02	
 				   _this.abc_datalist04=arrs02
-					
-					
 					//console.log("--->>>>")
 					/*end of 重新组装可以直接v-for读取的数据*/
 					
@@ -653,7 +651,7 @@ a {
 .det_itemList .deo_list{ min-width: 365px; height: 195px; margin: 2px 0 0 5px;}
 .det_itemList .deo_list ul li{ width: 362px; padding: 0 8px 0 5px; height: 194px; float: left;  background: url(/static/image/indexdetail/fvc4e.png) 89px 0 no-repeat;}
 
-/*.det_itemList .deo_list ul li.err{background: url(/static/image/indexdetail/content_bg_2.png) 0px 0 no-repeat;}*/
+.det_itemList .deo_list ul li.alarm{background: url(/static/image/indexdetail/content_bg_2.png) 0px 0 no-repeat;}
 .det_itemList .deo_list ul li.err .inner_bg_sh{ width:100%;  height: 194px ;background: url(/static/image/indexdetail/content_bg_2.png) 0px 0 no-repeat;}
 .det_itemList .deo_list ul li .a1{ position: relative; width: 138px; height: 175px; float: left;  padding: 10px 0 0 10px;text-align: left;}
 
