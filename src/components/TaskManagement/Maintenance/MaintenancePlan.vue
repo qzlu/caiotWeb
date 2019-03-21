@@ -1,27 +1,23 @@
 <template>
     <div class="report plan">
-        <!-- 新增或编辑巡检计划 弹框-->
+        <!-- 新增或编辑抄表计划 弹框-->
         <el-dialog :title="title" :visible.sync="show" :class="{showPointTree:showPointTree,'zw-dialog':true}">
             <div class="clearfix">
                 <ul class="l clearfix ">
                     <li>
-                        <span class="label">巡检路线名称</span>
-                        <el-input v-model="addPlanData.InspectionLineName" v-if="type===1" readonly></el-input>
-                        <el-select v-model="road"  filterable value-key="ID"  placeholder="请选择" @change="selectRoad" v-if="type===0">
-                            <el-option v-for="road in roadDatas" :key="road.ID" :label="road.InspectionLineName" :value="road"></el-option>
-                        </el-select>
-                        <button class="zw-btn" @click="showPointTree = !showPointTree">路线详情</button>
+                        <span class="label">设备名称</span>
+                        <el-input v-model="addPlanData.DeviceName" readonly></el-input>
                     </li>
                     <li>
-                        <span class="label">巡检计划名称</span>
-                        <el-input v-model="addPlanData.InspectionPlanName" readonly></el-input>
+                        <span class="label">保养等级</span>
+                        <el-input v-model="addPlanData.MaintenanceLevelName" readonly></el-input>
                     </li>
                     <li>
-                        <span class="label">巡检周期</span>
-                        <el-input v-model="inspectionCycleName" readonly></el-input>
+                        <span class="label">保养计划名称</span>
+                        <el-input v-model="addPlanData.MaintenancePlanName" readonly></el-input>
                     </li>
                     <li class="plan-time">
-                        <span class="label">计划巡检时间</span>
+                        <span class="label">保养计划时间</span>
                         <el-date-picker
                           v-model="planTime"
                           type="datetime"
@@ -31,23 +27,18 @@
                     </li>
                     <li>
                         <span class="label">负责人</span>
-                        <el-select v-model="addPlanData.InspectionUserGUID" filterable  placeholder="请选择">
+                        <el-select v-model="addPlanData.MaintenanceUserGUID" filterable  placeholder="请选择">
                             <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
                         </el-select>
                     </li>
                 </ul>
-                <div class="r clearfix tree-content" v-if="showPointTree">
-                    <i class="arrow"></i>       
-                    <zw-tree :data='pointData' :renderContent='renderContent' :defaultProps='defaultProps' v-loading="loading">
-                    </zw-tree>                                                                                                                                       
-                </div>
             </div>
             <div style="text-align:center;height:42px;margin-top:37px;">
-                <button class="zw-btn" @click="addPlan()">确定</button>
+                <button class="zw-btn" @click="updatedPlan(addPlanData)">确定</button>
             </div>
         </el-dialog>
         <ul class="report-header plan-header clearfix"> 
-            <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li>
+            <!-- <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li> -->
             <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
             <li class="l"><button class="zw-btn zw-btn-primary" @click="deletePlans()"><i class="el-icon-delete"></i> 删除</button></li>
             <li class="l select-plan-time">
@@ -70,14 +61,14 @@
                     <ul class="search-box"  v-if="showFilterBox">
                         <li>
                             <span>计划名称</span>
-                            <el-input v-model="filterObj.InspectionPlanName"></el-input>
+                            <el-input v-model="filterObj.FName"></el-input>
                         </li>
                         <li>
-                            <span>路线名称</span>
-                            <el-input v-model="filterObj.InspectionLineName"></el-input>
+                            <span>设备名称</span>
+                            <el-input v-model="filterObj.FDeviceName"></el-input>
                         </li>
                         <li class="plan-select-time">
-                            <span>巡检时间</span>
+                            <span>抄表时间</span>
                             <el-date-picker
                               v-model="time"
                               type="datetimerange"
@@ -91,13 +82,13 @@
                         </li>
                         <li >
                             <span>负责人</span>
-                            <el-select v-model="filterObj.InspectionUserGUID"  placeholder="请选择">
+                            <el-select v-model="filterObj.FUserGuid"  placeholder="请选择">
                                 <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
                             </el-select>
                         </li>
                         <li>
-                            <span>巡检周期</span>
-                            <el-select v-model="filterObj.InspectionCycle"  placeholder="请选择">
+                            <span>保养周期</span>
+                            <el-select v-model="filterObj.MaintenanceCycle"  placeholder="请选择">
                                 <el-option v-for="time in timeList" :key="time.value" :label="time.label" :value="time.value"></el-option>
                             </el-select>
                         </li>
@@ -123,13 +114,6 @@
                   type="selection"
                   width="55">
                 </el-table-column>
-                <el-table-column label="序号" width="80">
-                    <template slot-scope="scope">
-                        <div>
-                            {{scope.$index+1+(pageIndex-1)*10}}
-                        </div>
-                    </template>
-                </el-table-column>
                 <el-table-column
                  v-for="item in tableLabel"
                  :key="item.prop"
@@ -145,7 +129,7 @@
                  show-overflow-tooltip
                  label="负责人">
                  <template slot-scope="scoped">
-                    <el-select v-model="scoped.row.InspectionUserGUID"  placeholder="请选择" @change="changeUser(scoped.row)">
+                    <el-select v-model="scoped.row.MaintenanceUserGUID"  placeholder="请选择" @change="changeUser(scoped.row)">
                         <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
                     </el-select>
                  </template>
@@ -166,73 +150,78 @@
     </div>
 </template>
 <script>
-import {system,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
+import {system,Maintenance,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {zwPagination,zwTree} from '@/zw-components/index'
-import * as comm from "../../assets/js/pro_common";
+import * as comm from "@/assets/js/pro_common";
 export default {
     mixins:[table],
     data(){
         return{
             tableLabel:[
                 {
-                    prop: 'InspectionPlanName',
-                    label: '计划名称'
+                    prop: 'RowNum',
+                    label: '序号',
+                    width:80
                 },
                 {
-                    prop: 'InspectionPlanTypeText',
-                    label: '状态'
-                },
-                {
-                    prop: 'InspectionLineName',
-                    label: '路线名称'
-                },
-                {
-                    prop: 'PointCount',
-                    label: '巡检点数',
+                    prop: 'MaintenancePlanName',
+                    label: '保养计划名称',
                     sortble:'custom'
                 },
                 {
-                    prop: 'InspectionCycleName',
-                    label: '巡检周期'
+                    prop: 'DeviceName',
+                    label: '设备名称',
+                    sortble:'custom'
                 },
-/*                 {
-                    prop: 'Frequency',
-                    label: '频次'
-                }, */
                 {
-                    prop: 'InspectionDatetime',
-                    label: '计划巡检时间',
+                    prop: 'DeviceTypeName',
+                    label: '设备类型',
+                    sortble:'custom'
+                },
+                {
+                    prop: 'MaintenanceLevelName',
+                    label: '保养等级',
+                    sortble:'custom'
+                },
+                {
+                    prop: 'MaintenanceCycleName',
+                    label: '保养周期',
+                    sortble:'custom'
+                },
+                {
+                    prop: 'MaintenancePlanDateTime',
+                    label: '计划保养时间',
                     sortble:'custom'
                 }
             ],
             timeList:[{
-                label:'日巡检',
-                value:1
+                label:'全部',
+                value:0
             },
             {
-                label:'周巡检',
+                label:'月度',
                 value:2
             },
             {
-                label:'月巡检',
+                label:'年度',
                 value:3
             }],
             year:'',
             filterText:'',
             defaultFilterObj:{
-                InspectionPlanName:'',
-                InspectionLineName:'',
-                InspectionCycle:1,
-                InspectionUserGUID:'',
+                FName:'',
+                FDeviceName:'',
+                FUserGuid:'',
+                MaintenanceCycle:0,
                 StartDateTime:'',
                 EndDateTime:''
             },
             filterObj:{ //高级搜索条件
-                InspectionPlanName:'',
-                InspectionLineName:'',
-                InspectionCycle:1,
-                InspectionUserGUID:'',
+                FName:'',
+                FDeviceName:'',
+                FUserGuid:'',
+                MaintenanceCycle:0,
                 StartDateTime:'',
                 EndDateTime:''
             },
@@ -242,31 +231,33 @@ export default {
             queryType:0,//查询方式，0为普通查询，1为高级搜索
             type:0,//0为新增 1为编辑计划
             show:false, //控制新增或编辑弹框
-            title:'新增巡检计划',
+            title:'新增抄表计划',
             users:[], //所有用户
             roadDatas:[],//所有路线
             showPointTree:false,
-            inspectionCycleName:'临时巡检',
+            inspectionCycleName:'临时抄表',
             defaultProps:{
                 children:'list'
             },
-            defaultAddPlanData:{
-                InspectionPlanName:null,
-                InspectionLineID:null,
-                InspectionDatetime:null,
-                InspectionUserGUID:null,
-                FDescription:''
-            },
             addPlanData:{
-                InspectionPlanName:null,
-                InspectionLineID:null,
-                InspectionDatetime:null,
-                InspectionUserGUID:null,
-                FDescription:''
+                DeviceName:null,
+                MaintenanceLevelName:null,
+                MaintenancePlanName:null,
+                MaintenancePlanDateTime:null,
+                MaintenanceUserGUID:null,
+                ID:''
             },
             road:null,
             loading:false,
-            pointData:[],//巡检路线对应的巡检点
+            pointData:[],//抄表路线对应的抄表点
+            pickerOptions:{ //新增或编辑抄表计划只能选择大于当前时间的
+/*                 disabledDate:val => {
+                    if(Date.parse(new Date(val)) < Date.parse(new Date())){
+                        console.log(new Date(val),new Date());
+                        return true
+                    }
+                } */
+            },
             pickerOptions2: {
                 shortcuts: [{
                   text: '最近一周',
@@ -302,7 +293,7 @@ export default {
     },
     watch:{
         filterText(val){
-            this.filterObj.InspectionPlanName = val
+            this.filterObj.FName = val
             this.queryType = 1
             this.queryData()
         }
@@ -310,19 +301,13 @@ export default {
     created(){
         this.queryData()
         this.queryUser()
-        this.queryRoad()
     },
     mounted(){
 
     },
     methods:{
-        renderContent(h, { node, data, store }){
-            return(
-                <span>{data.Aream?data.Aream:data.InspectionPointName}</span>
-            )
-        },
         /**
-         * 查询巡检计划
+         * 查询保养计划
          * @param { Number } type :1 高级查询 0:普通查询
          * prop 排序字段
          * order 升序或降序
@@ -331,66 +316,34 @@ export default {
             if(this.queryType ===1){
                 this.showFilterBox = false
             }
-            Inspection({
-                FAction:'QueryPageUInspectionPlan',
+            Maintenance({
+                FAction:'QueryPageUMaintenancePlan',
                 FType:this.queryType?'Advanced':'Normal',
                 PageIndex:this.pageIndex,
                 PageSize:10,
                 Field:this.orderProp,
                 FOrder:this.order,
-                mSearchInspectionPlan:this.queryType?this.filterObj:{}
+                mUMaintenancePlan:this.queryType?this.filterObj:{}
             })
             .then(data => {
-                this.total = data.FObject.Table?data.FObject.Table[0].FTotalCount:0
+                this.total = data.FObject.Table?data.FObject.Table[0].Count:0
                 this.tableData = data.FObject.Table1?data.FObject.Table1:[]
                 this.tableData.forEach(item => {
-                    if(item.InspectionUserGUID=="00000000-0000-0000-0000-000000000000"){
-                        item.InspectionUserGUID = ''
+                    if(item.MaintenanceUserGUID=="00000000-0000-0000-0000-000000000000"){
+                        item.MaintenanceUserGUID = ''
                     }
-                    this.$set(item,'InspectionPlanTypeText',item.InspectionPlanType==1?'自动生成':'手动生成')
                 });
             })
             .catch(error => {
-
+            
             })
         },
-        /**
-         * 排序
-         */
-        sortChange(column){
-            this.orderProp = column.prop
-            this.order = column.order
-            this.queryData()
-        }, 
         /**
          * handleCurrentChange 页码改变时触发
          */
         handleCurrentChange(val){
             this.pageIndex = val
             this.queryData()
-        },
-        /**
-         * 查询巡检路线
-         */
-        queryRoad(){
-
-            let startDateTime = '00:00'
-            let endDateTime = '23:59'
-            Inspection({
-                FAction:'QueryPageUInspectionLineInfo',
-                FName:'',
-                StartDateTime:startDateTime,
-                EndDateTime:endDateTime,
-                InspectionCycle:0,
-                PageIndex:1,
-                PageSize:10000000000
-            })
-            .then(data => {
-                this.roadDatas = data.FObject.Table1
-            })
-            .catch(error => {
-
-            })
         },
         /**
          * 查询所有用户
@@ -408,11 +361,11 @@ export default {
             })
         },
         /**
-         * 根据年份一键生成巡检计划
+         * 根据年份一键生成抄表计划
          * @param year 年份
          */
         createPlanByYear(year){
-            Inspection({
+            Maintenance({
                 FAction:'CreatePlanByYear',
                 FYear:year
             })
@@ -436,7 +389,7 @@ export default {
          */
         selectYear(val){
             let year = new Date(val).getFullYear()
-            this.$DeleteMessage([`确认生成　　${year}年巡检计划`,'确认信息'])
+            this.$DeleteMessage([`确认生成　　${year}年保养计划`,'确认信息'])
             .then(() => {
                 this.createPlanByYear(year)
             })
@@ -445,8 +398,8 @@ export default {
             })
         },
         /**
-         * 删除巡检计划
-         * @param {Object} row 删除的计划
+         * 删除保养计划
+         * @param {Object} idStr 删除的计划
          */
         async deletePlan(idStr){
             await new Promise(resove => {
@@ -458,8 +411,8 @@ export default {
 
                 })
             })
-            Inspection({
-                FAction:'DeleteUInspectionPlanByID',
+            Maintenance({
+                FAction:'DeleteUMaintenancePlan',
                 IDStr:idStr
             })
             .then(data => {
@@ -481,25 +434,16 @@ export default {
          */
         changeUser(row){
             row.showSelectBox=false
-            if(Date.parse(new Date(row.InspectionDatetime))<Date.parse(new Date())){
-                row.InspectionUserGUID = ''
+            if(Date.parse(new Date(row.MeterReadingDatetime))<Date.parse(new Date())){
+                row.MeterReadingUserGUID = ''
                 this.$message({
                   type: 'error',
-                  message: '计划巡检时间已过，无法修改'
+                  message: '计划抄表时间已过，无法修改'
                 });
                 return
             }
-            Inspection({
-                FAction:'UpdateUInspectionPlanByID',
-                ID:row.ID,
-                mUInspectionPlan:{'InspectionDatetime':row.InspectionDatetime,'InspectionUserGUID':row.InspectionUserGUID}
-            })
-            .then(data => {
-                console.log('负责人',data);
-            })
-            .catch(error => {
-
-            })
+            this.addPlanData.MaintenancePlanDateTime = row.MaintenancePlanDateTime
+            this.updatedPlan(row)
         },
         /**
          * 高级搜索弹框选择时间
@@ -507,7 +451,6 @@ export default {
         selectTime(val){
             this.filterObj.StartDateTime = comm.getFormatTime(val[0])
             this.filterObj.EndDateTime = comm.getFormatTime(val[1])
-            console.log(this.filterObj);
 
         },
         /**
@@ -518,62 +461,35 @@ export default {
             this.time = ''
         },
         /**
-         * 根据路线id获取巡检点
-         */
-        queryPoints(id){
-            Inspection({
-                FAction:'QueryAreaUInspectionPointBySort',
-                ID:id,
-                FType:1
-            })
-            .then(data => {
-                this.pointData = data.FObject
-                this.loading = false
-            })
-            .catch(error => {
-                this.loading = false
-                this.pointData = []
-            })
-        },
-        /**
-         * 选择路线
-         */
-        selectRoad(val){
-            this.loading = true
-            this.addPlanData.InspectionLineName = val.InspectionLineName
-            this.addPlanData.InspectionPlanName = val.InspectionLineName + '临时巡检计划'
-            this.addPlanData.InspectionLineID = val.ID
-            this.queryPoints(val.ID)
-        },
-        /**
-         * 新增计划弹框：选择时间
+         * 编辑计划弹框：选择时间
          */
         selectPlanTime(val){
             if(Date.parse(new Date(val))<=Date.parse(new Date())){
                 this.planTime = ''
                 this.$message({
                   type: 'error',
-                  message: '计划巡检时间应大于当前时间，请重新选择'
+                  message: '计划抄表时间应大于当前时间，请重新选择'
                 });
                 return
             }
-            this.addPlanData.InspectionDatetime = comm.getFormatTime(val)
+            this.addPlanData.MaintenancePlanDateTime = comm.getFormatTime(val)
         },
         /**
-         * 新增或编辑巡检计划
+         * 修改保养计划
          */
-        addPlan(){
-            if(Date.parse(new Date(this.addPlanData.InspectionDatetime))<=Date.parse(new Date())){
+        updatedPlan(obj){
+            if(Date.parse(new Date(this.addPlanData.MaintenancePlanDateTime))<=Date.parse(new Date())){
                 this.$message({
                   type: 'error',
-                  message: '计划巡检时间应大于当前时间，请重新选择'
+                  message: '计划保养时间应大于当前时间，请重新选择'
                 });
                 return
             }                                                                         
-            Inspection({
-                FAction:this.type?'UpdateUInspectionPlanByID':'AddTempUInspectionPlan',
-                ID:this.type?this.addPlanData.ID:'',
-                mUInspectionPlan:this.type?{InspectionDatetime:this.addPlanData.InspectionDatetime,InspectionUserGUID:this.addPlanData.InspectionUserGUID}:this.addPlanData
+            Maintenance({
+                FAction:'UpdateUMaintenancePlan',
+                ID:obj.ID,
+                FDateTime:this.addPlanData.MaintenancePlanDateTime,
+                FGUID:obj.MaintenanceUserGUID
             })
             .then(data => {
                 this.show = false
@@ -581,7 +497,7 @@ export default {
                 this.queryData()
                 this.$message({
                   type: 'success',
-                  message: this.type?'修改成功！':'新增成功！'
+                  message: '修改成功！'
                 });
             })
             .catch(error => {
@@ -589,36 +505,31 @@ export default {
             })
         },
         /**
-         * 点击新增按钮
-         */
-        beforeAdd(){
-            this.show  = true
-            this.title = '新增巡检计划'
-            this.type = 0
-            this.inspectionCycleName = '临时巡检'
-            this.planTime = ''
-            this.addPlanData = Object.assign({},this.defaultAddPlanData)
-        },
-        /**
          * 编辑计划
          */
         changePlan(row){
             this.show = true
-            this.title = '编辑巡检计划'
+            this.title = '编辑保养计划'
             this.type = 1
-            this.inspectionCycleName = row.InspectionCycleName
-            this.addPlanData.InspectionPlanName = row.InspectionPlanName
-            this.addPlanData.InspectionUserGUID = row.InspectionUserGUID
-            this.addPlanData.InspectionLineID = row.InspectionLineID
-            this.planTime = new Date(row.InspectionDatetime)
-            this.addPlanData.InspectionDatetime = row.InspectionDatetime
-            this.$set(this.addPlanData,'InspectionLineName',row.InspectionLineName)
-            this.$set(this.addPlanData,'ID',row.ID)
-            this.queryPoints(row.InspectionLineID)
+            Object.keys(this.addPlanData).forEach(key => {
+                this.addPlanData[key] = row[key]
+            })
+            this.planTime = new Date(row.MaintenancePlanDateTime)
         },
+        sortChange(column){
+            if(column.prop === 'MaintenanceLevelName'){
+                this.orderProp = 'MaintenanceLevel'
+            }else if(column.prop === 'MaintenanceCycleName'){
+                this.orderProp = 'MaintenanceCycle'
+            }else{
+                this.orderProp = column.prop
+            }
+            this.order = column.order
+            this.queryData()
+        }   
     }
 }
 </script>
 <style lang="scss">
-@import './InspectionPlan.scss'
+@import '../InspectionPlan.scss'
 </style>

@@ -184,7 +184,6 @@ export function chart_utis(o){
 	
 }
 
-
  export function ChangeRouterVal(o) {  //匹配原来写好的路由情况
  
  	var arr_new=o

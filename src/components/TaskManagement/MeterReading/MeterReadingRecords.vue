@@ -254,7 +254,7 @@
         <div class="time">
           <p class="l name">日期</p>
           <div class="date_chs">
-            <div class="block" style="margin-top: 5px; height: 20px;">
+            <div class="block">
               <el-date-picker
                 v-model="value1"
                 type="month"
@@ -727,22 +727,7 @@ export default {
             })
           })
           this.getPdf('#pdf_htmls',fileName);
-          /* 生成base64传给后台 */
-          html2Canvas(document.querySelector("#pdf_htmls")).then(canvas => {
-            var srccc = canvas.toDataURL("image/png");
-            /*生成图片传给服务器*/
-            FileUpLoad({
-                FAction:'SaveInspectionReportJpg2Pdf',
-                FData: srccc.replace("data:image/png;base64,", ""),
-                FName: fileName
-            })
-            .then(data => {
-            })
-            .catch(error => {
-              console.log('cuowu',error);
-            })
-            /*end of 生成图片传给服务器*/
-          })
+          this.fileUpload("#pdf_htmls",fileName)
     },
 
     logTimeChange(val) {
@@ -1043,19 +1028,7 @@ export default {
         })
       })
       this.getPdf('#date-report', fileName);
-      html2Canvas(document.querySelector("#date-report")).then(canvas => {
-        var srccc = canvas.toDataURL("image/png");
-        FileUpLoad({
-            FAction:'SaveInspectionReportJpg2Pdf',
-            FData: srccc.replace("data:image/png;base64,", ""),
-            FName: fileName
-        })
-        .then(data => {
-        })
-        .catch(error => {
-          console.log('cuowu',error);
-        })
-      });
+      this.fileUpload("#date-report",fileName)
     },
     /**
      * 设置自动抄表时间

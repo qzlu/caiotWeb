@@ -529,16 +529,6 @@ export default {
     let _this = this;
     let times = comm.getNowFormatDate();
     this.getDatas(times, "");
-
-    function countdown() {
-      _this.getDatas(times, "");
-      //let timeoutId_en= setTimeout(countdown, 4000);
-      let router_currt = _this.$route.name;
-      if (router_currt != "energy_list") {
-        // clearTimeout(timeoutId_en);
-      }
-    }
-    countdown();
   },
   computed: {}
 };

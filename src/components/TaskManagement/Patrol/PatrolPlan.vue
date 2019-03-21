@@ -49,7 +49,7 @@
         <ul class="report-header plan-header clearfix"> 
             <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
-            <li class="l"><button class="zw-btn zw-btn-primary"><i class="el-icon-delete"></i> 删除</button></li>
+            <li class="l"><button class="zw-btn zw-btn-primary" @click="deletePlans()"><i class="el-icon-delete"></i> 删除</button></li>
             <li class="l select-plan-time">
                 <span class="label">生成计划</span>
                 <el-date-picker
@@ -148,7 +148,7 @@
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="role-operation">
-                        <span class="pointer" @click="deletePlan(scoped.row)">删除</span>
+                        <span class="pointer" @click="deletePlan(scoped.row.ID)">删除</span>
                         <span class="pointer" @click="changePlan(scoped.row)">编辑</span>
                      </div>
                  </template>
@@ -266,8 +266,6 @@ export default {
             road:null,
             loading:false,
             pointData:[],//巡更路线对应的巡更点
-            orderProp:'',
-            order:'',
             pickerOptions:{ //新增或编辑巡更计划只能选择大于当前时间的
 /*                 disabledDate:val => {
                     if(Date.parse(new Date(val)) < Date.parse(new Date())){
@@ -447,9 +445,9 @@ export default {
          * 删除巡更计划
          * @param {Object} row 删除的计划
          */
-        async deletePlan(row){
+        async deletePlan(idStr){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除　　${row.PatrolPlanName}`,'删除计划'])
+                this.$DeleteMessage([`确认删除`,'删除计划'])
                 .then(() => {
                     resove()
                 })
@@ -459,7 +457,7 @@ export default {
             })
             Patrol({
                 FAction:'DeleteUPatrolPlanByID',
-                ID:row.ID
+                IDStr:idStr
             })
             .then(data => {
                 this.$message({
@@ -612,9 +610,6 @@ export default {
             this.$set(this.addPlanData,'PatrolLineName',row.PatrolLineName)
             this.$set(this.addPlanData,'ID',row.ID)
             this.queryPoints(row.PatrolLineID)
-        },
-        handleSelectionChange(rows){
-            console.log(rows);
         },
         sortChange(column){
             this.orderProp = column.prop

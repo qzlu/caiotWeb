@@ -1,5 +1,6 @@
 import html2Canvas from 'html2canvas'
 import JsPDF from 'jspdf'
+import {FileUpLoad} from '@/request/api.js'//api接口（接口统一管理）
 export default{
   install (Vue, options) {
     Vue.prototype.getPdf = function (id,title) {
@@ -36,6 +37,28 @@ export default{
         
       }
       )
+    };
+    Vue.prototype.fileUpload = async function(id,fileName){
+      new Promise(resolve => {
+        this.$nextTick(() => {
+          resolve()
+        })
+      })
+      html2Canvas(document.querySelector(id)).then(canvas => {
+        var srccc = canvas.toDataURL("image/png");
+        /*生成图片传给服务器*/
+        FileUpLoad({
+            FAction:'SaveInspectionReportJpg2Pdf',
+            FData: srccc.replace("data:image/png;base64,", ""),
+            FName: fileName
+        })
+        .then(data => {
+        })
+        .catch(error => {
+          console.log('cuowu',error);
+        })
+        /*end of 生成图片传给服务器*/
+      })
     }
   }
 

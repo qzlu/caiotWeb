@@ -80,14 +80,6 @@ export default {
         
     },
     methods:{
-        renderContent(h, { node, data, store }) {
-            return (
-              <span>
-                <i class></i>
-                <span>{data.DeviceTypeName?data.DeviceTypeName:data.DeviceName}</span>
-              </span>
-            )
-        },
         /**
          * 169.获取所有设备
          */

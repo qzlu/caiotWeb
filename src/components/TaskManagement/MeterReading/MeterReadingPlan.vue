@@ -49,7 +49,7 @@
         <ul class="report-header plan-header clearfix"> 
             <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
-            <li class="l"><button class="zw-btn zw-btn-primary"><i class="el-icon-delete"></i> 删除</button></li>
+            <li class="l"><button class="zw-btn zw-btn-primary" @click="deletePlans()"><i class="el-icon-delete"></i> 删除</button></li>
             <li class="l select-plan-time">
                 <span class="label">生成计划</span>
                 <el-date-picker
@@ -148,7 +148,7 @@
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="role-operation">
-                        <span class="pointer" @click="deletePlan(scoped.row)">删除</span>
+                        <span class="pointer" @click="deletePlan(scoped.row.ID)">删除</span>
                         <span class="pointer" @click="changePlan(scoped.row)">编辑</span>
                      </div>
                  </template>
@@ -178,7 +178,7 @@ export default {
                     label: '计划名称'
                 },
                 {
-                    prop: 'InspectionPlanTypeText',
+                    prop: 'MeterReadingPlanTypeText',
                     label: '状态'
                 },
                 {
@@ -270,8 +270,6 @@ export default {
             road:null,
             loading:false,
             pointData:[],//抄表路线对应的抄表点
-            orderProp:'',
-            order:'',
             pickerOptions:{ //新增或编辑抄表计划只能选择大于当前时间的
 /*                 disabledDate:val => {
                     if(Date.parse(new Date(val)) < Date.parse(new Date())){
@@ -360,7 +358,7 @@ export default {
                     if(item.MeterReadingUserGUID=="00000000-0000-0000-0000-000000000000"){
                         item.MeterReadingUserGUID = ''
                     }
-                    this.$set(item,'InspectionPlanTypeText',item.InspectionPlanType==1?'自动生成':'手动生成')
+                    this.$set(item,'MeterReadingPlanTypeText',item.MeterReadingPlanType==1?'自动生成':'手动生成')
                 });
             })
             .catch(error => {
@@ -449,9 +447,9 @@ export default {
         },
         /**
          * 删除抄表计划
-         * @param {Object} row 删除的计划
+         * @param {Object} idStr 删除的计划的ID
          */
-        async deletePlan(row){
+        async deletePlan(idStr){
             await new Promise(resove => {
                 this.$DeleteMessage([`确认删除　　${row.MeterReadingPlanName}`,'删除计划'])
                 .then(() => {
@@ -463,7 +461,7 @@ export default {
             })
             MeterReading({
                 FAction:'DeleteUMeterReadingPlanByID',
-                ID:row.ID
+                IDStr:idStr
             })
             .then(data => {
                 this.$message({
@@ -617,9 +615,6 @@ export default {
             this.$set(this.addPlanData,'MeterReadingLineName',row.MeterReadingLineName)
             this.$set(this.addPlanData,'ID',row.ID)
             this.queryPoints(row.MeterReadingLineID)
-        },
-        handleSelectionChange(rows){
-            console.log(rows);
         },
         sortChange(column, prop, order){
             this.orderProp = column.prop

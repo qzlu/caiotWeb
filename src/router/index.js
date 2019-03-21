@@ -345,7 +345,7 @@ let routers_item=[
 					
 					{ path: '/',
 						name: 'FixRecords',// 维修管理--维修记录第一个子菜单
-						component: () => import('@/components/home/test'), //默认为第一个菜单 
+						component: () => import('@/components/TaskManagement/FixRecords.vue'), //默认为第一个菜单 
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true, 
@@ -402,7 +402,7 @@ let routers_item=[
 	
 					{ path: 'MaintenanceRecords',
 						name: 'MaintenanceRecords',// 保养管理-保养记录
-						component: () =>import('@/components/home/test'),
+						component: () =>import('@/components/TaskManagement/Maintenance/MaintenanceRecords.vue'),
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true, 
@@ -411,7 +411,7 @@ let routers_item=[
 					
 					{ path: 'MaintenancePlan',
 						name: 'MaintenancePlan',// 保养管理-保养计划
-						component: () =>import('@/components/home/test'),
+						component: () =>import('@/components/TaskManagement/Maintenance/MaintenancePlan.vue'),
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true, 
@@ -419,13 +419,20 @@ let routers_item=[
 					},
 					{ path: 'MaintenanceStandard',
 						name: 'MaintenanceStandard',// 保养管理-保养标准
-						component: () =>import('@/components/home/test'),
+						component: () =>import('@/components/TaskManagement/Maintenance/MaintenanceStandard.vue'),
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true, 
 						 },
 					},
-					
+					{ path: 'Supplies',
+						name: 'Supplies',// 耗材库
+						component: () =>import('@/components/TaskManagement/Supplies.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true, 
+						 },
+					},
 					{
 						path: 'MeterReadingPoint',
 						name:'MeterReadingPoint',
@@ -498,6 +505,15 @@ let routers_item=[
 							requireAuth: true, 
 						}
 					},
+					{
+						path: 'MatterRecord',
+						name:'MatterRecord',
+						component: () => import('@/components/TaskManagement/MatterRecord.vue'), //报事
+						meta:{
+							title: '千仞云平台',
+							requireAuth: true, 
+						}
+					}
 					]
 				
 				

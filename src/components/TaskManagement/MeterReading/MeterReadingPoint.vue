@@ -249,7 +249,7 @@ export default {
             })
         },
         /**
-         * 获取巡检点区域设备
+         * 获取抄表点区域设备
          */
         queryAreaTypeDeviceInfo(){
             this.showImportDialog = true
@@ -316,7 +316,7 @@ export default {
             this.addPoint = Object.assign({},this.defalutAddPoint)
         },
         /**
-         * update 修改巡检点
+         * update 修改抄表点
          */
         update(item) {
             this.title = '修改'
@@ -329,8 +329,8 @@ export default {
             }
         },
         /**
-         * deleteItem 删除巡检点
-         * @param {type Object} item 巡检点
+         * deleteItem 删除抄表点
+         * @param {type Object} item 抄表点
          */
         async deleteItem(item){
             await new Promise(resolve => {
@@ -355,7 +355,7 @@ export default {
             .catch(error => {
                 this.$message({
                   type: 'error',
-                  message: '删除失败!'
+                  message: error
                 });
             })
         },
@@ -391,7 +391,7 @@ export default {
                 return item.DeviceID
             })
             MeterReading({
-                FAction:'AddImportUInspectionPoint',
+                FAction:'AddImportUMeterReadingPoint',
                 IDStr:arr.join(',')
             })
             .then(data => {
@@ -413,7 +413,7 @@ export default {
 }
 </script>
 <style lang="scss">
-// 样式同巡检点（InspectionItem）
+// 样式同抄表点（InspectionItem）
 @import '../inspectionItem.scss';
 .zw-dialog.meter-reading-point{
     .el-dialog{

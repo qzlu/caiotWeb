@@ -3,7 +3,7 @@
     <!-- 人工巡更月报 -->
     <el-dialog :visible.sync="showReport" width="1350px">
       <!--html-->
-      <section class="ppt_item month-report" id="month-report" v-if="monthReport.Table">
+      <section class="ppt_item month-report" id="date-report" v-if="dateReport.Table">
         <div class="htbn">
           <section>
             <div class="hdr">
@@ -21,50 +21,23 @@
               <img
                 src="/static/image/task/bicon_1.png"
                 class="pimg"
-                :class="{nnor:monthReport.Table2.length>0}"
+                :class="{nnor:dateReport.Table1.length>0}"
               >
               <img
                 src="/static/image/task/bicon_2.png"
                 class="pimg"
-                :class="{nnor:monthReport.Table2.length==0}"
+                :class="{nnor:dateReport.Table1.length==0}"
               >
               <div class="r list">
-                <ul v-for="item in monthReport.Table">
-                  <li class="l">{{item.EnergyTypeName}}　<span>{{item.EnergyTypeUnit}}</span></li>
-                  <li class="l">巡更点数　<span>{{item.PointCount}}</span></li>
-                  <li class="l">能耗正常　<span>{{item.MeterReadingDataNormalCount}}</span></li>
-                  <li class="l">能耗异常　<span>{{item.MeterReadingDataFaultCount}}</span></li>
-                  <li class="l">设备异常　<span>{{item.DeviceFaultCount}}</span></li>
+                <ul v-for="item in dateReport.Table">
+                  <li class="l">巡更次数　<span>{{item.PatrolPlanCount}}</span></li>
+                  <li class="l">待巡更　<span>{{item.UnPatrolCount}}</span></li>
+                  <li class="l">正常点数　<span>{{item.NormalCount}}</span></li>
+                  <li class="l">异常点数　<span>{{item.FaultCount}}</span></li>
                 </ul>
               </div>
             </div>
           </section>
-
-          <div class="table-c">
-            <table width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr class="gg">
-                <td width="12.5%">能源类型</td>
-                <td width="12.5%">分区能耗</td>
-                <td width="12.5%">巡更情况</td>
-                <td width="12.5%">能耗值</td>
-                <td width="12.5%">巡更点数</td>
-                <td width="12.5%">正常点数</td>
-                <td width="12.5%">异常点数</td>
-                <td width="12.5%">设备异常</td>
-              </tr>
-              <tr v-for="(item,key) in monthReport.Table1">
-                <td>{{item.EnergyTypeName}}</td>
-                <td>{{item.EnergyTypeValueDiffCount}}</td>
-                <td :class="{reding:item.MeterReadingDataFaultCount>0||item.DeviceFaultCount>0}">{{(item.MeterReadingDataFaultCount>0||item.DeviceFaultCount>0)?'异常':'正常'}}</td>
-                <td>{{item.EnergyTypeValueDiffCount}}</td>
-                <td>{{item.AreaPointCount}}</td>
-                <td>{{item.MeterReadingDataNormalCount?item.MeterReadingDataNormalCount:0}}</td>
-                <td :class="{reding:item.MeterReadingDataFaultCount>0}">{{item.MeterReadingDataFaultCount?item.MeterReadingDataFaultCount:0}}</td>
-                <td :class="{reding:item.DeviceFaultCount>0}">{{item.DeviceFaultCount?item.DeviceFaultCount:0}}</td>
-              </tr>
-            </table>
-          </div>
-
           <div class="table-red">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
@@ -73,10 +46,10 @@
                 <td width="33%">异常描述</td>
                 <!-- <td width="25%">处理情况</td> -->
               </tr>
-              <tr v-for="(item,key) in  monthReport.Table2">
-                <td>{{item.MeterReadingObject}}</td>
-                <td>{{item.MeterReadingTime}}</td>
-                <td style="color: red;">{{item.PointResult}}</td>
+              <tr v-for="(item,key) in  dateReport.Table2">
+                <td>{{item.PatrolObject}}</td>
+                <td>{{item.PatrolTime}}</td>
+                <td style="color: red;">{{item.PatrolNote}}</td>
                 <!-- <td></td> -->
               </tr>
             </table>
@@ -102,7 +75,7 @@
           <el-date-picker
             class=""
             v-model="time"
-            type="month"
+            type="date"
             @change="selectTime"
             placeholder="选择日期"
           ></el-date-picker>
@@ -253,6 +226,7 @@ export default {
   data() {
     return {
       //人工巡更
+      projectNames: localStorage.getItem("projectname"),
       time:new Date(),
       filterText:'',
       totalInfo:0,//巡更总况统计信息
@@ -263,98 +237,31 @@ export default {
       planID:'',
       records:[],
       showReport:false,
-      monthReport:{},
+      dateReport:{},
       tableLabel:[
           {
             prop: 'RowNum',
             label: '序号'
           },
           {
-            prop: 'AreaName',
-            label: '巡更区域'
+            prop: 'PatrolObject',
+            label: '巡更路线'
           },
           {
-              prop: 'MeterReadingObject',
+              prop: 'PatrolItem',
               label: '巡更点'
           },
           {
-              prop: 'EnergyTypeName',
-              label: '能耗类型'
-          },
-          {
-              prop: 'EnergyTypeUnit',
-              label: '单位'
-          },
-          {
-              prop: 'LastMeterReadingValue',
-              label: '上次读数'
-          },
-          {
-              prop: 'MeterReadingValue',
-              label: '本次读数'
-          },
-          {
-              prop: 'UseValue',
-              label: '本期用量'
-          },
-          {
-              prop: 'MeterReadingTime',
+              prop: 'PatrolTime',
               label: '巡更时间',
               width:160
           },
           {
-              prop: 'MeterReadingResult',
-              label: '设备状态'
+              prop: 'PatrolResult',
+              label: '巡更结果'
           },
           {
-              prop: 'ComparedValue',
-              label: '同比用量'
-          },
-          {
-              prop: 'MeterReadingNote',
-              label: '异常描述'
-          }
-      ],
-      tableLabel1:[
-          {
-            prop: 'AreaName',
-            label: '巡更区域'
-          },
-          {
-              prop: 'DeviceName',
-              label: '巡更点'
-          },
-          {
-              prop: 'EnergyTypeName',
-              label: '能耗类型'
-          },
-          {
-              prop: 'EnergyTypeUnit',
-              label: '单位'
-          },
-          {
-              prop: 'LastMeterReadingValue',
-              label: '上次读数'
-          },
-          {
-              prop: 'NowMeterReadingValue',
-              label: '本次读数'
-          },
-          {
-              prop: 'NowDiffValue',
-              label: '本期用量'
-          },
-          {
-              prop: 'NowMeterReadingDateTime',
-              label: '巡更时间',
-              width:160
-          },
-          {
-              prop: 'NowLastDiffPercent',
-              label: '同比用量'
-          },
-          {
-              prop: 'MeterReadingNote',
+              prop: 'PatrolNote',
               label: '异常描述'
           }
       ],
@@ -433,8 +340,8 @@ export default {
     queryPlanRecord(){
         Patrol({
           FAction:'QueryUPatrolPlanByCount',
-          StartDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1),
-          EndDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1)
+          StartDateTime:this.time.toLocaleDateString().replace(/\//g,'-'),
+          EndDateTime:this.time.toLocaleDateString().replace(/\//g,'-')
         })
         .then(data => {
           this.totalInfo = data.FObject.Table?data.FObject.Table[0]:{}
@@ -461,10 +368,7 @@ export default {
         this.planID = id
         Patrol({
           FAction:'QueryUPatrolPlanRecord',
-          FDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1),
-          ID:id,
-          PageIndex:this.pageIndex,
-          PageSize:'20'
+          ID:id
         })
         .then(data => {
             this.records = data.FObject
@@ -474,16 +378,17 @@ export default {
         })
     },
     /**
-     * 查询人工巡更月报
+     * 查询人工巡更日报
      */
     async queryDateReport(){
       await new Promise((resolve,reject) => {
         Patrol({
-          FAction:'QueryUMeterReadingCountByMoneth',
-          FDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1) + '-01'
+          FAction:'QueryUPatrolReportByDay',
+          FDateTime:this.time.toLocaleDateString().replace(/\//ig,'-')
         })
         .then(data => {
-          this.monthReport = data.FObject
+          console.log(data);
+          this.dateReport = data.FObject
           this.showReport = true
         })
         .catch(error => {
@@ -491,7 +396,7 @@ export default {
         })
       })
       return
-      if(this.monthReport.Table.length ===0){
+      if(this.dateReport.Table.length ===0){
         return
       }
       let fileName = localStorage.getItem("projectname") + '人工巡更' +  this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1)
@@ -501,19 +406,7 @@ export default {
         })
       })
       this.getPdf('#date-report', fileName);
-      html2Canvas(document.querySelector("#date-report")).then(canvas => {
-        var srccc = canvas.toDataURL("image/png");
-        FileUpLoad({
-            FAction:'SaveInspectionReportJpg2Pdf',
-            FData: srccc.replace("data:image/png;base64,", ""),
-            FName: fileName
-        })
-        .then(data => {
-        })
-        .catch(error => {
-          console.log('cuowu',error);
-        })
-      });
+      this.fileUpload('#date-report',fileName)
     },
     /**
      * exportFile 导出

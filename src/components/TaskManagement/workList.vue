@@ -49,8 +49,9 @@
                          prop=""
                          label="操作">
                          <template slot-scope="scoped">
-                             <div class="detail" @click="queryDetail(scoped.row)">
-                                <span>详情</span>
+                             <div class="detail">
+                                <span v-if="(scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6)&&(scoped.row.OrderState==3||scoped.row.OrderState==4)" @click="beforeChangeUser(scoped.row)">派单</span>
+                                <span v-else @click="queryDetail(scoped.row)">详情</span>
                              </div>
                          </template>
                        </el-table-column>
@@ -72,13 +73,14 @@
                          :prop="item.prop"
                          :label="item.label"
                          :width="item.width"
+                          show-overflow-tooltip
                         >
                        </el-table-column>
                        <el-table-column
                          prop=""
                          label="操作">
                          <template slot-scope="scoped">
-                             <div>
+                             <div @click="queryDetail(scoped.row)">
                                 <span>详情</span>
                              </div>
                          </template>
@@ -101,13 +103,14 @@
                          :prop="item.prop"
                          :label="item.label"
                          :width="item.width"
+                         show-overflow-tooltip
                         >
                        </el-table-column>
                        <el-table-column
                          prop=""
                          label="操作">
                          <template slot-scope="scoped">
-                             <div class="detail">
+                             <div class="detail" @click="queryDetail(scoped.row)">
                                 <span>详情</span>
                              </div>
                          </template>
@@ -130,14 +133,16 @@
                          :prop="item.prop"
                          :label="item.label"
                          :width="item.width"
+                         show-overflow-tooltip
                         >
                        </el-table-column>
                        <el-table-column
                          prop=""
                          label="操作">
                          <template slot-scope="scoped">
-                             <div>
-                                <span>详情</span>
+                             <div class="detail">
+                                <span v-if="scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6" @click="beforeChangeUser(scoped.row)">派单</span>
+                                <span v-else @click="queryDetail(scoped.row)">详情</span>
                              </div>
                          </template>
                        </el-table-column>
@@ -159,6 +164,7 @@
                          :prop="item.prop"
                          :label="item.label"
                          :width="item.width"
+                         show-overflow-tooltip
                         >
                        </el-table-column>
                        <el-table-column
@@ -166,8 +172,9 @@
                          label="操作">
                          <template slot-scope="scoped">
                              <div>
-                                <span>详情</span>
-                             </div>
+                                <span v-if="scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6" @click="beforeChangeUser(scoped.row)">派单</span>
+                                <span v-else @click="queryDetail(scoped.row)">详情</span>                             
+                            </div>
                          </template>
                        </el-table-column>
                     </el-table>
@@ -188,13 +195,14 @@
                          :prop="item.prop"
                          :label="item.label"
                          :width="item.width"
+                         show-overflow-tooltip
                         >
                        </el-table-column>
                        <el-table-column
                          prop=""
                          label="操作">
                          <template slot-scope="scoped">
-                             <div>
+                             <div class="detail" @click="queryDetail(scoped.row)">
                                 <span>详情</span>
                              </div>
                          </template>
@@ -204,9 +212,27 @@
                 <zw-pagination @pageIndexChange='handleCurrentChange' :pageIndex='pageIndex5' :total='total5'></zw-pagination>
             </div>
         </div>
+        <el-dialog title="派单" class="zw-dialog order-dialog" :visible.sync="showOrder">
+            <ul>
+                <li>
+                    <span>工单情况</span>
+                    <el-input v-model="workObj.OrderContent"></el-input>
+                </li>
+                <li>
+                    <span>接单人员</span>
+                    <el-select v-model="workObj.OrderUserGUID"   placeholder="请选择">
+                        <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
+                    </el-select>
+                </li>
+            </ul>
+            <div style="margin-top:50px;text-align:center">
+                <button class="zw-btn zw-btn-primary" @click="changeUser()">确定</button>
+                <button class="zw-btn zw-btn-primary" style="margin-left:20px" v-if="workObj.OrderType == 5">误报</button>
+            </div>
+        </el-dialog>
         <el-dialog title="工单详情" class="show-detail" :visible.sync="showDetail">
             <el-scrollbar>
-                <div style="height:760px">
+                <div style="max-height:760px">
                     <div>
                         <p class="title"><span class="icon-title"></span>工单信息</p>
                         <ul class="info" v-if="workInfo">
@@ -238,7 +264,7 @@
                     </div>
                     <div style="margin-top:39px;">
                         <p class="title"><span class="icon-title"></span>工单进度</p>
-                        <ul class="progress clearfix">
+                        <ul class="progress clearfix" v-if="areaArr.length&&workInfo.OrderType!=2">
                             <li class="clearfix" v-for="(item,index) in areaArr" :key="index">
                                 <div class="l area-name">
                                     <div>
@@ -257,6 +283,92 @@
                                 </ul>
                             </li>
                         </ul>
+                        <ul class="progress clearfix" v-if="areaArr.Table5&&workInfo.OrderType==2">
+                            <li class="clearfix" v-for="(item,index) in areaArr.Table5" :key="index">
+                                <div v-if="index !==2">
+                                    <div class="l area-name">
+                                        <div>
+                                            <span>{{item.Name}}</span>
+                                            <div class="circle finish">
+                                                <div class="circle-inner"></div>
+                                            </div>
+                                        </div>
+                                        <div class="border r"></div>
+                                    </div>
+                                    <ul class="area-info clearfix">
+                                        <li class="l "><span>{{workInfo.FContacts}}　</span>{{item.FDateTime}}</li>
+                                    </ul>
+                                </div>
+                                <div class="clearfix" v-else>
+                                    <div class="area-name">
+                                        <div>
+                                            <span>{{item.Name}}</span>
+                                            <div class="circle finish">
+                                                <div class="circle-inner"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix collapse" >
+                                        <el-collapse accordion >
+                                          <el-collapse-item name="1">
+                                            <template slot="title">
+                                                <ul class="area-info clearfix">
+                                                    <li class="l "><span>{{workInfo.FContacts}}　</span>{{item.FDateTime}}</li>
+                                                </ul>
+                                            </template>
+                                            <div class="collapse-content">
+                                                <div class="collapse-content-item" v-if="areaArr.Table3">
+                                                    <h5>保养前</h5>
+                                                    <ul class="clearfix">
+                                                        <li class="l" v-for="img in areaArr.Table3">
+                                                            <img :src="'http://www.szqianren.com/'+img.MaintenanceBeforeImg" alt="">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="collapse-content-item">
+                                                    <h5>保养内容</h5>
+                                                    <p style="">
+                                                        <span v-for="(content,i) in areaArr.Table1">{{i+1}}.{{content.MaintenanceDetail}}　</span>
+                                                    </p>
+                                                </div>
+                                                <div class="collapse-content-item" v-if="areaArr.Table4">
+                                                    <h5>保养后</h5>
+                                                    <ul class="clearfix">
+                                                        <li class="l" v-for="img in areaArr.Table4">
+                                                            <img :src="'http://www.szqianren.com/'+img.MaintenanceAfterImg" alt="">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="collapse-content-item">
+                                                    <h5>处理情况</h5>
+                                                    <p>{{areaArr.Table[0].FDescription}}</p>
+                                                </div>
+                                                <div class="collapse-content-item">
+                                                    <h5>实际耗材</h5>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                      <tr class="table-header">
+                                                        <td width="12.5%">序号</td>
+                                                        <td width="12.5%">耗材名称</td>
+                                                        <td width="12.5%">型号</td>
+                                                        <td width="12.5%">单位</td>
+                                                        <td width="12.5%">数量</td>
+                                                      </tr>
+                                                      <tr v-for="(item,key) in areaArr.Table2" :class="{'odd-row':key%2==0}" :key="key">
+                                                        <td>{{key+1}}</td>
+                                                        <td>{{item.SuppliesName}}</td>
+                                                        <td>{{item.SuppliesTypeName}}</td>
+                                                        <td>{{item.SuppliesUnit}}</td>
+                                                        <td>{{item.SuppliesCount}}</td>
+                                                      </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                          </el-collapse-item>
+                                        </el-collapse>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </el-scrollbar>
@@ -264,7 +376,7 @@
     </div>
 </template>
 <script>
-import {Inspection,Orders} from '@/request/api.js'//api接口（接口统一管理）;
+import {Inspection,Orders,system} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {zwPagination} from '@/zw-components/index'
 export default {
@@ -290,12 +402,12 @@ export default {
                     label: '工单名称',
                 },
                 {
-                    prop: 'SendOrderDateTime',
+                    prop: 'OrderCreateDateTime',
                     label: '创建时间',
                 },
                 {
                     prop: 'RunningOrderDateTime',
-                    label: '计划时间',
+                    label: '计划/处理时间',
                 },
                 {
                     prop: 'EndOrderDateTime',
@@ -320,7 +432,7 @@ export default {
                     label: '工单名称',
                 },
                 {
-                    prop: 'SendOrderDateTime',
+                    prop: 'OrderCreateDateTime',
                     label: '创建时间',
                 },
                 {
@@ -357,13 +469,33 @@ export default {
                     name:'抄表',
                     value:4
                 },
+                {
+                    name:'告警',
+                    value:5
+                },
+                {
+                    name:'报事',
+                    value:6
+                },
+                {
+                    name:'工单池',
+                    value:7
+                },
+                {
+                    name:'故障',
+                    value:8
+                },
+                {
+                    name:'巡更',
+                    value:9
+                },
             ],
             selectType:{
                 name:'全部',
                 value:0
             },
             showSelectOption:false,
-            time:[new Date(),new Date()],
+            time:[new Date(Date.parse(new Date())-24*60*60*1000),new Date()],
             tableData0:[],
             tableData1:[],
             tableData2:[],
@@ -385,6 +517,9 @@ export default {
             showDetail:false,
             workInfo:null,
             areaArr:[],
+            showOrder:false,//显示派单弹框
+            users:[],
+            workObj:{}
         }
     },
     components:{
@@ -395,6 +530,7 @@ export default {
     },
     created(){
         this.queryAllOrders()
+        this.queryUser()
     },
     mounted(){
 
@@ -416,14 +552,13 @@ export default {
                 PageIndex:pageIndex,
                 PageSize:10,
                 mSearchUOrders:{
-                    StartDateTime:this.time[0],
-                    EndDateTime:this.time[1],
+                    StartDateTime:this.time[0].toLocaleDateString() + ' 00:00',
+                    EndDateTime:this.time[1].toLocaleDateString() + ' 23:59',
                     OrderType:this.selectType.value,
                     OrderState:state
                 }
             })
             .then((data) => {
-                console.log(data);
                 let key = 'tableData' + state
                 this[key] = data.FObject.Table1
                 this['total'+state] = data.FObject.Table[0].FTotalCount
@@ -448,18 +583,67 @@ export default {
         queryDetail(row){
             this.showDetail = true
             this.workInfo = row
-            Inspection({
-                FAction:'QueryUInspectionAreaByCount',
-                ID:row.OrderRelatedTaskID
+            this.areaArr = []
+            Orders({
+                FAction:'QueryOrdersRecordDetail',
+                ID:row.ID
             })
             .then(data => {
                 console.log(data);
-                this.areaArr = data.FObject.Table2
+                this.areaArr = data.FObject
             })
             .catch(error => {
-
+                this.areaArr = []
             })
-        }
+        },
+        /**
+         * 查询所有用户
+         */
+        queryUser(){
+            system({
+                FAction:'QueryTUsers',
+                FName:''
+            })
+            .then(data => {
+                this.users = data.FObject
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        },
+        /**
+         * 点击派单
+         */
+        beforeChangeUser(row){
+            this.showOrder = true
+            this.workObj = row
+        },
+        /**
+         * 派单
+         */
+        changeUser(){
+            Orders({
+                FAction:'UpdateUOrdersSendOrderUser',
+                ID:this.workObj.ID,
+                FGUID:this.workObj.OrderUserGUID
+            })
+            .then(data => {
+                this.$message({
+                  type: 'success',
+                  message: '派单成功!'
+                });
+                this.queryAllOrders()
+            })
+            .catch(err => {
+                this.$message({
+                  type: 'error',
+                  message: '派单失败!'
+                });
+            })
+            .finally(() => {
+                this.showOrder = false
+            })
+        },
     }
 
 }
@@ -552,12 +736,14 @@ export default {
                 width: 100%;
                 height: 100%;
                 cursor: pointer;
+                span{
+                    cursor: pointer;
+                }
             }
         }
         .show-detail {
             .el-dialog{
                 width: 1084px;
-                height: 860px;
                 background: #EDF1F4;
                 &__title{
                     font-size:26px;
@@ -605,6 +791,9 @@ export default {
                         .item-info{
                             padding-left: 10px;
                             color: #6D6D6D
+                        }
+                        .collapse-content{
+
                         }
                     }
                     li:nth-of-type(3),li:nth-of-type(4){
@@ -719,13 +908,13 @@ export default {
                         }
                         .area-info{
                             position: relative;
-                            top: -20px;
-                            margin-left: 250px;
+                            // top: -20px;
+                            margin-left: 252px;
                             font-size:22px;
                             font-family:MicrosoftYaHei;
                             font-weight:400;
                             color:rgba(0,0,0,1);
-                            li+li{
+                            li{
                                 margin-left: 20px;
                             }
                             li.time{
@@ -737,6 +926,104 @@ export default {
                                 }
                             }
                         }
+                        .collapse{
+                            min-height: 210px;
+                            margin-left: 222px;
+                            padding-left: 40px;
+                            border-left: 2px solid rgba(215,211,211,1);
+                            .area-info{
+                                margin-left: -12px
+                            }
+                        }
+                        .el-collapse{
+                            margin-top: -34px;
+                        }
+                        .el-collapse-item{
+                            .area-name {
+                                .circle{
+                                    line-height: 18px;
+                                }
+                            }
+                            
+                        }
+                        .el-collapse-item.is-active{
+                            .area-name{
+                                .border{
+                                   height: 637px;
+                                }
+                            }
+                        }
+                        .el-collapse-item__header,.el-collapse-item__wrap{
+                            background: none
+                        }
+                        .collapse-content{
+                            background: #f2f2f2;
+                            padding-left: 40px;
+                            &-item{
+                                h5{
+                                    font-size: 18px;
+                                    text-align: left;
+                                    margin: 10px 0px;
+                                    color: #646464
+                                }
+                                p{
+                                    text-align:left;
+                                    padding-left:20px;
+                                    font-size:18px;
+                                    font-weight:bold
+                                }
+                                img{
+                                    width: 110px;
+                                    height: 90px;
+                                    margin-left: 20px;
+                                }
+                                table{
+                                    margin-left: 20px;
+                                    border: 1px solid #f3afaf;
+                                    font-size:18px;
+                                    font-weight:bold
+                                }
+                                .table-header{
+                                    height: 36px;
+                                    line-height: 36px;
+                                    background: #f5c8c8;
+                                }
+                                tr{
+                                    border: 1px solid #f3afaf;
+                                }
+                                td{
+                                    height: 36px;
+                                    border: 1px solid #f3afaf;
+                                }
+                                .odd-row{
+                                    background: #f9e6e8
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .order-dialog{
+            .el-dialog{
+                width: 430px;
+                background: url(#{$img-url}task/inspection.png);
+                background-size: 100% 100%;
+                padding-left: 50px;
+                ul{
+                    padding-left: 20px;
+                }
+                li+li{
+                    margin-top: 20px;
+                }
+                .el-input{
+                    width: 165px;
+                    height: 39px;
+                    line-height: 39px;
+                    margin-left: 10px;
+                    &__inner{
+                        background:rgba(24,64,107,1);
+                        border:1px solid rgba(5,103,158,1);
                     }
                 }
             }

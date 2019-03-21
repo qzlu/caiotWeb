@@ -4,36 +4,36 @@
         <el-scrollbar>
             <ul class="clearfix device-list">
                 <li class="l" v-for="item in focusMonitorData" :key="item.DeviceID" :class="{alarm:item.IsAlarm}">
-                    <h4>
-                        <router-link :to="{ name: 'detail_info_list',params:{ id:item.DeviceID,PossionID:item.DataDetail[0].SDataID,getalldata:item}}">
-                            {{item.DeviceName}}
-                        </router-link>
-                        <i :class="{r:true,'el-icon-star-off':!item.IsFocus,'el-icon-star-on':item.IsFocus}" @click="addOrDeleteUFocusMonitor(item)"></i>
-                    </h4>
-                    <el-row>
-                        <el-col :span="11">
-                            <ul>
-                                <li v-for="(obj,j) in item.DataDetail.slice(0,3)" :key="j">
-                                    <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">{{i}}/</i></span></p>
-                                    <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
-                                </li>
-                            </ul>
-                        </el-col>
-                        <el-col :span="3">
-                            <div class="status" :class="'status-'+item.DeviceStatus">
-                                <p><i :class="['icon','iconfont',item.WebIconName]"></i></p>
-                                <p>{{item.DeviceStatusTitle}}</p>
-                            </div>
-                        </el-col>
-                        <el-col :span="10">
-                            <ul>
-                                <li v-for="(obj,j) in item.DataDetail.slice(3)" :key="j">
-                                    <p><span v-for="(value,i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">{{i}}/</i></span></p>
-                                    <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
-                                </li>
-                            </ul>
-                        </el-col>
-                    </el-row>
+                    <i :class="{r:true,'el-icon-star-off':!item.IsFocus,'el-icon-star-on':item.IsFocus}" @click="addOrDeleteUFocusMonitor(item)"></i>
+                    <router-link :to="{ name: 'detail_info_list',params:{ id:item.DeviceID,PossionID:item.DataDetail[0].SDataID,getalldata:item}}">
+                        <h4>
+                                {{item.DeviceName}}
+                        </h4>
+                        <el-row>
+                            <el-col :span="11">
+                                <ul>
+                                    <li v-for="(obj,j) in item.DataDetail.slice(0,3)" :key="j">
+                                        <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">{{i}}/</i></span></p>
+                                        <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
+                                    </li>
+                                </ul>
+                            </el-col>
+                            <el-col :span="3">
+                                <div class="status" :class="'status-'+item.DeviceStatus">
+                                    <p><i :class="['icon','iconfont',item.WebIconName]"></i></p>
+                                    <p>{{item.DeviceStatusTitle}}</p>
+                                </div>
+                            </el-col>
+                            <el-col :span="10">
+                                <ul>
+                                    <li v-for="(obj,j) in item.DataDetail.slice(3)" :key="j">
+                                        <p><span v-for="(value,i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">{{i}}/</i></span></p>
+                                        <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
+                                    </li>
+                                </ul>
+                            </el-col>
+                        </el-row>
+                    </router-link>
                 </li>
             </ul>
         </el-scrollbar>
@@ -110,6 +110,17 @@ export default {
         }
     }
     ul.device-list{
+        [class*="el-icon-star-"]{
+        	font-size:24px;
+            cursor: pointer;
+            margin-right: 20px;
+        }  
+        .el-icon-star-off{
+        	color:#525E7E
+        }
+        .el-icon-star-on{
+        	color:#2a91fc
+        }
         >li.alarm{
             background: url(/static/image/indexdetail/content_bg_2.png) 10px 0 no-repeat;
         }
@@ -125,19 +136,8 @@ export default {
                 color: #525E7E;
                 text-align: left;
                 padding:0px 20px;
-                [class*="el-icon-star-"]{
-                	font-size:24px;
-                	cursor: pointer;
-                    margin-right: 20px;
-                }  
-                .el-icon-star-off{
-                	color:#525E7E
-                }
-                .el-icon-star-on{
-                	color:#2a91fc
-                }
             }
-            >.el-row{
+            .el-row{
                 height: 162px;
                 .el-col{
                     height: 100%;

@@ -247,9 +247,9 @@ a {
           
     }
     
-.ght_listn .png_ygts{width: 130%; height: 233px; position: relative;}    
-.ght_listn ul{ position: absolute;top:0; left: 0; right: 0; bottom: 0;}
-.ght_listn ul li{ cursor: pointer; width: 313px; height: 234px; float: left;  background: url(/static/image/index/content_bg_1.png)  no-repeat;font-size: 16px;}
+.ght_listn .png_ygts{height: 233px; position: relative;}    
+.ght_listn ul{ position: absolute;white-space: nowrap;}
+.ght_listn ul li{ cursor: pointer; width: 313px; height: 234px; display: inline-block;  background: url(/static/image/index/content_bg_1.png)  no-repeat;font-size: 16px;}
 
 .ght_listn ul li:hover{background: url(/static/image/index/hover_09.png) no-repeat 0 1px;/*background: url(/static/image/index/content_bg_2.png) no-repeat 0 1px;*/}
 .ght_listn ul li:hover  .icon_lig{ display: block;}

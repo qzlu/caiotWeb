@@ -67,6 +67,14 @@ $img-url:'/static/image/';
 .zw-btn-import:active,.zw-btn-import:hover{
     background-image: url('#{$img-url}count/import1.png');
 }
+.zw-btn-report{
+    width: 119px;
+    background-image: url('#{$img-url}task/b5.png');
+    padding-left: 28px;
+}
+.zw-btn-report:active,.zw-btn-report:hover{
+    background-image: url('#{$img-url}task/b6.png');
+}
 .search-input{
     width: 174px;
     margin-right: 10px;
@@ -96,6 +104,13 @@ $img-url:'/static/image/';
 .pointer{
     cursor: pointer;
 }
+.el-date-editor.el-input.el-date-editor--month,.el-date-editor.el-input.el-date-editor--month .el-input__inner{
+    width: 200px;
+    height: 46px;
+    background: #042E74;
+    border-color: #005099;
+    color: white
+}
 .zw-dialog{
     .el-dialog{
         text-align: left;
@@ -123,4 +138,7 @@ $img-url:'/static/image/';
             text-align: center;
         }
     }
+}
+.v-modal{
+    display: none
 }

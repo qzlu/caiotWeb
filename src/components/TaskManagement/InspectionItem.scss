@@ -2,8 +2,9 @@ $img-url:'/static/image/';
 .inspection-item{
     .el-dialog{
         width: 426px;
-        height: 367px;
+        // height: 367px;
         background: url(#{$img-url}task/inspection.png);
+        background-size: 100% 100%;
         padding-left: 48px!important;
         &__header{
             text-align: left

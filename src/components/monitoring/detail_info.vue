@@ -84,38 +84,40 @@
 	 		<div class="deo_list">
 	 			<ul>
 	 			  <li  v-for="(suList,key) in gitem.item" :class="{alarm:suList.IsAlarm}">
-	 			  	<div :id="suList.DeviceID">
-	 			  	<div class="inner_bg_sh">
-	 			  	<div class="a1">
-	 			  		<div class="jg">
-	 			  			<!--后端要求，PossionID为默认的第一个（三相线电压）id，带过去,还要把整个点击的当前数组带过去getalldata-->
-	 			  			<router-link :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}">
-	 			  			<p class="t" :title="suList.DeviceName">{{suList.DeviceName}}<!--1#变压器--></p>
-	 			  			</router-link>
-								 <i :class="{r:true, 'el-icon-star-off':!suList.IsFocus,'el-icon-star-on':suList.IsFocus}" @click="addOrDeleteUFocusMonitor(suList)"></i>
-	 			  		</div>
-	 			  		<!--三相线电压数据-->
-	 			  		<div v-for="(c,key) in suList.DataDetail" :class="setclass(c.SDataID)" >
-						   
-			 		  		<p class="gre" ><span v-for="(df,key) in c.SDataValue" :data="df.DStatus">{{df.DValue}}<i v-if="c.SDataValue.length>key+1">/</i></span></p>
+						<i :class="{r:true, 'el-icon-star-off':!suList.IsFocus,'el-icon-star-on':suList.IsFocus}" @click.stop="addOrDeleteUFocusMonitor(suList)"></i>
+						<router-link :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}">
+	 			  		<div :id="suList.DeviceID" class="clearfix">
+	 			  		<div class="inner_bg_sh">
+	 			  		<div class="a1">
+	 			  			<div class="jg">
+	 			  				<!--后端要求，PossionID为默认的第一个（三相线电压）id，带过去,还要把整个点击的当前数组带过去getalldata-->
+	 			  				<!-- <router-link :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}"> -->
+	 			  				<p class="t" :title="suList.DeviceName">{{suList.DeviceName}}<!--1#变压器--></p>
+	 			  				<!-- </router-link> -->
+	 			  			</div>
+	 			  			<!--三相线电压数据-->
+	 			  			<div v-for="(c,key) in suList.DataDetail" :class="setclass(c.SDataID)" >
+								 
+			 		  			<p class="gre" ><span v-for="(df,key) in c.SDataValue" :data="df.DStatus">{{df.DValue}}<i v-if="c.SDataValue.length>key+1">/</i></span></p>
 
-			 		  		<p class="grd">{{c.SDataTitle}} <span v-if="c.SDataUnit">({{c.SDataUnit}})</span><!--三相线电压(V)--></p>
-	 			  		</div>
-	 			  		<!--end of 三相线电压数据-->
+			 		  			<p class="grd">{{c.SDataTitle}} <span v-if="c.SDataUnit">({{c.SDataUnit}})</span><!--三相线电压(V)--></p>
+	 			  			</div>
+	 			  			<!--end of 三相线电压数据-->
 
-	 			  	</div>
-
-	 			  	<div class="a2">
-	 			  		<div>
-	 			  		<p><i class="icon iconfont reset_green" :class="suList.WebIconName" :data="suList.DeviceStatus" style="font-size: 50px;"></i><!--<img src="/static/image/indexdetail/content_icon_3.png" />--></p>
-	 			  		<p class="tx"><!--合闸--><i :data="suList.DeviceStatus">{{suList.DeviceStatusTitle}}</i></p>
 	 			  		</div>
 
-	 			  	</div>
+	 			  		<div class="a2">
+	 			  			<div>
+	 			  			<p><i class="icon iconfont reset_green" :class="suList.WebIconName" :data="suList.DeviceStatus" style="font-size: 50px;"></i><!--<img src="/static/image/indexdetail/content_icon_3.png" />--></p>
+	 			  			<p class="tx"><!--合闸--><i :data="suList.DeviceStatus">{{suList.DeviceStatusTitle}}</i></p>
+	 			  			</div>
+
+	 			  		</div>
 
 
-	 			  	</div>
-	 			  	</div>
+	 			  		</div>
+	 			  		</div>
+						</router-link>
 	 			  </li>	
 
 	 			</ul>
@@ -157,6 +159,10 @@
 [class*="el-icon-star-"]{
 	font-size:24px;
 	cursor: pointer;
+	position: relative;
+	top:20px;
+	right:20px;
+	z-index: 100;
 }  
 .el-icon-star-off{
 	color:#525E7E

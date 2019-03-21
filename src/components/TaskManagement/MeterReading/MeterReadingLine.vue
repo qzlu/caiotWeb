@@ -295,7 +295,7 @@
                     </tree-transfer>    
                 </div>
                 <div style="text-align:center;margin-top:20px;">
-                    <button class="zw-btn" style="background:none" @click="preStep()">上一步</button>
+                    <button class="zw-btn" style="background:none" v-if="type === 0" @click="preStep()">上一步</button>
                     <button class="zw-btn zw-btn-primary" @click="setPoint()">确定</button>
                 </div>
             </el-dialog>

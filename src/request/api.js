@@ -18,6 +18,9 @@ const Orders = p => post('Orders', p)
 const MeterReading = p => post('MeterReading', p)
 const Patrol = p => post('Patrol', p)
 const Monitor = p => post('Monitor',p)
+const Maintenance = p => post('Maintenance',p)
+const Supplies = p => post('Supplies',p)
+const ReportMatter = p => post('ReportMatter', p)
 export{
     login,
     project,
@@ -29,5 +32,8 @@ export{
     Orders,
     MeterReading,
     Patrol,
-    Monitor
+    Monitor,
+    Maintenance,
+    Supplies,
+    ReportMatter
 }

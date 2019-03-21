@@ -291,7 +291,7 @@ export default {
          * update 修改巡检点
          */
         update(item) {
-            this.title = '修改'
+            this.title = '编辑'
             this.show = true
             this.type = 1
             for(let key in this.addPoint){

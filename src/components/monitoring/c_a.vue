@@ -14,59 +14,61 @@
     </video>-->
     <ul>
       <li v-for="(item, index) in datalist" :key="index" :class="{'show_warn_class':item.TopValue.length,'no_warn_class':!item.TopValue.length,}">
-        <div class="hover_bg" style="margin: 0 5px 0 0;">
-          <router-link :to="{ name: 'detail_info',params:{ id:item.AreaID,SingleType:2}}">
-            <p class="fi_ts">{{item.AreaTitle}}</p>
-          </router-link>
-          <div class="fi_eh">
-            <div v-for="(list, key) in item.DataDetail ">
-              <div>
-                <p class="ght">
-                  <i class="jg">
-                    {{list.SDataTitle}}
-                    <br>
-                  </i>
-                  <i>（{{list.SDataUnit}})</i>
-                </p>
-                <p class="ght_text" v-for="(shcg, k) in list.SDataValue">{{shcg.DValue}}</p>
-                <!--温度-->
+        <router-link :to="{ name: 'detail_info',params:{ id:item.AreaID,SingleType:2}}">
+          <div class="hover_bg" style="margin: 0 5px 0 0;">
+           <!--  <router-link :to="{ name: 'detail_info',params:{ id:item.AreaID,SingleType:2}}"> -->
+              <p class="fi_ts">{{item.AreaTitle}}</p>
+            <!-- </router-link> -->
+            <div class="fi_eh">
+              <div v-for="(list, key) in item.DataDetail ">
+                <div>
+                  <p class="ght">
+                    <i class="jg">
+                      {{list.SDataTitle}}
+                      <br>
+                    </i>
+                    <i>（{{list.SDataUnit}})</i>
+                  </p>
+                  <p class="ght_text" v-for="(shcg, k) in list.SDataValue">{{shcg.DValue}}</p>
+                  <!--温度-->
+                </div>
+              </div>
+            </div>
+            <div class="pi_itm_out">
+              <div class="pi_itm" :id="setdocID + index"></div>
+            </div>
+            <div class="manu_li">
+              <p class="l" v-if="item.VedioAddress">
+                <img
+                  src="/static/image/index/icon_4.png"
+                  @click="opens_video(item.VedioAddress)"
+                  style=" vertical-align: 0px; cursor: pointer;"
+                >
+              </p>
+              <p v-for="(lis, key) in item.TopValue" class="l">
+                <i
+                  class="icon iconfont set_imgColor"
+                  :class="[lis.AlarmWebIcon]"
+                  :data="lis.AlarmType"
+                ></i>
+                &nbsp;{{lis.AlarmCount}}&nbsp;
+                <!--<span v-if="key==0"><img src="/static/image/index/content_icon_5.png"> {{lis.AlarmCount}} &nbsp;</span>
+                <span v-if="key==1"><img src="/static/image/index/content_icon_4.png"> {{lis.AlarmCount}} </span>-->
+                <!-- <span><img src="/static/image/index/content_icon_4.png"> {{lis.AlarmIcon}}</span>-->
+              </p>
+            </div>
+            <div class="tl_t_fd">
+              <p style="color: #F1F1F2; font-size: 10px;">{{item.TargetTitle}}</p>
+              <p style="color: #F1F1F2; font-size: 22px;">{{item.TargetValue}}</p>
+            </div>
+
+            <div class="numb_fd">
+              <div v-for="(abc, k) in item.TargetDetail" class="posi">
+                <p :class="'abc' + k">{{abc.STargetValue}}</p>
               </div>
             </div>
           </div>
-          <div class="pi_itm_out">
-            <div class="pi_itm" :id="setdocID + index"></div>
-          </div>
-          <div class="manu_li">
-            <p class="l" v-if="item.VedioAddress">
-              <img
-                src="/static/image/index/icon_4.png"
-                @click="opens_video(item.VedioAddress)"
-                style=" vertical-align: 0px; cursor: pointer;"
-              >
-            </p>
-            <p v-for="(lis, key) in item.TopValue" class="l">
-              <i
-                class="icon iconfont set_imgColor"
-                :class="[lis.AlarmWebIcon]"
-                :data="lis.AlarmType"
-              ></i>
-              &nbsp;{{lis.AlarmCount}}&nbsp;
-              <!--<span v-if="key==0"><img src="/static/image/index/content_icon_5.png"> {{lis.AlarmCount}} &nbsp;</span>
-              <span v-if="key==1"><img src="/static/image/index/content_icon_4.png"> {{lis.AlarmCount}} </span>-->
-              <!-- <span><img src="/static/image/index/content_icon_4.png"> {{lis.AlarmIcon}}</span>-->
-            </p>
-          </div>
-          <div class="tl_t_fd">
-            <p style="color: #F1F1F2; font-size: 10px;">{{item.TargetTitle}}</p>
-            <p style="color: #F1F1F2; font-size: 22px;">{{item.TargetValue}}</p>
-          </div>
-
-          <div class="numb_fd">
-            <div v-for="(abc, k) in item.TargetDetail" class="posi">
-              <p :class="'abc' + k">{{abc.STargetValue}}</p>
-            </div>
-          </div>
-        </div>
+        </router-link>
       </li>
     </ul>
   </div>

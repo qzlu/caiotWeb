@@ -84,7 +84,7 @@ export default {
             systemTypeList:[], //系统分类
             type:0,
             showImportDialog:false,
-            allDefaultPoint:[],//设备导入的所有抄表检点
+            allDefaultPoint:[],//设备导入的所有巡更检点
             defaultProps:{children:'list',disabled:'disabled'},
             defaultChecked:[]//已经导入的
         }
@@ -191,7 +191,7 @@ export default {
             this.addPointData.PointName = null
         },
         /**
-         * update 修改巡检点
+         * update 修改巡更点
          */
         update(item) {
             this.title = '修改'
@@ -201,12 +201,13 @@ export default {
             this.addPointData.ID = item.ID
         },
         /**
-         * deleteItem 删除巡检点
-         * @param {type Object} item 巡检点
+         * deleteItem 删除巡更点
+         * @param {type Object} item 巡更点
          */
         async deleteItem(item){
+            console.log(item);
             await new Promise(resolve => {
-                this.$DeleteMessage([`确定要删除　　${item.PointName}`,'删除抄表点'])
+                this.$DeleteMessage([`确定要删除　　${item.PatrolPointName}`,'删除巡更点'])
                 .then(() => {
                     resolve()
                 })

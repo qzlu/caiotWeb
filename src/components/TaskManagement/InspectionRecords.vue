@@ -665,22 +665,7 @@ export default {
             })
           })
           this.getPdf('#pdf_htmls',fileName);
-          /* 生成base64传给后台 */
-          html2Canvas(document.querySelector("#pdf_htmls")).then(canvas => {
-            var srccc = canvas.toDataURL("image/png");
-            /*生成图片传给服务器*/
-            FileUpLoad({
-                FAction:'SaveInspectionReportJpg2Pdf',
-                FData: srccc.replace("data:image/png;base64,", ""),
-                FName: fileName
-            })
-            .then(data => {
-            })
-            .catch(error => {
-              console.log('cuowu',error);
-            })
-            /*end of 生成图片传给服务器*/
-          });
+          this.fileUpload('#pdf_htmls',fileName)
         }
     },
 
@@ -718,7 +703,6 @@ export default {
       if (this.table2 != "" && x == 0) {
         gettime = this.table2[0].InspectionTime; //默认为第一个li的时间值
       }
-
       let dates = gettime.split(" ")[0];
       dates = dates.replace(/-/gi, "");
       let hour =
@@ -789,10 +773,9 @@ export default {
       //一键巡检只能查当前的
       project({
         FAction: "CreateCaiotInspectionByProject",
-        ProjectID: localStorage.getItem("projectid"),
       })
       .then(data => {
-        ProjectID: localStorage.getItem("projectid")
+        window.location = "http://www.szqianren.com/" + data.FObject;
       })
       .catch(error => {
         
@@ -870,8 +853,8 @@ export default {
         this.active = 0
         Inspection({
           FAction:'QueryUInspectionPlanByCount',
-          StartDateTime:this.time,
-          EndDateTime:this.time
+          StartDateTime:this.time.toLocaleDateString() +' 00:00',
+          EndDateTime:this.time.toLocaleDateString() +' 23:59'
         })
         .then(data => {
           this.points = data.FObject.Table?data.FObject.Table[0].Count:0
@@ -929,19 +912,7 @@ export default {
         })
       })
       this.getPdf('#date-report', fileName);
-      html2Canvas(document.querySelector("#date-report")).then(canvas => {
-        var srccc = canvas.toDataURL("image/png");
-        FileUpLoad({
-            FAction:'SaveInspectionReportJpg2Pdf',
-            FData: srccc.replace("data:image/png;base64,", ""),
-            FName: fileName
-        })
-        .then(data => {
-        })
-        .catch(error => {
-          console.log('cuowu',error);
-        })
-      });
+      this.fileUpload('#date-report',fileName)
     },
     /**
      * exportFile 导出

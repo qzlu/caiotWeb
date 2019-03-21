@@ -9,6 +9,10 @@
                         :props="defaultProps"
                         @node-click='handleClick'
                     >
+                        <span slot-scope="{ node, data }">
+                            <i class='icon iconfont' :class="data.IconName"></i>
+                            <span style="font-size:18px">{{data.DeviceTypeName}}</span>
+                        </span>
                     </el-tree>
                 </el-scrollbar>
             </div>
@@ -192,12 +196,12 @@ export default {
          * 点击设备时
          */
         handleClick(data){
-            if(String(data.DeviceTypeID).length<3){
-                this.device = null
-            }else{
+            if(data.TreeLevel == 2){
                 this.device = data
                 this.queryDeviceAllItem(data.DeviceTypeID)
                 this.querySInspectionDeviceTypeDataItem(data.DeviceTypeID)
+            }else{
+                this.device = null
             }
         },
         /**
@@ -333,7 +337,12 @@ $img-url:'/static/image/';
                 }
                 &-node__content{
                     height: 66px;
+                    line-height: 66px;
                     padding-left: 100px!important;
+                    .iconfont{
+                        vertical-align: middle;
+                        font-size: 24px
+                    }
                 }
                 &-node__content:hover {
                     background:linear-gradient(90deg,rgba(4,28,63,1),rgba(6,46,113,1),rgba(13,58,132,1),rgba(2,35,82,1));
