@@ -35,7 +35,7 @@
     <div class="Titems_b" :class="{'showing':currt==1}">
       <div class="tin_left">
         <div class="tin_t1" v-for="(items,key) in data_information" style="position: relative;">
-          <ul>
+          <ul class="clearfix l">
             <li>设备编号：
               <span>{{items.DeviceCode}}</span>
             </li>
@@ -59,7 +59,7 @@
               <span>{{items.ServiceLife}}年</span>
             </li>
           </ul>
-          <div style="position: absolute; top: 35px; right: -600px; width: 750px;">
+          <div  style="position: absolute; top: 35px; right: -600px; width: 750px;">
             <div style="float: right; margin: 0 10px;">
               <p>
                 <img v-bind:src="img_url+items.DevicePhoto">
@@ -281,5 +281,9 @@ a {
   float: left;
   margin: 15px 25px 0 0;
   font-size: 17px;
+}
+.Titems_b img{
+  width:120px;
+  height: 120px;
 }
 </style>

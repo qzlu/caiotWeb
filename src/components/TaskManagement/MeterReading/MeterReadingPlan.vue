@@ -48,7 +48,7 @@
         </el-dialog>
         <ul class="report-header plan-header clearfix"> 
             <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li>
-            <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
+            <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile()">导出</button></li>
             <li class="l"><button class="zw-btn zw-btn-primary" @click="deletePlans()"><i class="el-icon-delete"></i> 删除</button></li>
             <li class="l select-plan-time">
                 <span class="label">生成计划</span>
@@ -451,7 +451,7 @@ export default {
          */
         async deletePlan(idStr){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除　　${row.MeterReadingPlanName}`,'删除计划'])
+                this.$DeleteMessage([`确认删除`,'删除计划'])
                 .then(() => {
                     resove()
                 })
@@ -620,7 +620,28 @@ export default {
             this.orderProp = column.prop
             this.order = column.order
             this.queryData()
-        }   
+        },
+        /**
+         * exportFile 导出
+         */
+        exportFile(){
+            MeterReading({
+                FAction:'QueryExportUMeterReadingPlan',
+                FType:this.queryType?'Advanced':'Normal',
+                Field:this.orderProp,
+                FOrder:this.order,
+                mSearchMeterReadingPlan:this.queryType?this.filterObj:{}
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: '导出失败!请重试'
+                });
+            })
+        },   
     }
 }
 </script>

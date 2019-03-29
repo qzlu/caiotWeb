@@ -26,7 +26,7 @@ Vue.use(caito)
 
 
 /*引入videojs视频播放器*/
-// import 'video.js/dist/video-js.css'
+import 'video.js/dist/video-js.css'
 
 
 

@@ -35,7 +35,7 @@
                 <div class="cc rowup" id="pin_wanr">
                   <div class="item" v-for="(items,key) in datalist">
                     <router-link :to="{name:'now_count'}">
-                      <div>
+                      <div style="color:white">
                         <p class="l">{{items.AlarmText}}</p>
                         <p class="r">{{items.AlarmTime}}</p>
                       </div>
@@ -78,17 +78,36 @@
                   </span>
                 </p>
                 <div class="list_sel" style="top: 62px;">
-                  <p v-for="(item,key) in seledata02" @click="ccName_item(item)">{{item}}</p>
-                  <p @click="all_out()">退出</p>
+                  <!-- <p v-for="(item,key) in seledata02" @click="ccName_item(item)">{{item}}</p> -->
+                  <p @click="beforeUpdatedPassword()"><i class="iconfont icon-Lock" style="font-size:24px;margin-right:10px"></i>修改密码</p>
+                  <p @click="all_out()"><i class="iconfont icon-Exit" style="font-size:24px;margin-right:10px"></i>退出系统</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
       <router-view></router-view>
     </div>
+    <el-dialog title="修改密码" :visible.sync="show" class="change-password zw-dialog">
+      <el-form :model="changePassWord" ref="form">
+          <el-form-item label="账号"  prop='InspectionPointName'>
+              <el-input :value="seledata02[0]" readonly=""></el-input>
+          </el-form-item>
+          <el-form-item label="旧密码" prop="FPassword" :rules="[{ required: true, message: '请输入旧密码'}]">
+              <el-input v-model="changePassWord.FPassword" type="password"></el-input>
+          </el-form-item>
+          <el-form-item label="新密码" prop="FNewPassword" :rules="[{ required: true, message: '请输入新密码'}]">
+              <el-input v-model="changePassWord.FNewPassword" type="password"></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="repeatPassword" :rules="[{ required: true, message: '请确认密码'}]">
+              <el-input v-model="changePassWord.repeatPassword" type="password"></el-input>
+          </el-form-item>
+      </el-form>
+      <div class="submit">
+          <button class="zw-btn zw-btn-primary" @click="updatedPassword()">确定</button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <style>
@@ -96,7 +115,7 @@
 <script>
 import * as comm from "../../assets/js/pro_common";
 import nav_item from "./nav.vue"; //中间图片
-import { project } from "@/request/api";
+import { project, system } from "@/request/api";
 var sta = 0; //控制报警声，第一次响，关闭后，数据更新，再也不会自动报警。
 export default {
   data() {
@@ -107,7 +126,13 @@ export default {
       seledata02: [localStorage.getItem("iuserName")], //["admin","user","新都会","云平台","新都会","云平台"],
       curr_selectdata02: localStorage.getItem("iuserName"),
       datalist: "", //告警数据列表
-      addclass: ""
+      addclass: "",
+      show:false,
+      changePassWord:{
+        FPassword:null,
+        FNewPassword:null,
+        repeatPassword:null
+      }
     };
   },
 
@@ -183,15 +208,11 @@ export default {
 		  })
 		  .then(data => {
             this.datalist = data.FObject;
-            if (sta == 0) {
+            if (this.is_li == 0) {
               //开始只响一次，第二次刷新数据也不会响
-              if (data.FObject != "") {
-                this.is = 0;
+              if (data.FObject&&data.FObject.length>0) {
                 this.play_warn_hg("play");
-              } else {
-                this.is = 1;
               }
-              sta = 1;
             }
             if (data) {
               this.datalist = data.FObject;
@@ -202,38 +223,6 @@ export default {
 
 		  })
 	  })
-/*       return new Promise(function(resolve, reject) {
-        _this.$axios
-          .post(_this.mypro + "Caiot/Project", {
-            FTokenID: localStorage.getItem("Token"),
-            FAction: "GetAlarmRealData",
-            FVersion: "1.0.0",
-            ProjectID: localStorage.getItem("projectid"),
-            FDateTime: gettime
-          })
-          .then(function(jsons) {
-            comm.messageErr(jsons.data.Result); //公共状态提示
-            _this.datalist = jsons.data.FObject;
-
-            if (sta == 0) {
-              //开始只响一次，第二次刷新数据也不会响
-
-              if (jsons.data.FObject != "") {
-                _this.is = 0;
-                _this.play_warn_hg("play");
-              } else {
-                _this.is = 1;
-              }
-              sta = 1;
-            }
-
-            if (jsons) {
-              _this.datalist = jsons.data.FObject;
-              resolve("succ");
-            }
-          })
-          .catch(function(err) {});
-      }); */
     },
 
     Pro2() {
@@ -263,6 +252,49 @@ export default {
         }
       });
     },
+    beforeUpdatedPassword(){
+      this.show = true
+      Object.keys(this.changePassWord).forEach(item => {
+        this.changePassWord[item] = null
+      })
+    },
+    async updatedPassword(){
+      await new Promise(resolve => {
+          this.$refs.form.validate((valid) => {
+            if (valid) {
+                resolve()
+            } 
+          });
+      })
+      if(this.changePassWord.FNewPassword !== this.changePassWord.repeatPassword){
+        this.$message({
+          type:"warning",
+          message:'重复密码不一致',
+          druration:1000
+        })
+        return
+      }
+      system({
+        FAction:'UpdateTUsersPassword',
+        FPassword:this.changePassWord.FPassword,
+        FNewPassword:this.changePassWord.FNewPassword,
+        FType:3
+      })
+      .then(data => {
+        this.show = false
+        this.$message({
+          type:"success",
+          message:'密码修改成功,3秒后退出登录',
+          druration:1000
+        })
+        setTimeout(() => {
+          this.all_out()
+        },3000)
+      })
+      .catch(err => {
+
+      })
+    }
   },
   mounted: function() {
     var curr_time = this.getNowFormatDate();
@@ -300,10 +332,44 @@ export default {
     settimeouts_warn();
   },
   components: { nav_item },
-  computed: {}
+  computed: {},
 };
 </script>
-<style>
+<style lang="scss">
+$img-url:'/static/image/';
+.change-password {
+  .el-dialog{
+    width: 426px;
+    // height: 367px;
+    background: url(#{$img-url}task/inspection.png);
+    background-size: 100% 100%;
+    padding-left: 48px!important;
+    &__header{
+        text-align: left
+    }
+    .el-form{
+        &-item{
+            .el-form-item__label{
+                width: 94px;
+                color: #F1F1F2;
+            }
+            .el-input{
+                width: 165px;
+                .el-input__inner{
+                    background: #05679E;
+                    border-color: #18406B;
+                    color: #F1F1F2;
+                }
+            }
+            &__error{
+                left: 50%;
+                transform: translateX(-50%)
+            }
+        }
+    }
+  }
+}
+
 </style>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
@@ -405,7 +471,7 @@ export default {
 .home .name_select .list_sel p {
   padding: 5px 0 5px 0;
   font-size: 20px;
-  color: #4370b3;
+  color: #6ea0ee;
 }
 .home .name_select .list_sel p:hover {
   color: #fff;
@@ -559,4 +625,5 @@ li {
 a {
   color: #42b983;
 }
+
 </style>

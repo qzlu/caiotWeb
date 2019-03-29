@@ -38,12 +38,19 @@
         <section class="e_bigdate">
           <div class="it01" style="width: 205px;">
             <p class="t">
-              <!--今日-->
+              <!--当日-->
               {{titles[0]}}
             </p>
             <p class="nt" style="font-size: 20px;">
               {{table_data01.CurEnergy}}
               <!--20357-->
+            </p>
+            <p
+              class="gc"
+              :class="table_data01.PriorPercent>0 ? '' : 'gy'"
+            >
+              {{Math.abs(table_data01.PriorPercent)}}%
+              <!--15%-->
             </p>
           </div>
           <div class="it01 nobg" style="width: 205px;">
@@ -52,13 +59,6 @@
               {{titles[1]}}
             </p>
             <p class="np">{{table_data01.PriorEnergy}}</p>
-            <p
-              class="gc"
-              :class="table_data01.PriorPercent>0 ? '' : 'gy'"
-            >
-              {{Math.abs(table_data01.PriorPercent)}}%
-              <!--15%-->
-            </p>
           </div>
           <div class="it01 nobg" style="display: none;">
             <p class="t">历史平均</p>
@@ -131,11 +131,11 @@ export default {
       d_tyle: "Day", //点击年月日,ajax传给后台的类型
       ityle: "date", //点击年月日，右边时间下拉框类型
       active: 0,
-      titles: ["今日", "昨日"],
+      titles: ["当日", "昨日"],
       table_data01: "", //年月日按钮数据，左上1图
 
       table_data02: "", //曲线图右上1
-      table_data02_name: [], //组装分类名称[今日,昨日,平均值]
+      table_data02_name: [], //组装分类名称[当日,昨日,平均值]
       table_data02_value: [], //组装数组数据
       table_data02_xAxis: "", //x标尺数组
 
@@ -153,14 +153,14 @@ export default {
       //console.log(this.value1)
 
       if (this.d_tyle == "Year") {
-        this.titles = ["当年", "上一年"];
+        this.titles = ["今年", "上年"];
         this.getDatas(this.value1.split("-")[0], this.d_tyle);
       } else if (this.d_tyle == "Month") {
-        this.titles = ["当月", "上一月"];
+        this.titles = ["本月", "上月"];
         var str = this.value1.split("-")[0] + "-" + this.value1.split("-")[1];
         this.getDatas(str, this.d_tyle);
       } else {
-        this.titles = ["当日", "上一日"];
+        this.titles = ["当日", "昨日"];
         this.getDatas(this.value1, this.d_tyle);
       }
     },
@@ -243,13 +243,13 @@ export default {
       if (x == 0) {
         (this.ityle = "date"), //日期显示类型
           (this.d_tyle = "Day"), //ajax传给后台的类型
-          (this.titles = ["今日", "昨日"]);
+          (this.titles = ["当日", "昨日"]);
         this.value1 = comm.getNowFormatDate();
       }
       if (x == 1) {
         (this.ityle = "date"),
           (this.d_tyle = "Week"), //ajax传给后台的类型
-          (this.titles = ["今周", "上周"]);
+          (this.titles = ["本周", "上周"]);
         var now = new Date();
         var day = now.getDay();
         var week = "7123456";
@@ -268,7 +268,7 @@ export default {
       if (x == 2) {
         (this.ityle = "month"),
           (this.d_tyle = "Month"), //ajax传给后台的类型
-          (this.titles = ["今月", "上月"]);
+          (this.titles = ["本月", "上月"]);
         var now_gh = new Date();
         var year = now_gh.getFullYear() + "-";
         var month = now_gh.getMonth() + 1;
@@ -277,7 +277,7 @@ export default {
       if (x == 3) {
         (this.ityle = "year"),
           (this.d_tyle = "Year"), //ajax传给后台的类型
-          (this.titles = ["今年", "去年"]);
+          (this.titles = ["今年", "上年"]);
         var now_gvg = new Date();
         var year2 = now_gvg.getFullYear() + "-";
         var month2 = now_gvg.getMonth() + 1;
@@ -408,12 +408,12 @@ export default {
           _this.table_data02_value = [];
           _this.table_data02_name = [];
           for (let obj of jsons.data.FObject.Table1) {
-            _this.table_data02_name.push(obj.Cycle); //把分类名称写入数组[今日,昨日,平均值]
+            _this.table_data02_name.push(obj.Cycle); //把分类名称写入数组[当日,昨日,平均值]
           }
 
           /*组装成线条bar数据
 								  {
-			               name:'今日',
+			               name:'当日',
 			               type:'line',
 			               stack: '总量',
 			               data:[120, 132, 101, 134, 90, 230, 210, 310, 210]
@@ -471,7 +471,7 @@ export default {
           color: "#fff"
         },
         legend: {
-          //  data:['今日','昨日','历史平均'],
+          //  data:['当日','昨日','历史平均'],
           data: this.table_data02_name,
           x: "right", //x,y 显示位置
           y: "20px",
@@ -518,7 +518,8 @@ export default {
           splitLine: { show: false } //去除网格线
         },
         series: this.table_data02_value,
-        color: ["#1385f7", "#18d094", "#ff7206"]
+        color:["#18d094","#1385f7","#ff7206"]
+       /*  color: ["#1385f7", "#18d094", "#ff7206"] */
       };
       if (option && typeof option === "object") {
         myChart.setOption(option, true);

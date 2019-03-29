@@ -1,6 +1,6 @@
 <template>
-    <div class="report">
-        <ul class="report-header clearfix">
+    <div  class="clearfix" style="height:100%">
+        <ul class="report-header clearfix" style="margin-top:15px;">
             <li class="l">
                 <span class="label" style="font-size:14px;">月份　</span>
                 <el-date-picker
@@ -195,5 +195,5 @@ export default {
 }
 </script>
 <style lang="scss">
-@import 'record.scss';
+@import '../TaskManagement/record.scss';
 </style>

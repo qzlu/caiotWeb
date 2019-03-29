@@ -230,12 +230,8 @@
         <!-- <li>综合巡检</li> -->
       </ul>
     </div>
-    <div class="bg_are" v-show="activeIndex === 0">
+    <div class="bg_are" v-if="activeIndex === 0">
       <div class="ich">
-        <div
-          class="gre_btns"
-          style="position: absolute; top: 57px; left: 485px; height: 46px; width: 119px; background: #093b7c; opacity: 0.8;"
-        ></div>
         <div
           class="gre_btns02"
           style="position: absolute; top: 57px; left: 839px; height: 46px; width: 84px; background: #093b7c; opacity: 0.8;"
@@ -255,7 +251,7 @@
             </div>
           </div>
         </div>
-        <div
+<!--         <div
           class="ntb01_pp"
           :class="{divsh:currt==0}"
           style="position: absolute; top: 57px; left: 358px; height: 46px; width: 119px; background: #093b7c; opacity: 0.8;"
@@ -264,14 +260,35 @@
           class="ntb01_pp yuh"
           :class="{isod:exl_hef!=''}"
           style="position: absolute; top: 57px; left: 741px; height: 46px; width: 86px; background: #093b7c; opacity: 0.8;"
-        ></div>
-        <div class="ntb01" @click="one_change">一键巡检</div>
-        <div class="ntb02">自动巡检</div>
+        ></div> -->
+        <button class="zw-btn ntb01"  @click="one_change">一键巡检</button>
+        <div class="ntb02" @click="showSetTime = true">设置自动巡检</div>
         <div class="ntb03" @click="make_paf">报告预览</div>
         <a :href="exl_hef">
           <div class="ntb04">导出</div>
         </a>
         <div class="ntb05">审核</div>
+        <el-dialog title='设置自动巡检' :visible.sync="showSetTime" class="set-inspection-time zw-dialog" width="450px">
+          <div style="margin:30px 0">
+           <span style="font-size:14px">设置时间</span>
+           <el-select
+             v-model="timesArr"
+             multiple
+             collapse-tags
+             style="margin-left: 10px;"
+             placeholder="请选择">
+             <el-option
+               v-for="(item,i) in 24"
+               :key="i"
+               :label="i<10?'0'+ i +':00':i+':00'"
+               :value="i">
+             </el-option>
+           </el-select>
+          </div>
+          <div style="text-align:center;margin-bottom:30px">
+            <button class="zw-btn zw-btn-primary" @click="setInspectionTime()">确定</button>
+          </div>
+        </el-dialog>
       </div>
 
       <div class="title">
@@ -282,7 +299,9 @@
       </div>
       <section class="btn_baritems">
         <div class="l showitem01" v-if="bar_value">
-          <section id="show_bar" style="height:183px; width: 90%;"></section>
+          <section id="show_bar" style="height:183px; width: 90%;">
+            <pie-chart :data="chartData" :color='["#00D294", "#89192E"]'></pie-chart>
+          </section>
           <div>
             <div class="atc_title">
               <p>巡检点数</p>
@@ -399,7 +418,7 @@
         <!--<iframe :src="exl_url"    frameborder="0" scrolling="yes"  class="iframe_tiem"></iframe>-->
       </div>
     </div>
-    <div class="bg_are" v-show="activeIndex === 1">
+    <div class="bg_are" v-if="activeIndex === 1">
       <ul class="ich record-header">
         <li class="l">
           <span class="label">日期</span>
@@ -432,7 +451,9 @@
       </div>
       <section class="btn_baritems">
         <div class="l showitem01">
-          <section id="record-chart" style="height:183px; width: 90%;"></section>
+          <section id="record-chart" style="height:183px; width: 90%;">
+            <pie-chart :data="chartData1" :color='["#00D294", "#89192E"]'></pie-chart>
+          </section>
           <div>
             <div class="atc_title">
               <p>巡检点数</p>
@@ -551,6 +572,7 @@ var echarts = require("echarts");
 import * as comm from "../../assets/js/pro_common";
 import {Inspection,FileUpLoad,project} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
+import {pieChart} from '@/zw-components/index'
 export default {
   mixins:[table],
   data() {
@@ -569,9 +591,11 @@ export default {
       exl_url: "", //用于在div内浏览的地址
       exl_hef: "", //用于导出exl，用split()分割后，得到直接地址
       currt: 0, //一键巡检遮罩层
-
+      timesArr:[],//设置物联巡检时间
+      showSetTime:false,//设置自动巡检弹框是否显示
       all_table: [], //所有表格数据。
       activeIndex: 0,
+      chartData:{},
       // exl_url:"http://www.szqianren.cn/CreateFile/新都汇/新都汇物联巡检记录2018112612.xls",
       //人工巡检
       time:new Date(),
@@ -587,6 +611,7 @@ export default {
       showReport:false,
       dateReport:null,
       pageIndex1:1,
+      chartData1:{},
       tableLabel:[
           {
               prop: 'AreaName',
@@ -624,6 +649,9 @@ export default {
       inspectionStateArr:['待巡检','巡检中','已完成','逾期']
     };
   },
+  components:{
+    pieChart
+  },
   methods: {
     async make_paf() {
       //生成pdf文件的方法
@@ -654,7 +682,7 @@ export default {
       this.centerDialogVisible = true; //弹出-弹出框
       /*生成pdf名称*/
       let now_times = ""; //如果日期为空，默认为昨天的
-      now_times = this.value1.toLocaleDateString().replace(/\//gi, "");
+      now_times = this.value1.getFullYear()+comm.formatNumber((this.value1.getMonth()+1))+comm.formatNumber((this.value1.getDate()))
       /*生成pdf名称*/
         if (this.Dialog_table2 != "") {
           //如果没有数据，就不生成pdf文件
@@ -757,9 +785,10 @@ export default {
           this.bar_value = data.FObject.Table[0]; //把环形图值付给它。再在页面读取总数等值
           this.table2 = data.FObject.Table1; //把巡检总况列表值付给table2。
           let datas = [{value:data.FObject.Table[0].NormalCount,name:"正常"},{value:data.FObject.Table[0].FaultCount,name:"异常"}]
-          this.$nextTick(()=>{
-            this.showPieChart('show_bar',datas)
-          })
+          this.chartData = {
+            columns:['正常','异常'],
+            rows:datas
+          }
           if (data.FObject.Table1.length > 0) {
             this.li_item_click("0", timesh, data.FObject.Table1[0].ID); //默认第一个li点击，把第一个id带过去
           }
@@ -770,6 +799,17 @@ export default {
     },
 
     one_change() {
+      if(localStorage.getItem('disabled') == 1){
+        this.$message({
+          type:'warning',
+          message:'操作太频繁，请稍后重试！'
+        })
+        return
+      }
+      localStorage.setItem('disabled',1)
+      setTimeout(() => {
+        localStorage.setItem('disabled',0)
+      },60*1000)
       //一键巡检只能查当前的
       project({
         FAction: "CreateCaiotInspectionByProject",
@@ -782,69 +822,39 @@ export default {
       })
     },
     /**
+     *  230.查询物联物联巡检配置信息 (物联巡检时间)
+     */
+    queryUInspectionConfig(){
+      Inspection({
+        FAction:'QueryUInspectionConfig'
+      })
+      .then(data => {
+        this.timesArr = data.FObject.map(item => parseInt(item.Hour))
+      })
+      .catch(err => {})
+    },
+    /**
+     * 设置物联巡检时间
+     */
+    setInspectionTime(){
+      Inspection({
+        FAction:'AddUInspectionConfig',
+        FData:this.timesArr.join(',')
+      })
+      .then(data => {
+      })
+      .catch(err => {
+        this.queryUInspectionConfig()
+      })
+      .finally(() => {
+        this.showSetTime = false
+      })
+    },
+    /**
      * 人工巡检选择时间
      */
     selectTime(val){
       this.queryPlanRecord()
-    },
-    /**
-     * 绘制饼图
-     * id 图形容器id
-     * data 数据
-     */
-    showPieChart(id,data){
-        var dom = document.getElementById(id);
-        var myChart = echarts.init(dom);
-        var app = {};
-        var option = null;
-        app.title = "环形图";
-
-        option = {
-          tooltip: {
-            trigger: "item",
-            formatter: "{b}: {c} ({d}%)"
-          },
-          legend: {
-            orient: "vertical",
-            x: "219px",
-            y: "center",
-            textStyle: { color: "#fff" },
-            itemWidth: 13,
-            itemHeight: 13,
-            data: ["正常", "异常"]
-          },
-          series: [
-            {
-              name: "访问来源",
-              type: "pie",
-              radius: ["50", "60"],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {
-                  show: false,
-                  position: "center"
-                },
-                emphasis: {
-                  show: true,
-                  textStyle: {
-                    fontSize: "30",
-                    fontWeight: "bold"
-                  }
-                }
-              },
-              labelLine: {
-                normal: {
-                  show: false
-                }
-              },
-              data: data
-            }
-          ],
-          color: ["#00D294", "#89192E"]
-        };
-        if (option && typeof option === "object") {
-          myChart.setOption(option, true);
-        }
     },
     /**
      * 查询人工巡检信息
@@ -859,9 +869,16 @@ export default {
         .then(data => {
           this.points = data.FObject.Table?data.FObject.Table[0].Count:0
           this.pointsInfo = data.FObject.Table1?data.FObject.Table1[0]:{}
-          this.plans = data.FObject.Table2?data.FObject.Table2:{}
+          this.plans = data.FObject.Table2?data.FObject.Table2:[]
           this.waitingPlan = data.FObject.Table3?data.FObject.Table3[0].WaitingPlanCount:0
-          this.queryPlan(this.plans[0].ID)
+          let datas = [{value:this.pointsInfo.NormalCount,name:"正常"},{value:this.pointsInfo.FaultCount,name:"异常"}]
+          this.chartData1 = {
+            columns:['正常','异常'],
+            rows:datas
+          }
+          if(this.plans.length){
+            this.queryPlan(this.plans[0].ID)
+          }
         })
         .catch(error => {
           console.log(error);
@@ -905,7 +922,7 @@ export default {
       if(this.dateReport.length ===0){
         return
       }
-      let fileName = localStorage.getItem("projectname") + '人工巡检' +  this.time.toLocaleDateString().replace(/\//ig,'')
+      let fileName = localStorage.getItem("projectname") + '人工巡检' +  this.time.getFullYear()+comm.formatNumber((this.time.getMonth()+1))+comm.formatNumber((this.time.getDate()))
       await new Promise(resolve => {
         this.$nextTick(() => {
           resolve()
@@ -935,19 +952,12 @@ export default {
     
   },
   watch:{
-    activeIndex(val){
-      if(val===1){
-          let datas = [{value:this.pointsInfo.NormalCount,name:"正常"},{value:this.pointsInfo.FaultCount,name:"异常"}]
-          this.$nextTick(() => {
-            this.showPieChart('record-chart',datas)
-          })
-      }
-    }
   },
   created() {
     this.start_barData();
     this.queryPlanRecord()
-    let tt = comm.CurentTime().clock.split(" ")[0];
+    // let tt = comm.CurentTime().clock.split(" ")[0];
+    this.queryUInspectionConfig()
   },
   mounted() {}
 };
@@ -956,4 +966,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='scss'>
 @import 'InspectionRecords.scss';
+$img-url:'/static/image/';
+.set-inspection-time{
+  .el-dialog{
+    background: url(#{$img-url}task/inspection.png);
+    background-size: 100% 100%;
+    .el-input__inner{
+      height: 46px;
+      background: #18406b;
+      border: 1px solid #05679e;
+    }
+  }
+}
 </style>

@@ -39,7 +39,7 @@
         </el-dialog>
         <ul class="report-header plan-header clearfix"> 
             <!-- <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li> -->
-            <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
+           <!--  <li class="l"><button class="zw-btn zw-btn-export">导出</button></li> -->
             <li class="l"><button class="zw-btn zw-btn-primary" @click="deletePlans()"><i class="el-icon-delete"></i> 删除</button></li>
             <li class="l select-plan-time">
                 <span class="label">生成计划</span>
@@ -526,7 +526,28 @@ export default {
             }
             this.order = column.order
             this.queryData()
-        }   
+        },
+        /**
+         * exportFile 导出
+         */
+        exportFile(){
+            Maintenance({
+                FAction:'QueryExportUInspectionPlan',
+                FType:this.queryType?'Advanced':'Normal',
+                Field:this.orderProp,
+                FOrder:this.order,
+                mUMaintenancePlan :this.queryType?this.filterObj:{}
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: '导出失败!请重试'
+                });
+            })
+        },   
     }
 }
 </script>

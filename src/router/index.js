@@ -242,11 +242,50 @@ let routers_item=[
 				children: [
 					{ path: '/',   //设备台账
 						name: 'EquipmentDeskAccount',
-						redirect: '/home/ConfigPage_list/:guid',  
+						component: () => import('@/components/DeviceManagement/EquipmentDeskAccount.vue'),
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,  
 						 },
+					},
+					{ path: 'DeviceInfo/:deviceID',   //设备详情
+						name: 'DeviceInfo',
+						component: () => import('@/components/DeviceManagement/deviceInfo.vue'),
+						redirect:'DeviceInfo/:deviceID/',
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,  
+						 },
+						 children:[
+							 {
+								 path:'',
+								 name:'basicInfo', //设备详情基本信息
+								 component:() => import('@/components/DeviceManagement/basicInfo.vue')
+							 },
+							 {
+								path:'breakingNews/:id',
+								name:'breakingNews',//设备详情大事件
+								component:() => import('@/components/DeviceManagement/breakingNews.vue')
+							 },
+							 {
+								path:'alarmRecord',
+								name:'alarmRecord',
+								component:() => import('@/components/DeviceManagement/alarmRecord.vue')
+							 },
+							 {
+								path:'fixRecord',
+								name:'fixRecord',
+								component:() => import('@/components/DeviceManagement/fixRecord.vue')
+							 },
+							 { path: 'deviceMaintenanceRecord',
+							 name: 'deviceMaintenanceRecord',// 保养管理-保养记录
+							 component: () =>import('@/components/TaskManagement/Maintenance/MaintenanceRecords.vue'),
+							 meta: {
+								 title: '千仞云平台',
+								 requireAuth: true, 
+								},
+						 },
+						 ]
 					},
 					{ path: 'EquipmentStatistics',   //设备统计
 						name: 'EquipmentStatistics',
@@ -262,10 +301,7 @@ let routers_item=[
 					]
 				
 				
-			},
-			
-			
-			
+			},			
 			{ path: 'energy',//能源警管理
 				name: 'energy',
 				component: () => import('@/components/energy'),
@@ -509,6 +545,15 @@ let routers_item=[
 						path: 'MatterRecord',
 						name:'MatterRecord',
 						component: () => import('@/components/TaskManagement/MatterRecord.vue'), //报事
+						meta:{
+							title: '千仞云平台',
+							requireAuth: true, 
+						}
+					},
+					{
+						path: 'AlarmRecord',
+						name:'AlarmRecord',
+						component: () => import('@/components/TaskManagement/AlarmRecord.vue'), //告警记录
 						meta:{
 							title: '千仞云平台',
 							requireAuth: true, 

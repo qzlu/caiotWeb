@@ -5,14 +5,19 @@
                 <el-form-item label="巡检点名称"  prop='InspectionPointName' :rules="[{ required: true, message: '请输入巡检点名称'}]">
                     <el-input v-model="addPoint.InspectionPointName"></el-input>
                 </el-form-item>
-                <el-form-item label="所属区域" prop="AreaID" :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="区域名称" prop="AreaID" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addPoint.AreaID"   placeholder="请选择">
                     <el-option v-for="area in areaList" :key="area.AreaID" :label="area.AreaName" :value="area.AreaID"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="所属系统" prop="SystemParamID" :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="系统名称" prop="SystemParamID" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addPoint.SystemParamID"   placeholder="请选择">
                     <el-option v-for="system in systemTypeList" :key="system.Key" :label="system.ParamValue" :value="system.Key"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="设备类型" prop="DeviceTypeID" :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addPoint.DeviceTypeID"   placeholder="请选择">
+                    <el-option v-for="device in allDevice" :key="device.DeviceTypeID" :label="device.DeviceTypeName" :value="device.DeviceTypeID"></el-option>
                   </el-select>
                 </el-form-item>
             </el-form>
@@ -77,7 +82,7 @@
     </div>
 </template>
 <script>
-import {system,Inspection,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
+import {system,Inspection,MeterReading,ReportMatter} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {zwPagination,zwTree} from '@/zw-components/index'
 export default {
@@ -94,12 +99,16 @@ export default {
                     label: '巡检点'
                 },
                 {
+                    prop: 'DeviceTypeName',
+                    label: '设备类型'
+                },
+                {
                     prop: 'AreaName',
-                    label: '所属区域'
+                    label: '区域名称'
                 },
                 {
                     prop: 'Value',
-                    label: '所属系统'
+                    label: '系统名称'
                 }
             ],
             filterText:'',
@@ -110,7 +119,8 @@ export default {
                 ProjectID:localStorage.getItem('projectid'),
                 AreaID:null,
                 FDescription:'',
-                SystemParamID:null
+                SystemParamID:null,
+                DeviceTypeID:null
             },
             addPoint:{ //新增或编辑巡检点数据
                 InspectionPointName:'',
@@ -118,7 +128,8 @@ export default {
                 AreaID:null,
                 FDescription:'',
                 SystemParamID:null,
-                ID:null
+                ID:null,
+                DeviceTypeID:null
             },
             areaList:[], //区域列表
             systemTypeList:[], //系统分类
@@ -126,7 +137,8 @@ export default {
             showImportDialog:false,
             allDefaultPoint:[],//设备导入的所有巡检点
             defaultProps:{children:'list',disabled:'disabled'},
-            defaultChecked:[]//已经导入的
+            defaultChecked:[],//已经导入的
+            allDevice:[] //所有设备
         }
     },
     components:{
@@ -145,6 +157,7 @@ export default {
         this.queryData()
         this.queryAreaType()
         this.querySystemType()
+        this.queryAllDeviceType()
     },
     mounted(){
 
@@ -248,6 +261,18 @@ export default {
             })
         },
         /**
+         * 获取所有设备类型
+         */
+        queryAllDeviceType(){
+            system({
+                FAction:'QueryDeviceType',
+            })
+            .then(data => {
+                this.allDevice = data.FObject
+            })
+            .catch(err => {})
+        },
+        /**
          * 新增或编辑巡检点
          */
         async addUInspectionPoint(){
@@ -322,6 +347,7 @@ export default {
                   type: 'success',
                   message: '删除成功!'
                 });
+                this.pageIndex = 1
                 this.queryData()
             })
             .catch(error => {

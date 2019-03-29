@@ -4,9 +4,10 @@
             <li class="l">
                 <span class="label" style="font-size:14px;">月份　</span>
                 <el-date-picker
+                  class="month-picker"
                   v-model="time"
                   type="month"
-                  @change="queryData"
+                  @change="queryData()"
                   placeholder="选择日期"
                 ></el-date-picker>
             </li>
@@ -14,7 +15,7 @@
                 <button class="zw-btn zw-btn-export">导出</button>
             </li>
             <li class="l">
-                <button class="zw-btn zw-btn-report">报事月报</button>
+               <!--  <button class="zw-btn zw-btn-report">报事月报</button> -->
             </li>
             <li class="r">
                 <el-input class="search-input" placeholder="搜索关键字" v-model="filterText">
@@ -49,6 +50,7 @@
                </el-table-column>
             </el-table>
         </div>
+        <zw-pagination @pageIndexChange='handleCurrentChange' :pageIndex='pageIndex' :total='total'></zw-pagination>
         <!-- 报事记录 -->
         <el-dialog class="report-dialog"  title="报事记录" :visible.sync="show">
             <div class="export-container"><button class="zw-btn export " @click="exportRecord"><i class="iconfont icon-Export"></i>导出</button></div>
@@ -87,6 +89,7 @@
 <script>
 import table from '@/mixins/table' //表格混入数据
 import { ReportMatter } from '@/request/api.js';
+import {zwPagination} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -95,6 +98,10 @@ export default {
                 {
                     prop: 'RowNum',
                     label: '序号'
+                },
+                {
+                    prop:'OrderContent',
+                    label:'报事名称'
                 },
                 {
                     prop: 'OrderCreateDateTime',
@@ -125,6 +132,9 @@ export default {
             recordsInfo:[]
         }
     },
+    components:{
+        zwPagination
+    },
     watch:{
         filterText(val){
             this.queryData()
@@ -145,7 +155,7 @@ export default {
                 FOrder:this.order,
                 PageIndex:this.pageIndex,
                 PageSize:10,
-                FType:'1,2',
+                FType:'2',
                 SearchKey:text
             })
             .then((data) => {
@@ -154,6 +164,13 @@ export default {
             }).catch((err) => {
                 
             });
+        },
+        /**
+         * handleCurrentChange 页码改变时触发
+         */
+        handleCurrentChange(val){
+            this.pageIndex = val
+            this.queryData(this.filterText)
         },
         /**
          * 查询报事记录详情

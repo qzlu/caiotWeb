@@ -48,7 +48,7 @@
         </el-dialog>
         <ul class="report-header plan-header clearfix"> 
             <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li>
-            <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
+            <li class="l"><button class="zw-btn zw-btn-export"  @click="exportFile">导出</button></li>
             <li class="l"><button class="zw-btn zw-btn-primary" @click="deletePlans()"><i class="el-icon-delete"></i> 删除</button></li>
             <li class="l select-plan-time">
                 <span class="label">生成计划</span>
@@ -325,7 +325,7 @@ export default {
     methods:{
         renderContent(h, { node, data, store }){
             return(
-                <span>{data.Aream?data.Aream:data.InspectionPointName}</span>
+                <span>{data.PatrolPointName}</span>
             )
         },
         /**
@@ -522,6 +522,7 @@ export default {
             })
             .then(data => {
                 this.pointData = data.FObject
+                console.log(this.pointData);
                 this.loading = false
             })
             .catch(error => {
@@ -615,7 +616,28 @@ export default {
             this.orderProp = column.prop
             this.order = column.order
             this.queryData()
-        }   
+        },
+        /**
+         * exportFile 导出
+         */
+        exportFile(){
+            Patrol({
+                FAction:'QueryExportingUPatrolPlan',
+                FType:this.queryType?'Advanced':'Normal',
+                Field:this.orderProp,
+                FOrder:this.order,
+                mSearchPatrolPlan:this.queryType?this.filterObj:{}
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: '导出失败!请重试'
+                });
+            })
+        },   
     }
 }
 </script>

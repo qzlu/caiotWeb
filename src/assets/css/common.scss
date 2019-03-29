@@ -11,6 +11,29 @@ $img-url:'/static/image/';
     >li{
         margin-left: 10px;
     }
+    .el-date-editor{
+        width: 200px;
+        height: 46px;
+        .el-input__inner{
+            width: 200px;
+            height: 46px;
+            background: #042E74;
+            border-color: #005099;
+            color: white
+        }
+    }
+    .el-date-editor.el-date-editor--daterange{
+        width: 270px;
+        background: #042E74;
+        border-color: #005099;
+        .el-range-input{
+            background: #042E74;
+            color: white;
+        }
+        .el-range-separator{
+            color: white
+        }
+    }
 }
 .zw-btn{
     width: 88px;
@@ -75,6 +98,24 @@ $img-url:'/static/image/';
 .zw-btn-report:active,.zw-btn-report:hover{
     background-image: url('#{$img-url}task/b6.png');
 }
+.zw-btn-detail{
+    background-image: url('#{$img-url}count/button_nor_details.png')
+}
+.zw-btn-detail:active,.zw-btn-detail:hover{
+    background-image: url('#{$img-url}count/button_sel_details.png')
+}
+.zw-btn-edit{
+    background-image: url('#{$img-url}count/button_nor_edit.png')
+}
+.zw-btn-edit:active,.zw-btn-edit:hover{
+    background-image: url('#{$img-url}count/button_sel_edit.png')
+}
+.zw-btn-delete{
+    background-image: url('#{$img-url}count/button_nor_delete.png')
+}
+.zw-btn-delete:active,.zw-btn-delete:hover{
+    background-image: url('#{$img-url}count/button_sel_delete.png')
+}
 .search-input{
     width: 174px;
     margin-right: 10px;
@@ -94,7 +135,7 @@ $img-url:'/static/image/';
     }
 }
 .el-input__inner{
-    color: #F1F1F2
+    color: #F1F1F2;
 }
 .el-date-picker__time-header{
     .el-input__inner{
@@ -104,7 +145,7 @@ $img-url:'/static/image/';
 .pointer{
     cursor: pointer;
 }
-.el-date-editor.el-input.el-date-editor--month,.el-date-editor.el-input.el-date-editor--month .el-input__inner{
+.month-picker.el-date-editor.el-input.el-date-editor--month,.month-picker.el-date-editor.el-input.el-date-editor--month .el-input__inner{
     width: 200px;
     height: 46px;
     background: #042E74;

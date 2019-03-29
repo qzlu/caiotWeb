@@ -7,15 +7,6 @@
 
       <section class="pr_are">
         <ul class="clearfix">
-          <li class="first ">
-            <div class="imtems">
-              <p>
-                {{t}}
-              </p>
-            </div>
-						<div class="step-border"></div>
-            <!--2018-->
-          </li>
           <li v-for="(items,key) in dl_datalist" :class="{'d':key%2!=0}">
             <h2>
               {{items.HappenContext}}
@@ -37,32 +28,15 @@
               <div class="step-arrow-border"></div>
             </div>
           </li>
-
-          <!-- <li class="d">
- 	     	    	<h2>告警</h2><p class="gt">2017.6.12 22:23</p>
- 	     	    	<div class="imtems"><p><img src="/static/image/indexdetail/avb.png"></p></div>
- 	     	    </li>
- 	     	    
- 	     	    <li >
- 	     	    	<h2>保养</h2><p class="gt">2017.6.12 22:23</p>
- 	     	    	<div class="imtems"><p><img src="/static/image/indexdetail/avb.png"></p></div>
- 	     	    </li>
- 	     	    <li class="d">
- 	     	    	<h2>故障</h2><p class="gt">2017.6.12 22:23</p>
- 	     	    	<div class="imtems"><p><img src="/static/image/indexdetail/avb.png"></p></div>
- 	     	    </li>
- 	     	    <li >
- 	     	    	<h2>保养</h2><p class="gt">2017.6.12 22:23</p>
- 	     	    	<div class="imtems"><p><img src="/static/image/indexdetail/avb.png"></p></div>
- 	     	    </li>
- 	     	    <li class="d">
- 	     	    	<h2>故障</h2><p class="gt">2017.6.12 22:23</p>
- 	     	    	<div class="imtems"><p><img src="/static/image/indexdetail/avb.png"></p></div>
- 	     	    </li>
- 	     	    <li >
- 	     	    	<h2>保养</h2><p class="gt">2017.6.12 22:23</p>
- 	     	    	<div class="imtems"><p><img src="/static/image/indexdetail/avb.png"></p></div>
-          </li>-->
+          <li class="first ">
+            <div class="imtems">
+              <p>
+                {{t}}
+              </p>
+            </div>
+						<div class="step-border"></div>
+            <!--2018-->
+          </li>
         </ul>
       </section>
     </div>
@@ -76,7 +50,7 @@ import {project} from '@/request/api';
 export default {
   data() {
     return {
-      dl_datalist: "",
+      dl_datalist: [],
       t: ""
     };
   },
@@ -92,7 +66,7 @@ export default {
           DeviceID: this.$route.params.id //产品自己id
         })
         .then(data => {
-          this.dl_datalist = data.FObject;
+          this.dl_datalist = data.FObject.reverse();
           resolve("succ");
         })
         .catch(err => {
@@ -145,6 +119,7 @@ a {
 		white-space: nowrap;
     overflow-y:hidden;
     text-align: left;
+    padding-left:30px;
 }
 .pr_top .pr_are ul li {
   position: relative;
@@ -201,7 +176,7 @@ a {
   position: relative;
   left:3px;
 }
-.pr_top .pr_are ul li:nth-of-type(2n+1) .step-arrow{
+.pr_top .pr_are ul li:nth-of-type(2n) .step-arrow{
   transform:rotate(180deg);
   transform-origin: 0 50%;
   margin-top: -32px;

@@ -114,7 +114,7 @@
             <li class="l">
               <span class="label">月份　</span>
               <el-date-picker
-                class=""
+                class="month-picker"
                 v-model="time"
                 type="month"
                 @change="selectTime"

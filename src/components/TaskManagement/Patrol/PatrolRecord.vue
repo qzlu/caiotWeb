@@ -100,7 +100,9 @@
       </div>
       <section class="btn_baritems">
         <div class="l showitem01">
-          <section id="record-chart" style="height:183px; width: 90%;"></section>
+          <section id="record-chart" style="height:183px; width: 90%;">
+            <pie-chart :data='chartData' :color='["#00D294", "#89192E"]'></pie-chart>
+          </section>
           <div>
             <div class="atc_title">
               <p>巡更点数</p>
@@ -138,7 +140,7 @@
             <section class="ui_box">
               <h5>{{item.MeterReadingPlanName}}</h5>
               <div class="l status">
-                  {{inspectionStateArr[item.MeterReadingState]}}
+                  {{inspectionStateArr[item.PatrolState]}}
               </div>
               <div class="r itext">
                 <p>
@@ -146,7 +148,7 @@
                   <span class="igh">待巡更</span>
                   <span class="hgy">
                     <!--70-->
-                    {{item.MeterReadingPointCount - item.NormalCount - item.FaultCount}}
+                    {{item.PatrolPointCount - item.NormalCount - item.FaultCount}}
                   </span>
                 </p>
                 <p>
@@ -197,6 +199,7 @@
                header-row-class-name="el-table-header"
                :row-class-name="tableRowClassName"
                >
+               <el-table-column type="index" label="序号" width="90"></el-table-column>
                <el-table-column
                  v-for="item in tableLabel"
                  :key="item.prop"
@@ -221,6 +224,7 @@ var echarts = require("echarts");
 import * as comm from "@/assets/js/pro_common";
 import {Inspection,FileUpLoad,project,Patrol} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
+import {pieChart} from '@/zw-components/index'
 export default {
   mixins:[table],
   data() {
@@ -238,11 +242,8 @@ export default {
       records:[],
       showReport:false,
       dateReport:{},
+      chartData:{},
       tableLabel:[
-          {
-            prop: 'RowNum',
-            label: '序号'
-          },
           {
             prop: 'PatrolObject',
             label: '巡更路线'
@@ -268,71 +269,15 @@ export default {
       inspectionStateArr:['待巡更','巡更中','已完成','逾期'],
     };
   },
+  components:{
+    pieChart
+  },
   methods: {
     /**
      * 人工巡更选择时间
      */
     selectTime(val){
       this.queryPlanRecord()
-    },
-    /**
-     * 绘制饼图
-     * id 图形容器id
-     * data 数据
-     */
-    showPieChart(id,data){
-        var dom = document.getElementById(id);
-        var myChart = echarts.init(dom);
-        var app = {};
-        var option = null;
-        app.title = "环形图";
-
-        option = {
-          tooltip: {
-            trigger: "item",
-            formatter: "{b}: {c} ({d}%)"
-          },
-          legend: {
-            orient: "vertical",
-            x: "219px",
-            y: "center",
-            textStyle: { color: "#fff" },
-            itemWidth: 13,
-            itemHeight: 13,
-            data: ["正常", "异常"]
-          },
-          series: [
-            {
-              name: "访问来源",
-              type: "pie",
-              radius: ["50", "60"],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {
-                  show: false,
-                  position: "center"
-                },
-                emphasis: {
-                  show: true,
-                  textStyle: {
-                    fontSize: "30",
-                    fontWeight: "bold"
-                  }
-                }
-              },
-              labelLine: {
-                normal: {
-                  show: false
-                }
-              },
-              data: data
-            }
-          ],
-          color: ["#00D294", "#89192E"]
-        };
-        if (option && typeof option === "object") {
-          myChart.setOption(option, true);
-        }
     },
     /**
      * 164.查询人工巡更计划信息
@@ -345,11 +290,12 @@ export default {
         })
         .then(data => {
           this.totalInfo = data.FObject.Table?data.FObject.Table[0]:{}
-          this.plans = data.FObject.Table1?data.FObject.Table1:[]
+          this.plans = data.FObject.Table1?data.FObject.Table1.filter(item => item.PatrolState>0):[]
           let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"}]
-          this.$nextTick(() => {
-            this.showPieChart('record-chart',datas)
-          })
+          this.chartData = {
+            columns:['正常','异常'],
+            rows:datas
+          }
           if(this.plans[0]){
             this.queryPlan(this.plans[0].ID)
           }else{
@@ -387,7 +333,6 @@ export default {
           FDateTime:this.time.toLocaleDateString().replace(/\//ig,'-')
         })
         .then(data => {
-          console.log(data);
           this.dateReport = data.FObject
           this.showReport = true
         })
@@ -399,7 +344,7 @@ export default {
       if(this.dateReport.Table.length ===0){
         return
       }
-      let fileName = localStorage.getItem("projectname") + '人工巡更' +  this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1)
+      let fileName = localStorage.getItem("projectname") + '人工巡更' +  this.time.getFullYear() + comm.formatNumber(this.time.getMonth()+1)+comm.formatNumber((this.time.getDate()))
       await new Promise(resolve => {
         this.$nextTick(() => {
           resolve()

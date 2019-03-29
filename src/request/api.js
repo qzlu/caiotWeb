@@ -21,6 +21,8 @@ const Monitor = p => post('Monitor',p)
 const Maintenance = p => post('Maintenance',p)
 const Supplies = p => post('Supplies',p)
 const ReportMatter = p => post('ReportMatter', p)
+const Device = p => post('Device',p)
+const HandlingEvents = p => post('HandlingEvents',p)
 export{
     login,
     project,
@@ -35,5 +37,7 @@ export{
     Monitor,
     Maintenance,
     Supplies,
-    ReportMatter
+    ReportMatter,
+    Device,
+    HandlingEvents
 }

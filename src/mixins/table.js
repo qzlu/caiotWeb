@@ -13,6 +13,7 @@ export default{
             orderProp:'',//排序字段
             order:'', //升序还是降序
             selectArr:[], //表格多选
+            filterText:''
         }
     },
     methods: {

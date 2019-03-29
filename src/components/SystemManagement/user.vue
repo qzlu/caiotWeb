@@ -4,26 +4,26 @@
         <div class="config-dialog">
             <el-dialog  :title="title" :visible.sync="show" width="676" class="zw-dialog">
                 <el-form :model='addFormData' ref='form' inline>
-                    <el-form-item label="所属角色" prop="FRoleGUID" :rules="[{ required: true, message: '请选择'}]">
-                      <el-select v-model="addFormData.FRoleGUID"   placeholder="请选择角色">
-                        <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option>
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item label="用户名称" prop="FUserNickname" :rules="[{ required: true, message: '请输入用户名称'}]">
+<!--                     <el-form-item label="用户名称" prop="FUserNickname" :rules="[{ required: true, message: '请输入用户名称'}]">
                         <el-input v-model="addFormData.FUserNickname"></el-input>
-                    </el-form-item>
+                    </el-form-item> -->
                     <el-form-item label="账号" prop="FUserName" :rules="FUserNameRule">
                         <el-input v-model="addFormData.FUserName"></el-input>
                     </el-form-item>
-                    <el-form-item label="联系人" prop="FContacts" :rules="[{ required: true, message: '请输入联系人'}]">
+                    <el-form-item label="密码" prop="FPassword">
+                        <span style="margin-left:10px;">{{addFormData.FPassword}}</span>
+                        <!-- <el-input v-model="addFormData.FPassword" :disabled="true"></el-input> -->
+                    </el-form-item>
+                    <el-form-item label="用户名" prop="FContacts" :rules="[{ required: true, message: '请输入用户名'}]">
                         <el-input v-model="addFormData.FContacts"></el-input>
                     </el-form-item>
                     <el-form-item label="电话号码" prop="FTelephone" :rules="FTelephoneRule">
                         <el-input v-model="addFormData.FTelephone"></el-input>
                     </el-form-item>
-                    <el-form-item label="密码" prop="FPassword">
-                        <span style="margin-left:10px;">{{addFormData.FPassword}}</span>
-                        <!-- <el-input v-model="addFormData.FPassword" :disabled="true"></el-input> -->
+                    <el-form-item label="所属角色" prop="FRoleGUID" :rules="[{ required: true, message: '请选择'}]">
+                      <el-select v-model="addFormData.FRoleGUID"   placeholder="请选择角色">
+                        <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option>
+                      </el-select>
                     </el-form-item>
                 </el-form>
                 <div class="submit">
@@ -112,8 +112,8 @@ export default {
                     label: '账号'
                 },
                 {
-                    prop: 'FUserNickname',
-                    label: '用户名称'
+                    prop: 'FContacts',
+                    label: '用户名'
                 },
                 {
                     prop: 'FName',
@@ -123,10 +123,10 @@ export default {
                     prop: 'ProjectName',
                     label: '所属项目'
                 },
-                {
+/*                 {
                     prop: 'FPassword',
                     label: '密码'
-                }
+                } */
             ],
             roleList:null, // 新增或修改弹框中的角色列表
             //新增用户默认数据
@@ -290,6 +290,7 @@ export default {
          * 
          */
         addUser(){
+            this.addFormData.FUserNickname =  this.addFormData.FContacts
             system({
                 FAction:this.type?'UpdateTUsers':'AddTUsers',
                 FRoleGUID:this.addFormData.FRoleGUID,

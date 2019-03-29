@@ -146,7 +146,8 @@ export default {
             .then(data => {
               this.$message({
                 message: "登录成功！",
-                type: "success"
+                type: "success",
+                duration:1000
               });
               //登录成功，写入用户名       ,iuserName用于用户登录及退出，name用于记住用户
               localStorage.setItem("iuserName", this.ruleForm2.username); //用户账号

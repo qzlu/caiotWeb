@@ -249,7 +249,7 @@
         <!-- <li>综合抄表</li> -->
       </ul>
     </div>
-    <div class="bg_are" v-show="activeIndex === 0">
+    <div class="bg_are" v-if="activeIndex === 0">
       <div class="ich">
         <div class="time">
           <p class="l name">日期</p>
@@ -266,7 +266,7 @@
         </div>
 
         <div class="ntb01" @click="one_change">一键抄表</div>
-        <div class="ntb02" @click="showSetTimeDialog = true">设置自动抄表</div>
+        <div class="ntb02" @click="showSetTimeDialog = true" >设置自动抄表</div>
         <div class="ntb03" @click="make_paf">报告预览</div>
         <div class="ntb04" @click="queryExportUMeterReadingRecordInfo">导出</div>
         <!-- <div class="ntb05">审核</div> -->
@@ -280,7 +280,9 @@
       </div>
       <section class="btn_baritems">
         <div class="l showitem01" v-if="bar_value">
-          <section id="show_bar" style="height:183px; width: 90%;"></section>
+          <section id="show_bar" style="height:183px; width: 90%;">
+            <pie-chart :data="chartData" :color='["#00D294", "#89192E"]'></pie-chart>
+          </section>
           <div>
             <div class="atc_title">
               <p>抄表点数</p>
@@ -397,7 +399,7 @@
         <!--<iframe :src="exl_url"    frameborder="0" scrolling="yes"  class="iframe_tiem"></iframe>-->
       </div>
     </div>
-    <div class="bg_are" v-show="activeIndex === 1">
+    <div class="bg_are" v-if="activeIndex === 1">
       <ul class="ich record-header">
         <li class="l">
           <span class="label">日期</span>
@@ -429,7 +431,9 @@
       </div>
       <section class="btn_baritems">
         <div class="l showitem01">
-          <section id="record-chart" style="height:183px; width: 90%;"></section>
+          <section id="record-chart" style="height:183px; width: 90%;">
+            <pie-chart :data='chartData1' :color='["#00D294", "#89192E"]'></pie-chart>
+          </section>
           <div>
             <div class="atc_title">
               <p>抄表点数</p>
@@ -551,6 +555,7 @@ var echarts = require("echarts");
 import * as comm from "@/assets/js/pro_common";
 import {Inspection,FileUpLoad,project,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
+import {pieChart} from '@/zw-components/index'
 export default {
   mixins:[table],
   data() {
@@ -569,7 +574,7 @@ export default {
       exl_url: "", //用于在div内浏览的地址
       exl_hef: "", //用于导出exl，用split()分割后，得到直接地址
       currt: 0, //一键抄表遮罩层
-
+      chartData:{},
       all_table: [], //所有表格数据。
       activeIndex: 0,
       // exl_url:"http://www.szqianren.cn/CreateFile/新都汇/新都汇物联抄表记录2018112612.xls",
@@ -586,6 +591,7 @@ export default {
       showReport:false,
       monthReport:{},
       monthReport1:{},
+      chartData1:{},
       tableLabel:[
           {
             prop: 'RowNum',
@@ -692,6 +698,9 @@ export default {
       planID1:''
     };
   },
+  components:{
+    pieChart
+  },
   methods: {
     async make_paf() {
       //生成pdf文件的方法
@@ -781,9 +790,10 @@ export default {
           this.bar_value = data.FObject.Table[0]; //把环形图值付给它。再在页面读取总数等值
           this.table2 = data.FObject.Table1; //把抄表总况列表值付给table2。
           let datas = [{value:this.bar_value.NormalCount,name:"正常"},{value:this.bar_value.FaultCount,name:"异常"}]
-          this.$nextTick(()=>{
-            this.showPieChart('show_bar',datas)
-          })
+          this.chartData = {
+            columns:['正常','异常'],
+            rows:datas
+          }
           if (data.FObject.Table1.length > 0) {
             this.li_item_click("0", data.FObject.Table1[0].ID); //默认第一个li点击，把第一个id带过去
           }else{
@@ -812,7 +822,6 @@ export default {
      * 设置自动抄表时间
      */
     AddUMeterReadingConfig(){
-      console.log(this.month,this.timeArr)
       if(!this.month.length||!this.timeArr.length){
         this.$message({
           type: 'error',
@@ -852,6 +861,21 @@ export default {
       })
     },
     /**
+     * 231.获取物联抄表时间设置
+     */
+    queryUMeterReadingConfig(){
+      MeterReading({
+        FAction:'QueryUMeterReadingConfig'
+      })
+      .then(data => {
+        this.month = data.FObject.Table.map(item => parseInt(item.MeterReadingMonth))
+        this.timeArr = data.FObject.Table1.map(item => {
+          return item.FDayAndTime.replace(/号/,'').split(' ')
+        })
+      })
+      .catch(err => {})
+    },
+    /**
      * 导出（物联抄表）
      */
     queryExportUMeterReadingRecordInfo(){
@@ -876,65 +900,6 @@ export default {
       this.queryPlanRecord()
     },
     /**
-     * 绘制饼图
-     * id 图形容器id
-     * data 数据
-     */
-    showPieChart(id,data){
-        var dom = document.getElementById(id);
-        var myChart = echarts.init(dom);
-        var app = {};
-        var option = null;
-        app.title = "环形图";
-
-        option = {
-          tooltip: {
-            trigger: "item",
-            formatter: "{b}: {c} ({d}%)"
-          },
-          legend: {
-            orient: "vertical",
-            x: "219px",
-            y: "center",
-            textStyle: { color: "#fff" },
-            itemWidth: 13,
-            itemHeight: 13,
-            data: ["正常", "异常"]
-          },
-          series: [
-            {
-              name: "访问来源",
-              type: "pie",
-              radius: ["50", "60"],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {
-                  show: false,
-                  position: "center"
-                },
-                emphasis: {
-                  show: true,
-                  textStyle: {
-                    fontSize: "30",
-                    fontWeight: "bold"
-                  }
-                }
-              },
-              labelLine: {
-                normal: {
-                  show: false
-                }
-              },
-              data: data
-            }
-          ],
-          color: ["#00D294", "#89192E"]
-        };
-        if (option && typeof option === "object") {
-          myChart.setOption(option, true);
-        }
-    },
-    /**
      * 查询人工抄表信息
      */
     queryPlanRecord(){
@@ -946,11 +911,12 @@ export default {
         })
         .then(data => {
           this.totalInfo = data.FObject.Table?data.FObject.Table[0]:{}
-          this.plans = data.FObject.Table1?data.FObject.Table1:[]
+          this.plans = data.FObject.Table1?data.FObject.Table1.filter(item => item.MeterReadingState>0):[]
           let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"}]
-/*           this.$nextTick(() => {
-            this.showPieChart('record-chart',datas)
-          }) */
+          this.chartData1 = {
+            columns:['正常','异常'],
+            rows:datas
+          }
           if(this.plans[0]){
             this.queryPlan(this.plans[0].ID)
           }else{
@@ -1021,7 +987,7 @@ export default {
       if(this.monthReport.Table.length ===0){
         return
       }
-      let fileName = localStorage.getItem("projectname") + '人工抄表' +  this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1)
+      let fileName = localStorage.getItem("projectname") + '人工抄表' +  this.time.getFullYear() + comm.formatNumber(this.time.getMonth()+1)
       await new Promise(resolve => {
         this.$nextTick(() => {
           resolve()
@@ -1075,18 +1041,11 @@ export default {
     
   },
   watch:{
-    activeIndex(val){
-      if(val===1){
-          let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"}]
-          this.$nextTick(() => {
-            this.showPieChart('record-chart',datas)
-          })
-      }
-    }
   },
   created() {
     this.start_barData();
     this.queryPlanRecord()
+    this.queryUMeterReadingConfig()
     let tt = comm.CurentTime().clock.split(" ")[0];
   },
   mounted() {}
@@ -1112,26 +1071,14 @@ $img-url:'/static/image/';
       }
     }
   }
-
-  .bg_are{
-    .ich{
-      .ntb02{
-        background-size: 100% 100%;
-        padding-left: 14px;
-      }
-      .ntb02:hover,.ntb02:active{
-        background-size: 100% 100%;
-      }
-    }
-  }
   .zw-dialog.set-time-dialog{
     .el-dialog{
-      width: 530px;
+      width: 540px;
       height: 262px;
       background: url('#{$img-url}admin/btn3.png') center no-repeat;
       background-size: 100% 100%;
       .el-input{
-        width: 140px;
+        width: 150px;
         &__inner{
           background:rgba(24,64,107,1);
           border:1px solid rgba(5,103,158,1);

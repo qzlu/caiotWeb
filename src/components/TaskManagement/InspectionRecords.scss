@@ -60,17 +60,19 @@ $img-url:'/static/image/';
   height: 46px;
 }
 .Ins_records .top ul li {
-  width: 137px;
+  width: 100px;
   height: 46px;
   line-height: 46px;
   font-size: 16px;
   margin: 0 3px;
   float: left;
-	background: url(/static/image/task/t2.png);
+  background: url(/static/image/task/t2.png);
+  background-size: 100% 100%;
 	cursor: pointer;
 }
 .Ins_records .top ul li.active {
   background: url(/static/image/task/t1.png);
+  background-size: 100% 100%;
 }
 .Ins_records .bg_are {
   height: 864px;
@@ -117,8 +119,10 @@ $img-url:'/static/image/';
 .Ins_records .bg_are .ich .ntb02 {
   width: 119px;
   height: 46px;
+  padding-left: 14px;
   line-height: 46px;
   background: url(/static/image/task/b3.png);
+  background-size: 100% 100%;
   float: left;
   text-indent: 15px;
   margin-right: 8px;
@@ -126,6 +130,7 @@ $img-url:'/static/image/';
 }
 .Ins_records .bg_are .ich .ntb02:hover {
   background: url(/static/image/task/b4.png);
+  background-size: 100% 100%;
 }
 .Ins_records .bg_are .ich .ntb03 {
   width: 119px;

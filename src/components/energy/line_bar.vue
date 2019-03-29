@@ -35,7 +35,6 @@ export default {
   	},
   	
   	 getMessage(d,legend_name){ 	//从父组件传过来的数组 	,然后组件
-  	  
   	    this.typeName=[];this.message=[];this.gName=[];
   	  	this.gName=legend_name;//['当日','昨日','历史平均'] 	  	
   	  	/*

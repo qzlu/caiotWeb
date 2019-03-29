@@ -7,13 +7,13 @@
                     <el-form-item v-for="item in addFormList" :key="item.prop" :prop="item.prop" :label="item.label" :rules="item.rule">
                       <el-input v-model="addFormData[item.prop]"></el-input>
                     </el-form-item>
-                    <el-form-item label="角色类型" :rules="[{ required: true, message: '请选择'}]">
+<!--                     <el-form-item label="角色类型" :rules="[{ required: true, message: '请选择'}]">
                       <el-select v-model="addFormData.FType" placeholder="请选择角色类型">
                         <el-option label="超级管理员" value="0"></el-option>
                         <el-option label="系统管理员" value="1"></el-option>
                         <el-option label="其他" value="2"></el-option>
                       </el-select>
-                    </el-form-item>
+                    </el-form-item> -->
                 </el-form>
                 <div class="submit">
                     <button class="zw-btn zw-btn-primary" @click="submit()">确定</button>

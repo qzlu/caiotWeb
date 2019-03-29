@@ -48,7 +48,7 @@
         </el-dialog>
         <ul class="report-header plan-header clearfix"> 
             <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li>
-            <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
+            <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile">导出</button></li>
             <li class="l"><button class="zw-btn zw-btn-primary" @click="deletePlans()"><i class="el-icon-delete"></i> 删除</button></li>
             <li class="l select-plan-time">
                 <span class="label">生成计划</span>
@@ -74,7 +74,9 @@
                         </li>
                         <li>
                             <span>路线名称</span>
-                            <el-input v-model="filterObj.InspectionLineName"></el-input>
+                            <el-select v-model="filterObj.InspectionLineName"  filterable value-key="ID"  placeholder="请选择">
+                                <el-option v-for="road in roadDatas" :key="road.ID" :label="road.InspectionLineName" :value="road.InspectionLineName"></el-option>
+                            </el-select>
                         </li>
                         <li class="plan-select-time">
                             <span>巡检时间</span>
@@ -207,6 +209,10 @@ export default {
                 }
             ],
             timeList:[{
+                label:'全部',
+                value:0
+            },
+            {
                 label:'日巡检',
                 value:1
             },
@@ -223,7 +229,7 @@ export default {
             defaultFilterObj:{
                 InspectionPlanName:'',
                 InspectionLineName:'',
-                InspectionCycle:1,
+                InspectionCycle:0,
                 InspectionUserGUID:'',
                 StartDateTime:'',
                 EndDateTime:''
@@ -231,13 +237,13 @@ export default {
             filterObj:{ //高级搜索条件
                 InspectionPlanName:'',
                 InspectionLineName:'',
-                InspectionCycle:1,
+                InspectionCycle:0,
                 InspectionUserGUID:'',
                 StartDateTime:'',
                 EndDateTime:''
             },
             time:'',
-            planTime:'',
+            planTime:new Date(),
             showFilterBox:false,
             queryType:0,//查询方式，0为普通查询，1为高级搜索
             type:0,//0为新增 1为编辑计划
@@ -596,7 +602,7 @@ export default {
             this.title = '新增巡检计划'
             this.type = 0
             this.inspectionCycleName = '临时巡检'
-            this.planTime = ''
+            this.planTime = new Date()
             this.addPlanData = Object.assign({},this.defaultAddPlanData)
         },
         /**
@@ -615,6 +621,27 @@ export default {
             this.$set(this.addPlanData,'InspectionLineName',row.InspectionLineName)
             this.$set(this.addPlanData,'ID',row.ID)
             this.queryPoints(row.InspectionLineID)
+        },
+        /**
+         * exportFile 导出
+         */
+        exportFile(){
+            Inspection({
+                FAction:'QueryExportUInspectionPlan',
+                FType:this.queryType?'Advanced':'Normal',
+                Field:this.orderProp,
+                FOrder:this.order,
+                mSearchInspectionPlan:this.queryType?this.filterObj:{}
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: '导出失败!请重试'
+                });
+            })
         },
     }
 }

@@ -544,6 +544,7 @@ export default {
          * type 0:为新增 1：为修改
          */
         addOrUpdatedRoad(type) {
+            this.show = false
             return new Promise((resolve,reject) => {
                     Inspection({
                         FAction:type?'UpdateUInspectionLineInfo':'AddUInspectionLineInfo',
@@ -551,7 +552,6 @@ export default {
                     })
                     .then(data => {
                         this.queryData()
-                        this.show = false
                         this.$message({
                           type: 'success',
                           message: type?'修改成功！':'新增成功'

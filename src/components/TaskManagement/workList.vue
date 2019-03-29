@@ -2,10 +2,10 @@
     <div class="work-list">
         <ul class="tab-header clearfix">
             <li :class="{active:tabIndex === 1}" @click="tabIndex = 1">全部</li>
+            <li :class="{active:tabIndex === 5}" @click="tabIndex = 5">待派单</li>
+            <li :class="{active:tabIndex === 4}" @click="tabIndex = 4">待接单</li>
             <li :class="{active:tabIndex === 2}" @click="tabIndex = 2">待完成</li>
             <li :class="{active:tabIndex === 3}" @click="tabIndex = 3">已完成</li>
-            <li :class="{active:tabIndex === 4}" @click="tabIndex = 4">待接单</li>
-            <li :class="{active:tabIndex === 5}" @click="tabIndex = 5">待派单</li>
             <li :class="{active:tabIndex === 6}" @click="tabIndex = 6">已逾期</li>
             <li class="select">
                 <span>工单类型</span> 
@@ -80,7 +80,7 @@
                          prop=""
                          label="操作">
                          <template slot-scope="scoped">
-                             <div @click="queryDetail(scoped.row)">
+                             <div class="detail" @click="queryDetail(scoped.row)">
                                 <span>详情</span>
                              </div>
                          </template>
@@ -171,7 +171,7 @@
                          prop=""
                          label="操作">
                          <template slot-scope="scoped">
-                             <div>
+                             <div class="detail">
                                 <span v-if="scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6" @click="beforeChangeUser(scoped.row)">派单</span>
                                 <span v-else @click="queryDetail(scoped.row)">详情</span>                             
                             </div>
@@ -227,7 +227,7 @@
             </ul>
             <div style="margin-top:50px;text-align:center">
                 <button class="zw-btn zw-btn-primary" @click="changeUser()">确定</button>
-                <button class="zw-btn zw-btn-primary" style="margin-left:20px" v-if="workObj.OrderType == 5">误报</button>
+                <button class="zw-btn zw-btn-primary" style="margin-left:20px" v-if="workObj.OrderType == 5" @click="deleteOrdersByAlarm()">误报</button>
             </div>
         </el-dialog>
         <el-dialog title="工单详情" class="show-detail" :visible.sync="showDetail">
@@ -264,8 +264,9 @@
                     </div>
                     <div style="margin-top:39px;">
                         <p class="title"><span class="icon-title"></span>工单进度</p>
-                        <ul class="progress clearfix" v-if="areaArr.length&&workInfo.OrderType!=2">
-                            <li class="clearfix" v-for="(item,index) in areaArr" :key="index">
+                        <!-- 巡检 -->
+                        <ul class="progress clearfix" v-if="areaArr.Table2&&workInfo.OrderType==1">
+                            <li class="clearfix" v-for="(item,index) in areaArr.Table2" :key="index">
                                 <div class="l area-name">
                                     <div>
                                         <span>{{item.AreaName}}</span>
@@ -283,6 +284,47 @@
                                 </ul>
                             </li>
                         </ul>
+                        <!-- 抄表 -->
+                        <ul class="progress clearfix" v-if="areaArr.Table1&&workInfo.OrderType==4">
+                            <li class="clearfix" v-for="(item,index) in areaArr.Table1" :key="index">
+                                <div class="l area-name">
+                                    <div>
+                                        <span>{{item.AreaName}}</span>
+                                        <div :class="{circle:true,finish:!item.FaultCount&&item.AreaState==1,error:item.FaultCount>0,running:!item.FaultCount&&item.AreaState==2,waiting:item.AreaState==3}">
+                                            <div class="circle-inner"></div>
+                                        </div>
+                                    </div>
+                                    <div class="border r"></div>
+                                </div>
+                                <ul class="area-info clearfix">
+                                    <li class="l "><span>待抄表:</span>{{item.WaitingCount}}</li>
+                                    <li class="l "><span>正常:</span>{{item.NormalCount}}</li>
+                                    <li class="l "><span>异常:</span>{{item.FaultCount}}</li><br>
+                                    <li class="time"><span>开始时间:{{item.FStartInspectionTime}}</span><span>结束时间:{{item.FLastInspectionTime}}</span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <!-- 巡更 -->
+                        <ul class="progress clearfix" v-if="areaArr.Table1&&workInfo.OrderType==9">
+                            <li class="clearfix" v-for="(item,index) in areaArr.Table1" :key="index">
+                                <div class="l area-name">
+                                    <div>
+                                        <span>{{item.PatrolPointName}}</span>
+                                        <div :class="{circle:true,waiting:item.PatrolState==0,running:item.PatrolState==1,finish:item.PatrolState==2,error:item.PatrolResult=='异常',}">
+                                            <div class="circle-inner"></div>
+                                        </div>
+                                    </div>
+                                    <div class="border r"></div>
+                                </div>
+                                <ul class="area-info clearfix">
+<!--                                     <li class="l "><span>待抄表:</span>{{item.WaitingCount}}</li>
+                                    <li class="l "><span>正常:</span>{{item.NormalCount}}</li>
+                                    <li class="l "><span>异常:</span>{{item.FaultCount}}</li><br> -->
+                                    <li class="l"><span>开始时间:{{item.FStartInspectionTime}}</span><span>　结束时间:{{item.FLastInspectionTime}}</span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <!-- 保养 -->
                         <ul class="progress clearfix" v-if="areaArr.Table5&&workInfo.OrderType==2">
                             <li class="clearfix" v-for="(item,index) in areaArr.Table5" :key="index">
                                 <div v-if="index !==2">
@@ -344,6 +386,93 @@
                                                     <p>{{areaArr.Table[0].FDescription}}</p>
                                                 </div>
                                                 <div class="collapse-content-item">
+                                                    <h5>实际耗材</h5>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                      <tr class="table-header">
+                                                        <td width="12.5%">序号</td>
+                                                        <td width="12.5%">耗材名称</td>
+                                                        <td width="12.5%">型号</td>
+                                                        <td width="12.5%">单位</td>
+                                                        <td width="12.5%">数量</td>
+                                                      </tr>
+                                                      <tr v-for="(item,key) in areaArr.Table2" :class="{'odd-row':key%2==0}" :key="key">
+                                                        <td>{{key+1}}</td>
+                                                        <td>{{item.SuppliesName}}</td>
+                                                        <td>{{item.SuppliesTypeName}}</td>
+                                                        <td>{{item.SuppliesUnit}}</td>
+                                                        <td>{{item.SuppliesCount}}</td>
+                                                      </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                          </el-collapse-item>
+                                        </el-collapse>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <!-- 维修 -->
+                        <ul class="progress clearfix" v-if="areaArr.Table1&&(workInfo.OrderType==3||workInfo.OrderType==6)">
+                            <li class="clearfix" v-for="(item,index) in areaArr.Table1" :key="index">
+                                <div v-if="index !==3">
+                                    <div class="l area-name">
+                                        <div>
+                                            <span>{{item.ordername}}</span>
+                                            <div class="circle finish">
+                                                <div class="circle-inner"></div>
+                                            </div>
+                                        </div>
+                                        <div class="border r"></div>
+                                    </div>
+                                    <ul class="area-info clearfix">
+                                        <li class="l "><span>{{workInfo.FContacts}}　</span>{{item.Fdatetime}}</li>
+                                    </ul>
+                                </div>
+                                <div class="clearfix" v-else>
+                                    <div class="area-name">
+                                        <div>
+                                            <span>{{item.ordername}}</span>
+                                            <div class="circle finish">
+                                                <div class="circle-inner"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix collapse" >
+                                        <el-collapse accordion >
+                                          <el-collapse-item name="1">
+                                            <template slot="title">
+                                                <ul class="area-info clearfix">
+                                                    <li class="l "><span>{{workInfo.FContacts}}　</span>{{item.Fdatetime}}</li>
+                                                </ul>
+                                            </template>
+                                            <div class="collapse-content">
+                                                <div class="collapse-content-item" v-if="areaArr.Table">
+                                                    <h5>{{workInfo.OrderType==3?'维修前':'处理前'}}</h5>
+                                                    <ul class="clearfix">
+                                                        <li class="l" v-for="img in areaArr.Table[0].ReportMatterBeforeImg.split(',')">
+                                                            <img :src="'http://www.szqianren.com/'+img" alt="">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+<!--                                                 <div class="collapse-content-item">
+                                                    <h5>保养内容</h5>
+                                                    <p style="">
+                                                        <span v-for="(content,i) in areaArr.Table1">{{i+1}}.{{content.MaintenanceDetail}}　</span>
+                                                    </p>
+                                                </div> -->
+                                                <div class="collapse-content-item" v-if="areaArr.Table">
+                                                    <h5>{{workInfo.OrderType==3?'维修后':'处理后'}}</h5>
+                                                    <ul class="clearfix">
+                                                        <li class="l" v-for="img in areaArr.Table[0].ReportMatterAfterImg.split(',')">
+                                                            <img :src="'http://www.szqianren.com/'+img" alt="">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="collapse-content-item">
+                                                    <h5>处理情况</h5>
+                                                    <p>{{areaArr.Table[0].ReportMatterAfterDescription}}</p>
+                                                </div>
+                                                <div class="collapse-content-item" v-if="workInfo.OrderType==3">
                                                     <h5>实际耗材</h5>
                                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                                       <tr class="table-header">
@@ -458,44 +587,44 @@ export default {
                     value:1
                 },
                 {
-                    name:'保养',
-                    value:2
-                },
-                {
-                    name:'维修',
-                    value:3
+                    name:'巡更',
+                    value:9
                 },
                 {
                     name:'抄表',
                     value:4
                 },
                 {
-                    name:'告警',
-                    value:5
+                    name:'保养',
+                    value:2
                 },
                 {
                     name:'报事',
                     value:6
                 },
                 {
+                    name:'维修',
+                    value:3
+                },
+                {
+                    name:'告警',
+                    value:5
+                },
+/*                 {
                     name:'工单池',
                     value:7
                 },
                 {
                     name:'故障',
                     value:8
-                },
-                {
-                    name:'巡更',
-                    value:9
-                },
+                }, */
             ],
             selectType:{
                 name:'全部',
                 value:0
             },
             showSelectOption:false,
-            time:[new Date(Date.parse(new Date())-24*60*60*1000),new Date()],
+            time:[new Date(),new Date()],
             tableData0:[],
             tableData1:[],
             tableData2:[],
@@ -644,6 +773,22 @@ export default {
                 this.showOrder = false
             })
         },
+        /**
+         * 误报（255.删除工单告警）
+         */
+        deleteOrdersByAlarm(){
+            Orders({
+                FAction:'DeleteOrdersByAlarm',
+                ID:this.workObj.ID
+            })
+            .then(data => {
+                this.showOrder = false
+                this.queryAllOrders()
+            })
+            .catch(err => {
+
+            })
+        }
     }
 
 }
@@ -653,26 +798,28 @@ export default {
     .work-list{
         .tab-header{
             >li{
-                width: 137px;
+                width: 100px;
                 height: 46px;
                 line-height: 46px;
                 font-size: 16px;
                 margin: 0 3px;
                 float: left;
                 background: url(#{$img-url}task/t2.png);
+                background-size: 100% 100%;
                 cursor: pointer;
             }
             >li.active{
                 background: url(#{$img-url}task/t1.png);
+                background-size: 100% 100%;
             }
             .select{
                 width: auto;
                 position: relative;
-                margin-left: 10px;
+                margin-left: 230px;
                 background: none;
                 &-box{
                     display: inline-block;
-                    width: 80px;
+                    width: 100px;
                     height: 46px;
                     line-height: 46px;
                     box-sizing: border-box;
@@ -694,7 +841,7 @@ export default {
                     right: 0;
                     z-index: 1000;
                     li{
-                        width: 80px;
+                        width: 100px;
                         height: 30px;
                         line-height: 30px;
                         background: #134FA4;
@@ -713,7 +860,7 @@ export default {
                     width: 250px;
                     height: 46px;
                     line-height: 46px;
-                    background: #042E74;
+                    background: none;
                     border:1px solid rgba(12,55,110,1);
                     .el-range-separator{
                         line-height: 38px;
