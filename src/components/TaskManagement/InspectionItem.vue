@@ -32,7 +32,7 @@
              :data='allDefaultPoint' 
              :renderContent='renderContent' 
              :defaultProps='defaultProps'
-             nodeKey='DeviceID'
+             nodeKey='DeviceLedgerID'
              :defaultChecked='defaultChecked'
              showCheckbox>
             </zw-tree>
@@ -84,7 +84,7 @@
 <script>
 import {system,Inspection,MeterReading,ReportMatter} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination,zwTree} from '@/zw-components/index'
+import {zwTree} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -142,7 +142,6 @@ export default {
         }
     },
     components:{
-        zwPagination,
         zwTree
     },
     watch:{
@@ -165,7 +164,7 @@ export default {
     methods:{
         renderContent(h, { node, data, store }){
             return(
-                <span>{data.AreaName?data.AreaName:data.DeviceName}</span>
+                <span>{data.AreaName?data.AreaName:data.DeviceLedgerName}</span>
             )
         },
         /**
@@ -248,7 +247,7 @@ export default {
                 this.allDefaultPoint.forEach(item => {
                     item.list.forEach(node => {
                         if(node.IsExist == 1){
-                            this.defaultChecked.push(node.DeviceID)
+                            this.defaultChecked.push(node.DeviceLedgerID)
                             node.disabled = true
                         }else{
                             node.disabled = false
@@ -383,10 +382,10 @@ export default {
             let arr = this.$refs.pointTree.$refs.tree.getCheckedNodes()
             //过滤区域节点
             arr = arr.filter(item => {
-                return item.DeviceID
+                return item.DeviceLedgerID
             })
             arr = arr.map(item => {
-                return item.DeviceID
+                return item.DeviceLedgerID
             })
             Inspection({
                 FAction:'AddImportUInspectionPoint',

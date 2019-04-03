@@ -60,7 +60,6 @@
 </template>
 <script>
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination} from '@/zw-components/index'
 import {Supplies} from '@/request/api.js'//api接口（接口统一管理）;
 export default {
     mixins:[table],
@@ -114,9 +113,6 @@ export default {
                 SuppliesBrand:''
             }
         }
-    },
-    components:{
-        zwPagination
     },
     watch:{
 

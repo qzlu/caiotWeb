@@ -52,9 +52,10 @@
         </div>
         <zw-pagination @pageIndexChange='handleCurrentChange' :pageIndex='pageIndex' :total='total'></zw-pagination>
         <!-- 报事记录 -->
-        <el-dialog class="report-dialog"  title="报事记录" :visible.sync="show">
+        <el-dialog class="report-dialog"  title="" :visible.sync="show">
             <div class="export-container"><button class="zw-btn export " @click="exportRecord"><i class="iconfont icon-Export"></i>导出</button></div>
-            <div id='record' style="width: 1150px;margin-left: -50px;padding: 0 50px;">
+            <div id='record' >
+                <h4>维修记录</h4>
                 <div class="clearfix project-name"><p class="l">项目名称: {{projectName}}</p><p class="r">月份:{{time.getFullYear() + '-' + (time.getMonth()+1)}}</p></div>
                 <ul class="clearfix report-info" >
                     <li class="l">报事对象<span v-if="recordsInfo.Table">{{recordsInfo.Table[0].ReportMatterObjectName}}</span></li>
@@ -89,7 +90,6 @@
 <script>
 import table from '@/mixins/table' //表格混入数据
 import { ReportMatter } from '@/request/api.js';
-import {zwPagination} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -127,9 +127,6 @@ export default {
             show:false,
             recordsInfo:[]
         }
-    },
-    components:{
-        zwPagination
     },
     watch:{
         filterText(val){

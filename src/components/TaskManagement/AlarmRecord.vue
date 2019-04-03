@@ -89,7 +89,6 @@
 <script>
 import table from '@/mixins/table' //表格混入数据
 import { Orders, HandlingEvents } from '@/request/api.js';
-import {zwPagination} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -132,9 +131,6 @@ export default {
             recordsInfo:[],
             alarmLevel:['','提示','一般','严重']
         }
-    },
-    components:{
-        zwPagination
     },
     watch:{
         filterText(val){

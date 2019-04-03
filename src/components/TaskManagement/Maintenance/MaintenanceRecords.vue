@@ -2,7 +2,7 @@
     <div class="report" >
         <!-- 保养记录月报 -->
         <el-dialog class="report-dialog" id="month-report" title="保养月报" :visible.sync="showMonthReport">
-            <div class="export-container"><button class="zw-btn export " @click="exportMonthReport"><i class="iconfont icon-Export"></i>导出</button></div>
+            <div class="export-container" style="position:relative"><button class="zw-btn export " @click="exportMonthReport"><i class="iconfont icon-Export"></i>导出</button></div>
             <div class="clearfix project-name"><p class="l">项目名称: {{projectName}}</p><p class="r">月份:{{time.getFullYear() + '-' + (time.getMonth()+1)}}</p></div>
             <ul class="clearfix report-info">
                 <li class="l">保养次数<span v-if="monthReport.Table">{{monthReport.Table[0].MaintenanceCount}}</span></li>
@@ -44,9 +44,10 @@
             </div>
         </el-dialog>
         <!-- 保养记录 -->
-        <el-dialog class="report-dialog"  title="保养记录" :visible.sync="showRecords">
+        <el-dialog class="report-dialog"  title="" :visible.sync="showRecords">
             <div class="export-container"><button class="zw-btn export " @click="exportRecord"><i class="iconfont icon-Export"></i>导出</button></div>
-            <div id='record' style="width: 1150px;margin-left: -50px;padding: 0 50px;">
+            <div id='record'>
+                <h4>保养记录</h4>
                 <div class="clearfix project-name"><p class="l">项目名称: {{projectName}}</p><p class="r">月份:{{time.getFullYear() + '-' + (time.getMonth()+1)}}</p></div>
                 <ul class="clearfix report-info" >
                     <li class="l">设备名称<span v-if="recordsInfo.Table">{{recordsInfo.Table[0].DeviceName}}</span></li>
@@ -160,7 +161,6 @@
 <script>
 import * as comm from "@/assets/js/pro_common";
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination} from '@/zw-components/index'
 import {Maintenance} from '@/request/api.js'//api接口（接口统一管理）;
 export default {
     mixins:[table],
@@ -207,9 +207,6 @@ export default {
             orderProp:'',
             order:''
         }
-    },
-    components:{
-        zwPagination
     },
     watch:{
 

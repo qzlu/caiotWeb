@@ -51,7 +51,7 @@
             </div>
             <div class="main-item">
                 <div class="date-chart" id="date-chart">
-
+                    <line-chart :data="chartData" :color='["#FF3600", "#00D1D9", "#FF7300"]'></line-chart>
                 </div>
             </div>
         </div>
@@ -60,6 +60,7 @@
 <script>
 import {Monitor, system} from '@/request/api'
 import table from '@/mixins/table' //表格混入数据
+import {lineChart} from '@/zw-components/index';
 export default {
     mixins:[table],
     data(){
@@ -70,8 +71,12 @@ export default {
             },
             deviceID:null,
             time:new Date(),
-            rowItem:null
+            rowItem:null,
+            chartData:{}
         }
+    },
+    components:{
+        lineChart
     },
     created(){
         this.queryCaiotDeviceToTree()
@@ -132,14 +137,13 @@ export default {
             .then(data => {
                 let chartData = {
                     name:[],
-                    X:[],
-                    Y:{}
+                    columns:[],
+                    rows:{}
                 },
                 arr = data.FObject
-
                 chartData.name = arr.map(item => item.DataItemName)
-                chartData.X = arr[0].ProjectChartLineDatas.map(item => item.X)
-                chartData.Y = arr.map(item => {
+                chartData.columns = arr[0].ProjectChartLineDatas.map(item => item.X)
+                chartData.rows = arr.map(item => {
                     let yAxis = item.ProjectChartLineDatas.map(obj => obj.Y)
                     return {
                       type: "line",
@@ -147,7 +151,7 @@ export default {
                       data: yAxis
                     };
                 })
-                this.showLineChart('date-chart',chartData)
+                this.chartData = chartData
             })
             .catch(err => {
                 console.log(err);
@@ -167,69 +171,6 @@ export default {
         changeTime(val){
             this.queryDataItemChartDataByDeviceID(this.rowItem.SDataID)
         },
-        showLineChart(id,data) {
-          //生成line 坐标图
-          var dom = document.getElementById(id);
-          var myChart = echarts.init(dom);
-          var app = {};
-          var option = null;
-          option = {
-            title: {
-              // text: '折线图堆叠'
-            },
-            tooltip: {
-              trigger: "axis"
-            },
-            textStyle: {
-              fontWeight: "normal", //标题颜色
-              color: "#fff"
-            },
-            legend: {
-              data: data.name,
-              textStyle: {
-                fontWeight: "normal", //标题颜色
-                color: "#fff"
-              }
-            },
-            grid: {
-              left: "3%",
-              right: "4%",
-              bottom: "3%",
-              containLabel: true
-            },
-            toolbox: {
-              feature: {
-              }
-            },
-            xAxis: {
-              type: "category",
-              boundaryGap: false,
-              axisLine: {
-                //y轴色
-                lineStyle: {
-                  color: "#7f7f7f",
-                  width: 1
-                }
-              },
-              data: data.X
-            },
-            yAxis: {
-              type: "value",
-              splitLine: { show: false }, //去除网格线
-              axisLine: {
-                lineStyle: {
-                  color: "#7f7f7f",
-                  width: 1
-                }
-              }
-            },
-            series: data.Y,
-            color: ["#FF3600", "#00D1D9", "#FF7300"]
-          };
-          if (option && typeof option === "object") {
-            myChart.setOption(option, true);
-          }
-        }
     }
 }
 </script>

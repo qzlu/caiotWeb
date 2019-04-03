@@ -23,6 +23,7 @@ const Supplies = p => post('Supplies',p)
 const ReportMatter = p => post('ReportMatter', p)
 const Device = p => post('Device',p)
 const HandlingEvents = p => post('HandlingEvents',p)
+const FileUploadContext = p => post('FileUploadContext', p)
 export{
     login,
     project,
@@ -39,5 +40,6 @@ export{
     Supplies,
     ReportMatter,
     Device,
-    HandlingEvents
+    HandlingEvents,
+    FileUploadContext,
 }

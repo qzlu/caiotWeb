@@ -11,6 +11,20 @@ $img-url:'/static/image/';
     >li{
         margin-left: 10px;
     }
+    .label{
+        font-size: 14px;
+    }
+    .el-select{
+        .el-input{
+            .el-input__inner{
+                width: 100px;
+                height: 46px;
+                background: #042E74;
+                border-color: #005099;
+                color: white
+            }
+        }
+    }
     .el-date-editor{
         width: 200px;
         height: 46px;
@@ -46,7 +60,15 @@ $img-url:'/static/image/';
     font-size: 14px;
     color: #F1F1F2;
     text-align: center;
-    box-sizing: border-box
+    box-sizing: border-box;
+    background: #042E74;
+    [class*='icon']{
+        font-size: 16px;
+        margin-right: 10px;
+    }
+}
+.zw-btn:active,.zw-btn:hover{
+    background: #12559D
 }
 .zw-btn-primary{
     background: #12559D

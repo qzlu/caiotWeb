@@ -161,7 +161,7 @@
 <script>
 import {system,MeterReading,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination,zwTree} from '@/zw-components/index'
+import {zwTree} from '@/zw-components/index'
 import * as comm from "@/assets/js/pro_common";
 export default {
     mixins:[table],
@@ -308,7 +308,6 @@ export default {
         }
     },
     components:{
-        zwPagination,
         zwTree
     },
     watch:{

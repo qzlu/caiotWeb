@@ -205,6 +205,14 @@ let routers_item=[
 					    title: '千仞云平台',
 					    requireAuth: true, 
 				      }
+					},
+					{ path: 'AlarmConfig', //告警配置
+					  name: 'AlarmConfig',
+					  component: () => import('@/components/alarmManagement/alarmConfig.vue'),
+					  meta: {
+					    title: '千仞云平台',
+					    requireAuth: true, 
+				      }
 					}
 				  ]
 				
@@ -269,22 +277,38 @@ let routers_item=[
 							 },
 							 {
 								path:'alarmRecord',
-								name:'alarmRecord',
+								name:'alarmRecord', // 设备详情-告警记录
 								component:() => import('@/components/DeviceManagement/alarmRecord.vue')
 							 },
 							 {
 								path:'fixRecord',
-								name:'fixRecord',
+								name:'fixRecord', // 设备详情-维修记录
 								component:() => import('@/components/DeviceManagement/fixRecord.vue')
 							 },
 							 { path: 'deviceMaintenanceRecord',
-							 name: 'deviceMaintenanceRecord',// 保养管理-保养记录
-							 component: () =>import('@/components/TaskManagement/Maintenance/MaintenanceRecords.vue'),
+							 name: 'deviceMaintenanceRecord',// 设备详情-保养记录
+							 component: () =>import('@/components/DeviceManagement/maintenanceRecord.vue'),
 							 meta: {
 								 title: '千仞云平台',
 								 requireAuth: true, 
 								},
-						 },
+							 },
+							 { path: 'log',
+							 name: 'log',// 设备详情-启停日志
+							 component: () =>import('@/components/DeviceManagement/log.vue'),
+							 meta: {
+								 title: '千仞云平台',
+								 requireAuth: true, 
+								},
+							 },
+							 { path: 'file',
+							 name: 'file',// 设备详情-启停日志
+							 component: () =>import('@/components/DeviceManagement/file.vue'),
+							 meta: {
+								 title: '千仞云平台',
+								 requireAuth: true, 
+								},
+						 	},
 						 ]
 					},
 					{ path: 'EquipmentStatistics',   //设备统计

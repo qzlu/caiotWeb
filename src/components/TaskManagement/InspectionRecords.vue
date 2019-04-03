@@ -1,8 +1,8 @@
 <template>
   <div class="Ins_records">
     <!--弹出框(物联巡检)-->
-    <!-- <el-button type="text" @click="make_paf">点击打开 Dialog</el-button>-->
-    <el-dialog :visible.sync="centerDialogVisible" width="1350px">
+    <!-- <el-button type="text" @click="make_paf">点击打开 Dialog</el-button>append-to-body-->
+    <el-dialog :visible.sync="centerDialogVisible" append-to-body class="Ins_records" width="1350px">
       <!--html-->
       <section class="ppt_item" id="pdf_htmls">
         <div class="htbn">
@@ -111,7 +111,7 @@
       <!--html-->
     </el-dialog>
     <!-- 人工巡检日报 -->
-    <el-dialog :visible.sync="showReport" width="1350px">
+    <el-dialog :visible.sync="showReport" class="Ins_records" append-to-body width="1350px">
       <!--html-->
       <section class="ppt_item" id="date-report" v-if="dateReport">
         <div class="htbn">
@@ -268,7 +268,7 @@
           <div class="ntb04">导出</div>
         </a>
         <div class="ntb05">审核</div>
-        <el-dialog title='设置自动巡检' :visible.sync="showSetTime" class="set-inspection-time zw-dialog" width="450px">
+        <el-dialog title='设置一键巡检' :visible.sync="showSetTime" class="set-inspection-time zw-dialog" width="450px">
           <div style="margin:30px 0">
            <span style="font-size:14px">设置时间</span>
            <el-select
@@ -300,7 +300,7 @@
       <section class="btn_baritems">
         <div class="l showitem01" v-if="bar_value">
           <section id="show_bar" style="height:183px; width: 90%;">
-            <pie-chart :data="chartData" :color='["#00D294", "#89192E"]'></pie-chart>
+            <pie-chart :data="chartData" :color='["#00D294", "#89192E"]' :setting="{legend:{x:'220px'}}"></pie-chart>
           </section>
           <div>
             <div class="atc_title">
@@ -358,13 +358,11 @@
             </section>
             <p class="ghj_time">
               <span>
-                <!--00:00-->
-                {{item.InspectionTime.split(" ")[1]}}
-              </span>
-              <span>
-                {{item.InspectionBy}}
-                <!--自动巡检-->
-              </span>
+                {{item.InspectionBy === '自动巡检'?'自动巡检':`一键巡检`}}
+                <!-- 一键巡检 -->
+                <span>{{item.InspectionTime.split(" ")[1]}}</span>
+              </span><br>
+              <span v-if="item.InspectionBy !== '自动巡检'">{{item.InspectionBy}}</span>
             </p>
           </li>
 
@@ -377,7 +375,7 @@
 	  		  			<p><span class="colors colors_red"></span><span class="igh">异常</span><span class="hgy">30</span></p>
 	  		  		</div>
 	  		  		</section>
-	  		  		<p class="ghj_time"><span >04:00</span><span>自动巡检</span></p>
+	  		  		<p class="ghj_time"><span >04:00</span><span>一键巡检</span></p>
 	  		  	</li>		
           -->
         </ul>
@@ -452,7 +450,7 @@
       <section class="btn_baritems">
         <div class="l showitem01">
           <section id="record-chart" style="height:183px; width: 90%;">
-            <pie-chart :data="chartData1" :color='["#00D294", "#89192E"]'></pie-chart>
+            <pie-chart :data="chartData1" :color='["#00D294", "#89192E"]' :setting="{legend:{x:'220px'}}"></pie-chart>
           </section>
           <div>
             <div class="atc_title">
@@ -526,7 +524,7 @@
               </span>
               <span>
                 {{item.FContacts}}
-                <!--自动巡检-->
+                <!-- 一键巡检 -->
               </span>
             </p>
           </li>
@@ -567,8 +565,6 @@
   </div>
 </template>
 <script>
-import html2Canvas from "html2canvas";
-var echarts = require("echarts");
 import * as comm from "../../assets/js/pro_common";
 import {Inspection,FileUpLoad,project} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
@@ -592,7 +588,7 @@ export default {
       exl_hef: "", //用于导出exl，用split()分割后，得到直接地址
       currt: 0, //一键巡检遮罩层
       timesArr:[],//设置物联巡检时间
-      showSetTime:false,//设置自动巡检弹框是否显示
+      showSetTime:false,//设置一键巡检弹框是否显示
       all_table: [], //所有表格数据。
       activeIndex: 0,
       chartData:{},
@@ -799,26 +795,21 @@ export default {
     },
 
     one_change() {
-      if(localStorage.getItem('disabled') == 1){
-        this.$message({
-          type:'warning',
-          message:'操作太频繁，请稍后重试！'
-        })
-        return
-      }
-      localStorage.setItem('disabled',1)
-      setTimeout(() => {
-        localStorage.setItem('disabled',0)
-      },60*1000)
       //一键巡检只能查当前的
       project({
         FAction: "CreateCaiotInspectionByProject",
       })
       .then(data => {
         window.location = "http://www.szqianren.com/" + data.FObject;
+        setTimeout(() => {
+          this.start_barData()
+        },1000)
       })
       .catch(error => {
-        
+        this.$message({
+          type:'warning',
+          message:'操作太频繁，请稍后重试！'
+        })
       })
     },
     /**

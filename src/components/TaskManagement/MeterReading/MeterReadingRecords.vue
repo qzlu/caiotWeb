@@ -2,7 +2,7 @@
   <div class="Ins_records">
     <!--弹出框(物联抄表)-->
     <!-- <el-button type="text" @click="make_paf">点击打开 Dialog</el-button>-->
-    <el-dialog :visible.sync="centerDialogVisible" width="1350px">
+    <el-dialog :visible.sync="centerDialogVisible" append-to-body class="Ins_records" width="1350px">
       <!--html-->
       <section class="ppt_item month-report" id="pdf_htmls" v-if="monthReport1.Table">
         <div class="htbn">
@@ -90,7 +90,7 @@
       <!--html-->
     </el-dialog>
     <!-- 人工抄表月报 -->
-    <el-dialog :visible.sync="showReport" width="1350px">
+    <el-dialog :visible.sync="showReport" append-to-body class="Ins_records" width="1350px">
       <!--html-->
       <section class="ppt_item month-report" id="month-report" v-if="monthReport.Table">
         <div class="htbn">
@@ -178,8 +178,8 @@
       <p v-else style="padding:50px">暂无数据</p>
       <!--html-->
     </el-dialog>
-    <!-- 设置自动抄表 -->
-    <el-dialog title="设置自动抄表" :visible.sync="showSetTimeDialog" top="350px" class="zw-dialog set-time-dialog">
+    <!-- 设置一键抄表 -->
+    <el-dialog title="设置一键抄表" :visible.sync="showSetTimeDialog" top="350px" class="zw-dialog set-time-dialog">
       <div style="margin-top:30px;">
         <span>抄表时间</span>
         <el-select v-model="month" multiple collapse-tags placeholder="请选择">
@@ -281,7 +281,7 @@
       <section class="btn_baritems">
         <div class="l showitem01" v-if="bar_value">
           <section id="show_bar" style="height:183px; width: 90%;">
-            <pie-chart :data="chartData" :color='["#00D294", "#89192E"]'></pie-chart>
+            <pie-chart :data="chartData" :color='["#00D294", "#89192E"]' :setting="{legend:{x:'220px'}}"></pie-chart>
           </section>
           <div>
             <div class="atc_title">
@@ -339,12 +339,16 @@
             </section>
             <p class="ghj_time">
               <span>
+                {{item.ReadingBy === '自动抄表' ? '自动抄表':'一键抄表'}}
+                <!-- 自动抄表 -->
+              </span>
+              <span>
                 <!--00:00-->
                 {{item.MeterReadingTime}}
               </span>
+              <br>
               <span>
-                <!-- {{item.MeterReadingType}} -->
-                自动抄表
+                {{item.ReadingBy}}
               </span>
             </p>
           </li>
@@ -358,7 +362,7 @@
 	  		  			<p><span class="colors colors_red"></span><span class="igh">异常</span><span class="hgy">30</span></p>
 	  		  		</div>
 	  		  		</section>
-	  		  		<p class="ghj_time"><span >04:00</span><span>自动抄表</span></p>
+	  		  		<p class="ghj_time"><span >04:00</span><span>一键抄表</span></p>
 	  		  	</li>		
           -->
         </ul>
@@ -432,7 +436,7 @@
       <section class="btn_baritems">
         <div class="l showitem01">
           <section id="record-chart" style="height:183px; width: 90%;">
-            <pie-chart :data='chartData1' :color='["#00D294", "#89192E"]'></pie-chart>
+            <pie-chart :data='chartData1' :color='["#00D294", "#89192E"]' :setting="{legend:{x:'220px'}}"></pie-chart>
           </section>
           <div>
             <div class="atc_title">
@@ -507,7 +511,7 @@
               </span>
               <span>
                 {{item.FUserNickname}}
-                <!--自动抄表-->
+                <!--一键抄表-->
               </span>
             </p>
           </li>
@@ -550,8 +554,6 @@
   </div>
 </template>
 <script>
-import html2Canvas from "html2canvas";
-var echarts = require("echarts");
 import * as comm from "@/assets/js/pro_common";
 import {Inspection,FileUpLoad,project,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
@@ -815,11 +817,14 @@ export default {
         this.start_barData()
       })
       .catch(error => {
-        
+        this.$message({
+          type:'warning',
+          message:'操作太频繁，请稍后重试！'
+        })
       })
     },
     /**
-     * 设置自动抄表时间
+     * 设置一键抄表时间
      */
     AddUMeterReadingConfig(){
       if(!this.month.length||!this.timeArr.length){
@@ -997,7 +1002,7 @@ export default {
       this.fileUpload("#date-report",fileName)
     },
     /**
-     * 设置自动抄表时间
+     * 设置一键抄表时间
      */
     selectDate(){
         if(this.date==null||this.h == null||this.m == null){

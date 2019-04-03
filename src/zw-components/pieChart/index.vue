@@ -57,7 +57,7 @@ export default {
         },
         legend: {
           orient: "vertical",
-          x: "195px",
+          x: this.$props.setting&&this.$props.setting.legend?this.$props.setting.legend.x:'195px',
           y: "center",
           textStyle: { color: "#fff" },
           itemWidth: 13,

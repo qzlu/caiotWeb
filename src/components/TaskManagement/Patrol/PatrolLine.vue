@@ -324,7 +324,7 @@
 <script>
 import {system,Patrol,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination,treeTransfer} from '@/zw-components/index'
+import {treeTransfer} from '@/zw-components/index'
 import * as comm from "@/assets/js/pro_common";
 export default {
     mixins:[table],
@@ -422,7 +422,6 @@ export default {
         }
     },
     components:{
-        zwPagination,
         treeTransfer
     },
     watch:{

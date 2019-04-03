@@ -110,7 +110,9 @@
               class="show_acr_c"
               style="width: 900px; height: 185px; float: left; color: #fff; margin-top: 19px;"
               id="container_vn"
-            ></div>
+            >
+              <line-chart :data="linedata" :color='["#FF3600", "#00D1D9", "#FF7300"]'></line-chart>
+            </div>
           </div>
         </div>
       </section>
@@ -175,12 +177,13 @@ import img_data from "./d_l_a.vue"; //中间图片
 import table_data from "./d_l_b.vue"; //列表组件
 var echarts = require("echarts");
 import {project} from '@/request/api';
+import {lineChart} from '@/zw-components/index';
 export default {
   data() {
     return {
       datalist: [], //静态数据
       datalist02: this.$route.params.getalldata, //点击进来当前设备详情，左1
-      linedata: [], //图表线条数据
+      linedata: {}, //图表线条数据
       video_div: false,
       videoUrl:
         "http://hls.open.ys7.com/openlive/669cf1ba63a34653a1c358b17ceea2b6.m3u8"
@@ -227,6 +230,27 @@ export default {
     },
     routerback() {
       this.$router.back(-1);
+    },
+    /**
+     * 格式化折线图数据
+     */
+    formatChartData(arr){
+      let chartData = {
+          name:[],
+          columns:[],
+          rows:{}
+      }
+      chartData.name = arr.map(item => item.DataItemName)
+      chartData.columns = arr[0].ProjectChartLineDatas.map(item => item.X)
+      chartData.rows = arr.map(item => {
+          let yAxis = item.ProjectChartLineDatas.map(obj => obj.Y)
+          return {
+            type: "line",
+            name: item.DataItemName,
+            data: yAxis
+          };
+      })
+      return chartData
     },
     opens_video(urls) {
       //播放视频地址
@@ -277,8 +301,8 @@ export default {
         PossionID: x //_this.$route.params.PossionID默认第一个（三相电压id）
 			})
 			.then(data => {
-        this.linedata = data.FObject;
-        this.line_data_reset();
+        this.linedata = this.formatChartData(data.FObject);
+        //this.line_data_reset();
 			})
 			.catch(err => {})
     },
@@ -327,7 +351,7 @@ export default {
           .then(function(jsons) {
             //console.log(jsons.data.FObject)
             comm.messageErr(jsons.data.Result); //公共状态提示
-            _this.linedata = jsons.data.FObject;
+            _this.linedata = _this.formatChartData(jsons.data.FObject);
 
             if (jsons) {
               resolve("succ");
@@ -340,7 +364,7 @@ export default {
       let _this = this;
       //返回一个Promise对象
       return new Promise(function(resolve, reject) {
-        _this.line_data_reset();
+        // _this.line_data_reset();
 
         /*给所有图动态加色*/
         var doc_all = document.getElementsByTagName("i");
@@ -428,7 +452,7 @@ export default {
       }
     }
   },
-  components: { "my-imgdata": img_data, table_data },
+  components: { "my-imgdata": img_data, table_data ,lineChart},
   mounted: function() {
     let _this = this;
     function settimeouts_detil_info_list() {
@@ -456,6 +480,7 @@ export default {
         settimeouts_detil_info_list,
         24000
       );
+      console.log(_this.linedata);
       let router_currt = _this.$route.name;
       if (router_currt != "detail_info_list") {
         clearTimeout(timeoutId_detal_info_list);

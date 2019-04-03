@@ -14,6 +14,7 @@
             font-weight: bold;
             .export-container{
                 text-align: left;
+                position: absolute;
                 .zw-btn.export{
                     height: 40px;
                     line-height: 40px;
@@ -26,9 +27,18 @@
                     }
                 }
             }
+            #record{
+                width: 1150px;
+                margin-left: -50px;
+                padding: 50px 50px;
+            }
             .project-name{
                 margin-top: 10px;
                 margin-bottom: 30px;
+            }
+            h4{
+                text-align: center;
+                font-size: 24px;
             }
             ul.report-info{
                 background: #e4e4e4;

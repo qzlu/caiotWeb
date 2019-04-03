@@ -1,101 +1,157 @@
 <template>
     <div class="report">
-        <el-dialog title="新增设备台账" class="zw-dialog add-device" :visible.sync='show'>
-            <h5><span class="icon-border"></span>设备铭牌</h5>
-            <el-form inline :model='deviceInfo'>
-                <el-form-item label="设备名称"><el-input v-model="deviceInfo.DeviceName"></el-input></el-form-item>
-                <el-form-item label="设备编号"><el-input v-model="deviceInfo.DeviceCode"></el-input></el-form-item>
-                <el-form-item label="设备参数"><el-input v-model="deviceInfo.DeviceCode"></el-input></el-form-item>
-                <el-form-item label="生产厂家"><el-input v-model="deviceInfo.Manufacturer"></el-input></el-form-item>
-                <el-form-item label="出厂型号"><el-input v-model="deviceInfo.SpecificationsCode"></el-input></el-form-item>
-                <el-form-item label="出厂编号"><el-input v-model="deviceInfo.ManufacturingNumber"></el-input></el-form-item>
-                <el-form-item label="使用年限"><el-input v-model="deviceInfo.ServiceLife"></el-input></el-form-item>
-                <el-form-item label="出厂日期">
-                    <el-date-picker
-                        type="date"
-                        v-model="deviceInfo.ManufacturingTime"
+        <el-dialog :title="type?'编辑':'新增设备台账'"  class="zw-dialog add-device" :visible.sync='show' top="100">
+            <el-scrollbar>
+                <h5><span class="icon-border"></span>设备铭牌</h5>
+                <el-form inline :model='deviceInfo'>
+                    <el-form-item label="设备名称" prop="DeviceLedgerName"><el-input v-model="deviceInfo.DeviceLedgerName"></el-input></el-form-item>
+                    <el-form-item label="设备编号" prop="DeviceCode"><el-input v-model="deviceInfo.DeviceCode"></el-input></el-form-item>
+                    <el-form-item label="生产厂家" prop="Manufacturer"><el-input v-model="deviceInfo.Manufacturer"></el-input></el-form-item>
+                    <el-form-item label="出厂型号" prop="SpecificationsCode"><el-input v-model="deviceInfo.SpecificationsCode"></el-input></el-form-item>
+                    <el-form-item label="出厂编号" prop="ManufacturingNumber"><el-input v-model="deviceInfo.ManufacturingNumber"></el-input></el-form-item>
+                    <el-form-item label="使用年限" prop="ServiceLife"><el-input v-model="deviceInfo.ServiceLife" type="number"></el-input></el-form-item>
+                    <el-form-item label="出厂日期" prop="ManufacturingTime">
+                        <el-date-picker
+                            type="date"
+                            v-model="deviceInfo.ManufacturingTime"
+                        >
+                        </el-date-picker>
+                    </el-form-item>
+                    <br>
+                    <el-form-item label="设备图片">
+                        <el-upload
+                          action="http://47.106.64.130:56090/Caiot/FileUploadContext"
+                          list-type="picture-card"
+                          :limit = '1'
+                          :on-success="handleSuccess1"
+                          :data="{FAction:'UpLoadFile',FVersion:'1.0.0',FTokenID:token,ProjectID:projectId,FName:''}"
+                         >
+                            <p><i class="el-icon-plus"></i><br><span>上传</span></p>
+                        </el-upload>                
+                    </el-form-item>
+                    <el-form-item label="设备二维码" v-if="deviceInfo.DeviceLedgerQrCode">
+                        <img :src="`http://szqianren.com/${deviceInfo.DeviceLedgerQrCode}`" style="width:165px;height:128px" alt="">
+                    </el-form-item>
+                </el-form>
+                <h5><span class="icon-border"></span>使用登记</h5>
+                <el-form inline :model="deviceInfo">
+                    <el-form-item label="购买日期" prop="PurchaseDateTime">
+                        <el-date-picker
+                            type="date"
+                            v-model="deviceInfo.PurchaseDateTime"
+                        >
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="安装日期" prop="InstallationDateTime">
+                        <el-date-picker
+                            type="date"
+                            v-model="deviceInfo.InstallationDateTime"
+                        >
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="验收日期" prop="AcceptanceDateTime">
+                        <el-date-picker
+                            type="date"
+                            v-model="deviceInfo.AcceptanceDateTime"
+                        >
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="投运日期" prop="OperatingDateTime">
+                        <el-date-picker
+                            type="date"
+                            v-model="deviceInfo.OperatingDateTime"
+                        >
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="项目名称">
+                        <el-input readonly v-model="projectName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="设备类型" prop="DeviceTypeName">
+                      <el-select v-model="deviceInfo.DeviceTypeName"   placeholder="请选择">
+                        <el-option v-for="device in allDevice" :key="device.DeviceTypeID" :label="device.DeviceTypeName" :value="device.DeviceTypeName"></el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="区域名称">
+                        <el-select v-model="deviceInfo.AreaName">
+                            <el-option v-for="area in areaList" :key="area.AreaID" :value="area.AreaName" :label="area.AreaName">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="系统类别">
+                        <el-select v-model="deviceInfo.SystemParamName">
+                            <el-option v-for="system in systemList" :key="system.ParamValue" :value="system.ParamValue" :label="system.ParamValue">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="设备参数" class="param">
+                        <el-input type="textarea" v-model="deviceInfo.DeviceLedgerParam"></el-input>
+                    </el-form-item>
+                    <el-form-item label="配套设备参数" class="param">
+                        <el-input type="textarea" v-model="deviceInfo.AcsDeviceLedgerParam"></el-input>
+                    </el-form-item>
+                </el-form>
+                <h5>
+                    <span class="icon-border"></span>相关资料
+                        <el-upload
+                          action="http://47.106.64.130:56090/Caiot/FileUploadContext"
+                          :on-success="handleSuccess2"
+                          :show-file-list='false'
+                          :data="{FAction:'UpLoadFile',FVersion:'1.0.0',FTokenID:token,ProjectID:projectId,FName:''}"
+                         >
+                            <button class="zw-btn zw-btn-add" style="margin-left:20px;">新增</button>
+                        </el-upload>                
+                </h5>
+                <el-table
+                   v-if="fileList.length>0"
+                   :data="fileList"
+                   style="width: 100%"
+                   header-row-class-name="el-table-header"
+                   :row-class-name="tableRowClassName"
+                >
+                    <el-table-column
+                        type="index"
+                        label="序号"
+                        width="80"
+                        align="center"
                     >
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="质保期限">
-                    <el-date-picker
-                        type="date"
-                        v-model="deviceInfo.PleaseTime"
+                    </el-table-column>
+                    <el-table-column
+                        prop="FileName"
+                        label="资料名称"
+                        align="center"
                     >
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="设备图片">
-                    <el-upload
-                      action="/Caiot/FileUpLoad"
-                      list-type="picture-card"
-                      :data="{FAction:'UpLoadFile',FVersion:'1.0.0',FTokenID:token,ProjectID:projectId}"
-                     >
-                        <p><i class="el-icon-plus"></i><br><span>上传</span></p>
-                    </el-upload>                
-                </el-form-item>
-                <el-form-item label="设备二维码">
-                    <el-upload
-                      action="https://jsonplaceholder.typicode.com/posts/"
-                      list-type="picture-card"
+                    </el-table-column>
+                    <el-table-column
+                        prop="CreateDate"
+                        label="上传时间"
+                        align="center"
                     >
-                        <p><i class="el-icon-plus"></i><br><span>上传</span></p>
-                    </el-upload>                
-                </el-form-item>
-            </el-form>
-            <h5><span class="icon-border"></span>使用登记</h5>
-            <el-form inline :model="deviceInfo">
-                <el-form-item label="购买日期">
-                    <el-date-picker
-                        type="date"
-                        v-model="deviceInfo.BuyEventsTime"
-                    >
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="安装日期">
-                    <el-date-picker
-                        type="date"
-                        v-model="deviceInfo.InstallationEventsTime"
-                    >
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="验收日期">
-                    <el-date-picker
-                        type="date"
-                        v-model="deviceInfo.AcceptanceEventsTime"
-                    >
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="项目名称">
-                    <el-select>
-
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="区域名称">
-                    <el-select>
-                        
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="投运日期">
-                    <el-date-picker
-                        type="date"
-                        v-model="deviceInfo.CastEventsTime"
-                    >
-                    </el-date-picker>
-                </el-form-item>
-            </el-form>
-            <h5><span class="icon-border"></span>相关资料<button class="zw-btn zw-btn-add">新增</button></h5>
+                    </el-table-column>
+                   <el-table-column
+                     align="center"
+                     prop=""
+                     label="操作">
+                     <template slot-scope="scoped">
+                         <div class="role-operation">
+                            <span class="pointer" @click="fileList.splice(scoped.$index,1)">删除</span>
+                         </div>
+                     </template>
+                   </el-table-column>
+                </el-table>
+                <div style="text-align:center;margin-top:20px"><button class="zw-btn" @click="addOrUpdated()">确定</button></div>
+            </el-scrollbar>
         </el-dialog>
         <ul class="clearfix report-header">
-            <li class="l"><button class="zw-btn zw-btn-add" @click="editDevice">新增</button></li>
+            <li class="l"><button class="zw-btn zw-btn-add" @click="beforeAddDevice">新增</button></li>
             <li class="l">
                 <!-- 详情 -->
-                <router-link :to="{name:'DeviceInfo',params:{deviceID:selectArr[0].DeviceID}}" v-if="this.selectArr.length === 1">
+                <router-link :to="{name:'DeviceInfo',params:{deviceID:selectArr[0].DeviceLedgerID}}" v-if="this.selectArr.length === 1">
                     <button class="zw-btn zw-btn-detail"></button>
                 </router-link>
                 <button class="zw-btn zw-btn-detail" v-else></button>
             </li>
             <!-- 编辑 -->
-            <li class="l"><button class="zw-btn zw-btn-edit"></button></li>
+            <li class="l"><button class="zw-btn zw-btn-edit" @click="editDevice()"></button></li>
             <!-- 删除 -->
             <li class="l"><button class="zw-btn zw-btn-delete" @click="deleteDeviceInfo"></button></li>
             <li class="l">
@@ -104,9 +160,9 @@
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>
                             <el-upload
-                                action="/Caiot/Device"
-                                :data="{FAction:'ImportDeviceInfo',FVersion:'1.0.0',FTokenID:token,ProjectID:projectId}"
+                                action="http://47.106.64.130:56090/Caiot/FileUploadContext"
                                 :on-success="handleSuccess"
+                                :data="{FAction:'ImportUDeviceLedge',FVersion:'1.0.0',FTokenID:token,ProjectID:projectId}"
                             >
                                 选择文件
                             </el-upload>
@@ -115,6 +171,7 @@
                 </el-dropdown>
             </li>
             <li class="l"><button class="zw-btn zw-btn-export" @click="queryExportDeviceInfo">导出</button></li>
+             <li class="l"><button class="zw-btn" style="width:120px;padding:0 10px" @click="exportUDeviceLedgerQRCode"><i class="iconfont icon-QRcode" style="color:#3593ed"></i>导出二维码</button></li>
             <li class="r">
                 <el-input class="search-input" placeholder="搜索设备关键字" v-model="filterText">
                     <i class="el-icon-search" slot="suffix"></i>
@@ -141,6 +198,7 @@
                  :prop="item.prop"
                  :label="item.label"
                  :width="item.width"
+                 :formatter="item.formatter"
                  show-overflow-tooltip
                 >
                </el-table-column>
@@ -150,9 +208,10 @@
     </div>
 </template>
 <script>
-import {Device} from '@/request/api.js'
+import {Device,FileUploadContext,system} from '@/request/api.js'
 import table from '@/mixins/table' //表格混入数据
 import {zwPagination} from '@/zw-components/index'
+import axios from 'axios';
 export default {
     mixins:[table],
     data(){
@@ -163,7 +222,7 @@ export default {
                     label: '序号'
                 },
                 {
-                    prop: 'DeviceName',
+                    prop: 'DeviceLedgerName',
                     label: '设备名称'
                 },
                 {
@@ -193,14 +252,15 @@ export default {
                     label: '使用年限'
                 },
                 {
-                    prop: 'PleaseTime',
+                    prop: 'EditorDateTime',
                     label: '质保截止',
                     width:'160'
                 },
                 {
-                    prop: '',
+                    prop: 'IsIOTDevice',
                     label: '是否物联设备',
-                    width:130
+                    width:130,
+                    formatter:(row, column, cellValue, index) => row.IsIOTDevice?'是':'否'
                 },
                 {
                     prop: 'stateText',
@@ -209,28 +269,62 @@ export default {
                 }
             ],
             show:false,
-            deviceInfo:{ //详情请看接口文档
-                DeviceID:null,
-                DeviceName:null,
+            defaultDeviceInfo:{
+                DeviceLedgerID:null,
+                DeviceLedgerName:null,
                 DeviceCode:null,
                 SpecificationsCode:null,
                 Manufacturer:null,
                 ManufacturingTime:null,
                 ManufacturingNumber:null,
+                DeviceLedgerParam:null,
                 ServiceLife:null,
-                PleaseTime:null,
-                DevicePhoto:null,
-                DeviceQrCode:null,
+                EditorDateTime:null,
+                DeviceLedgerPhoto:null,
+                DeviceLedgerQrCode:null,
                 DeviceTypeID:null,
-                AreaID:null,
+                AreaName:null,
                 InfoNameStr:null,
-                BuyEventsTime:null,
-                InstallationEventsTime:null,
-                AcceptanceEventsTime:null,
-                CastEventsTime:null
+                PurchaseDateTime:null,
+                InstallationDateTime:null,
+                AcceptanceDateTime:null,
+                OperatingDateTime:null,
+                SystemParamName:null,
+                DeviceTypeName:null,
+                AcsDeviceLedgerParam:null
+            },
+            deviceInfo:{ //详情请看接口文档
+                DeviceLedgerID:null,
+                DeviceLedgerName:null,
+                DeviceCode:null,
+                SpecificationsCode:null,
+                Manufacturer:null,
+                ManufacturingTime:null,
+                ManufacturingNumber:null,
+                DeviceLedgerParam:null,
+                ServiceLife:null,
+                EditorDateTime:null,
+                DeviceLedgerPhoto:null,
+                DeviceLedgerQrCode:null,
+                DeviceTypeID:null,
+                AreaName:null,
+                InfoNameStr:null,
+                PurchaseDateTime:null,
+                InstallationDateTime:null,
+                AcceptanceDateTime:null,
+                OperatingDateTime:null,
+                SystemParamName:null,
+                DeviceTypeName:null,
+                AcsDeviceLedgerParam:null
             },
             token:localStorage.getItem("Token"),
-            projectId:localStorage.getItem('projectid')
+            projectId:localStorage.getItem('projectid'),
+            projectName:localStorage.getItem('projectname'),
+            areaList:[],
+            systemList:[],
+            allDevice:[],
+            fileList:[],
+            type:0 //0新增 ，1编辑
         }
     },
     components:{
@@ -246,6 +340,9 @@ export default {
     },
     created(){
         this.queryData()
+        this.queryUArea()
+        this.querySystemType()
+        this.queryAllDeviceType()
     },
     mounted(){
 
@@ -256,13 +353,13 @@ export default {
          */
         queryData(){
             Device({
-                FAction:'QueryPageDeviceInfo',
+                FAction:'QueryPageUDeviceLedger',
                 SearchKey:this.filterText,
                 PageIndex:this.pageIndex,
                 PageSize:10
             })
             .then(data => {
-                this.total = data.FObject.Table[0].Count
+                this.total = data.FObject.Table[0].FTotalCount
                 this.tableData = data.FObject.Table1
                 this.tableData.forEach(element => {
                     this.$set(element,'stateText',element.RunState?'启用':'停用')
@@ -275,15 +372,93 @@ export default {
             this.queryData()
         },
         /**
+         * 点击新增
+         */
+        beforeAddDevice(){
+            this.show = true
+            this.type = 0
+            this.fileList = []
+            this.deviceInfo = Object.assign({},this.defaultDeviceInfo)
+        },
+        /**
+         * 新增或编辑设备台账
+         */
+        addOrUpdated(){
+            this.deviceInfo.InfoNameStr = this.fileList.map(item => `${item.FileName}-${item.FilePath}`).join(',')
+            this.show = false
+            Device({
+                FAction:this.type?'UpdateUDeviceLedge':'AddUDeviceLedge',
+                mUDeviceLedge:this.deviceInfo
+            })
+            .then(data => {
+                this.queryData()
+            })
+            .catch(err => {})
+        },
+        /**
          * 编辑设备台账
          */
         editDevice(){
             this.show = true
+            this.type = 1
             Object.keys(this.deviceInfo).forEach(key => {
                 if(this.selectArr[0][key]){
                     this.deviceInfo[key] = this.selectArr[0][key]
                 }
             })
+            if(this.deviceInfo.ServiceLife == null){
+                this.deviceInfo.ServiceLife = 0
+            }
+            this.fileList = this.selectArr[0].LedgerFiles.split(',').map(item => {
+                let arr = item.split('!')
+                return {
+                    FileName:arr[1],
+                    FilePath:arr[2],
+                    CreateDate:arr[3]
+                }
+            })
+        },
+        /**
+         * 62.获取区域类型
+         */
+        queryUArea(){
+            system({
+                FAction:'QueryUArea'
+            })
+            .then(data => {
+                console.log(data);
+                this.areaList = data.FObject
+            })
+            .catch(err => {
+
+            })
+        },
+        /**
+         * 64.获取设备分类(系统类别)
+         */
+        querySystemType(){
+            system({
+                FAction:'SSystemParam'
+            })
+            .then(data => {
+                console.log(data);
+                this.systemList = data.FObject
+            })
+            .catch(err => {
+
+            })
+        },
+        /**
+         * 获取所有设备类型（241.获取设备类型）
+         */
+        queryAllDeviceType(){
+            system({
+                FAction:'QueryDeviceType',
+            })
+            .then(data => {
+                this.allDevice = data.FObject
+            })
+            .catch(err => {})
         },
         /**
          * 238.查询导出设置台账信息
@@ -301,20 +476,60 @@ export default {
          * 导入excel
          */
         handleSuccess(res,file){
-            console.log(res,file);
+            if(res.Result == 200){
+                this.queryData()
+            }
+        },
+        /**
+         * 上传设备图片
+         */
+        handleSuccess1(res,file){
+            this.deviceInfo.DeviceLedgerPhoto = res.FObject.FilePath
+        },
+        /**
+         * 上传资料
+         */
+        handleSuccess2(res,file){
+            if(res.Result == 200){
+                this.fileList.push(res.FObject)
+            }
         },
         /**
          * 236.批量删除设备台账信息
          */
-        deleteDeviceInfo(){
+        async deleteDeviceInfo(){
+            await new Promise(resove => {
+                this.$DeleteMessage([`确认删除`,'删除设备'])
+                .then(() => {
+                    resove()
+                })
+                .catch(error => {
+
+                })
+            })
+            let arr = this.selectArr.map(item => item.DeviceLedgerID)
             Device({
-                FAction:'QueryPageDeviceInfo',
-                IDStr:''
+                FAction:'DeleteDeviceInfo',
+                IDStr:arr.join(',')
             })
             .then(data => {
 
             })
             .catch(err => {})
+        },
+        /**
+         * 导出二维码
+         */
+        exportUDeviceLedgerQRCode(){
+            Device({
+                FAction:'ExportUDeviceLedgerQRCode'
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(err => {
+
+            })
         }
     }
 }
@@ -324,12 +539,22 @@ $img-url:'/static/image/';
 .zw-dialog.add-device{
     .el-dialog{
         width: 950px;
-        height: 770px;
+        max-height: 970px;
         background: url(#{$img-url}admin/btn3.png);
         background-size: 100% 100%;
         padding-left: 48px!important;
+        .el-dialog__body{
+            height: 800px;
+            overflow: hidden;
+            .el-scrollbar{
+                height: 100%;
+                .el-scrollbar__wrap{
+                    overflow-x: hidden
+                }
+            }
+        }
         h5{
-            margin-bottom: 33px;
+            margin-bottom: 20px;
             .icon-border{
                 width:4px;
                 height:12px;
@@ -338,23 +563,32 @@ $img-url:'/static/image/';
                 display: inline-block;
                 background:rgba(44,146,252,1);
             }
+            >div{
+                display: inline-block
+            }
         }
         .el-form{
             &-item{
                 &__label{
-                    width: 82px;
+                    width: 100px;
                     text-align: right;
                     font-size: 14px;
                     color: #F1F1F2
                 }
+                &__content{
+                    width:165px;
+                }
                 .el-date-editor.el-input, .el-date-editor.el-input__inner{
                     width:165px;
                 }
-                .el-input__inner{
-                    width:165px;
+                .el-input__inner,.el-textarea__inner{
                     height:39px;
                     background:rgba(24,64,107,1);
                     border:1px solid rgba(5,103,158,1);
+                }
+                .el-textarea__inner{
+                    height: 60px;
+                    color: #F1F1F2
                 }
                 .el-upload--picture-card{
                     width:165px;

@@ -303,7 +303,6 @@ export default {
         }
     },
     components:{
-        zwPagination,
         zwTree
     },
     watch:{

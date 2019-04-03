@@ -7,6 +7,15 @@
 
       <section class="pr_are">
         <ul class="clearfix">
+          <li class="first ">
+            <div class="imtems">
+              <p>
+                {{t}}
+              </p>
+            </div>
+						<div class="step-border"></div>
+            <!--2018-->
+          </li>
           <li v-for="(items,key) in dl_datalist" :class="{'d':key%2!=0}">
             <h2>
               {{items.HappenContext}}
@@ -27,15 +36,6 @@
               <div class="step-arrow-circle"></div>
               <div class="step-arrow-border"></div>
             </div>
-          </li>
-          <li class="first ">
-            <div class="imtems">
-              <p>
-                {{t}}
-              </p>
-            </div>
-						<div class="step-border"></div>
-            <!--2018-->
           </li>
         </ul>
       </section>
@@ -66,7 +66,7 @@ export default {
           DeviceID: this.$route.params.id //产品自己id
         })
         .then(data => {
-          this.dl_datalist = data.FObject.reverse();
+          this.dl_datalist = data.FObject
           resolve("succ");
         })
         .catch(err => {
@@ -191,6 +191,8 @@ a {
   width: 170px;
   white-space: nowrap;
   text-align:center;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .pr_top .pr_are ul li .gt {
   width: 100px;

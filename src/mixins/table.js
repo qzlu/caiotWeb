@@ -3,7 +3,7 @@
  * @param {Number} total 表格数据总条数
  * @param {Number} pageIndex 页码
  */
-// import Vue from 'vue'
+import {zwPagination} from '@/zw-components/index'
 export default{
     data() {
         return{
@@ -15,6 +15,9 @@ export default{
             selectArr:[], //表格多选
             filterText:''
         }
+    },
+    components:{
+        zwPagination
     },
     methods: {
         tableRowClassName({row, rowIndex}) {

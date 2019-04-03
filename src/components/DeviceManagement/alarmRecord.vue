@@ -2,6 +2,12 @@
     <div class="clearfix" style="height:100%">
         <ul class="report-header clearfix" style="margin-top:15px;">
             <li class="l">
+                <span class="label">告警级别</span>
+                <el-select v-model="level">
+                    <el-option v-for=" item in alarmLevel" :key="item.value" :value="item.value" :label="item.name"></el-option>
+                </el-select>
+            </li>
+            <li class="l">
                 <span class="label" style="font-size:14px;">时间　</span>
                 <el-date-picker
                   v-model="time"
@@ -10,6 +16,7 @@
                   placeholder="选择日期"
                 ></el-date-picker>
             </li>
+            <li class="l"><button class="zw-btn"><i class="el-icon-search"></i>查询</button></li>
             <li class="l">
                 <button class="zw-btn zw-btn-export">导出</button>
             </li>
@@ -22,7 +29,7 @@
                 </el-input>
             </li>
         </ul>
-        <div>
+        <div style="height:830px;">
             <el-table
                :data="tableData"
                style="width: 100%"
@@ -36,6 +43,7 @@
                  :label="item.label"
                  :sortable="item.sortble"
                  show-overflow-tooltip
+                 :formatter="item.formatter"
                 >
                </el-table-column>
                <el-table-column
@@ -87,11 +95,11 @@
     </div>
 </template>
 <script>
+import { Orders, HandlingEvents ,Device} from '@/request/api.js';
 import table from '@/mixins/table' //表格混入数据
-import { Orders, HandlingEvents } from '@/request/api.js';
-import {zwPagination} from '@/zw-components/index'
+import queryRecord from '@/mixins/queryRecord.js'
 export default {
-    mixins:[table],
+    mixins:[table,queryRecord],
     data(){
         return{
             tableLabel:[
@@ -100,82 +108,61 @@ export default {
                     label: '序号'
                 },
                 {
-                    prop:'OrderContent',
-                    label:'告警名称'
+                    prop:'DeviceName',
+                    label:'设备名称'
                 },
                 {
-                    prop: 'OrderCreateDateTime',
-                    label: '告警时间',
-                    sortble:'custom'
+                    prop: 'AlarmLevel',
+                    label: '告警等级',
                 },
                 {
-                    prop: 'DeviceName',
-                    label: '告警设备'
-                },
-                {
-                    prop: 'AlarmLevelText',
-                    label: '告警等级'
+                    prop: 'OrderContent',
+                    label: '告警内容'
                 },
                 {
                     prop: 'RunningOrderDateTime',
-                    label: '处理时间'
+                    label: '告警时间'
+                },
+                {
+                    prop: 'EndOrderDateTime',
+                    label: '完成时间'
                 },
                 {
                     prop: 'FContacts',
                     label: '处理人'
                 },
+                {
+                    prop: 'OrderState',
+                    label: '当前状态',
+                    formatter:(row, column, cellValue, index) => OrderState[row.OrderState]
+                },
             ],
-            projectName:localStorage.getItem('projectname'),
-            time:[new Date(),new Date()],
-            filterText:'',
             show:false,
             recordsInfo:[],
-            alarmLevel:['','提示','一般','严重']
-        }
-    },
-    components:{
-        zwPagination
-    },
-    watch:{
-        filterText(val){
-            this.queryData()
+            alarmLevel:[
+                {
+                    value:0,
+                    name:'全部'
+                },
+                {
+                    value:1,
+                    name:'提示'
+                },
+                {
+                    value:2,
+                    name:'一般'
+                },
+                {
+                    value:3,
+                    name:'严重'
+                }
+            ],
+            type:5
         }
     },
     created(){
-        this.queryData()
     },
     methods:{
-        /**
-         * 查询告警记录
-         */
-        queryData(text = ''){
-            Orders({
-                FAction:'QueryAlarmOrders',
-                StartDateTime:this.time[0].toLocaleDateString() + ' 00:00',
-                EndDateTime:this.time[1].toLocaleDateString() + ' 23:59',
-                Field:this.orderProp,
-                FOrder:this.order,
-                PageIndex:this.pageIndex,
-                PageSize:10,
-                SearchKey:text
-            })
-            .then((data) => {
-                this.total = data.FObject.Table?data.FObject.Table[0].Count:0
-                this.tableData = data.FObject.Table1?data.FObject.Table1:[]
-                this.tableData.forEach(item => {
-                    this.$set(item,'AlarmLevelText',this.alarmLevel[item.AlarmLevel])
-                })  
-            }).catch((err) => {
-                
-            });
-        },
-        /**
-         * handleCurrentChange 页码改变时触发
-         */
-        handleCurrentChange(val){
-            this.pageIndex = val
-            this.queryData(this.filterText)
-        },
         /**
          * 查询告警记录详情
          * 

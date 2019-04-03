@@ -10,12 +10,12 @@
                     <el-option v-for="item in energyTypeList" :key="item.ID" :label="item.EnergyTypeName" :value="item.ID"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="所属区域" prop="AreaID" :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="区域名称" prop="AreaID" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addPoint.AreaID"   placeholder="请选择">
                     <el-option v-for="area in areaList" :key="area.AreaID" :label="area.AreaName" :value="area.AreaID"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="所属系统" prop="SystemParamID" :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="系统名称" prop="SystemParamID" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addPoint.SystemParamID"   placeholder="请选择">
                     <el-option v-for="system in systemTypeList" :key="system.Key" :label="system.ParamValue" :value="system.Key"></el-option>
                   </el-select>
@@ -32,7 +32,7 @@
              :data='allDefaultPoint' 
              :renderContent='renderContent' 
              :defaultProps='defaultProps'
-             nodeKey='DeviceID'
+             nodeKey='DeviceLedgerID'
              :defaultChecked='defaultChecked'
              showCheckbox>
             </zw-tree>
@@ -84,7 +84,7 @@
 <script>
 import {system,MeterReading} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination,zwTree} from '@/zw-components/index'
+import {zwTree} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -143,7 +143,6 @@ export default {
         }
     },
     components:{
-        zwPagination,
         zwTree
     },
     watch:{
@@ -166,7 +165,7 @@ export default {
     methods:{
         renderContent(h, { node, data, store }){
             return(
-                <span>{data.AreaName?data.AreaName:data.DeviceName}</span>
+                <span>{data.AreaName?data.AreaName:data.DeviceLedgerName}</span>
             )
         },
         /**
@@ -263,7 +262,7 @@ export default {
                 this.allDefaultPoint.forEach(item => {
                     item.list.forEach(node => {
                         if(node.IsExist == 1){
-                            this.defaultChecked.push(node.DeviceID)
+                            this.defaultChecked.push(node.DeviceLedgerID)
                             node.disabled = true
                         }else{
                             node.disabled = false
@@ -385,10 +384,10 @@ export default {
             let arr = this.$refs.pointTree.$refs.tree.getCheckedNodes()
             //过滤区域节点
             arr = arr.filter(item => {
-                return item.DeviceID
+                return item.DeviceLedgerID
             })
             arr = arr.map(item => {
-                return item.DeviceID
+                return item.DeviceLedgerID
             })
             MeterReading({
                 FAction:'AddImportUMeterReadingPoint',

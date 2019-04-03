@@ -24,7 +24,7 @@
                   end-placeholder="结束日期">
                 </el-date-picker>
                 <button class="zw-btn" style="background:#042E74;" @click="queryAllOrders()"><i class="el-icon-search"></i>查询</button>
-                <button class="zw-btn zw-btn-export">导出</button>
+                <button class="zw-btn zw-btn-export" @click="exportFile()">导出</button>
             </li>
         </ul>
         <div class="tab-content" >
@@ -321,6 +321,7 @@
                                     <li class="l "><span>正常:</span>{{item.NormalCount}}</li>
                                     <li class="l "><span>异常:</span>{{item.FaultCount}}</li><br> -->
                                     <li class="l"><span>开始时间:{{item.FStartInspectionTime}}</span><span>　结束时间:{{item.FLastInspectionTime}}</span></li>
+                                    <li class="l" v-if="item.PatrolNote != ''&&item.PatrolNote !=null" style="color:red"><span>异常描述:</span>{{item.PatrolNote}}</li>
                                 </ul>
                             </li>
                         </ul>
@@ -788,6 +789,24 @@ export default {
             .catch(err => {
 
             })
+        },
+        /**
+         * 导出工单
+         */
+        exportFile(){
+            Orders({
+                FAction:'ExportPageUOrders',
+                mSearchUOrders:{
+                    StartDateTime:this.time[0].toLocaleDateString() + ' 00:00',
+                    EndDateTime:this.time[1].toLocaleDateString() + ' 23:59',
+                    OrderType:this.selectType.value,
+                    OrderState:this.tabIndex - 1
+                }
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(err => {})
         }
     }
 
