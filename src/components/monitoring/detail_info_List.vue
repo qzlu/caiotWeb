@@ -120,7 +120,7 @@
         <div class="gh_line" style="height: 25px;"></div>
         <div class="mains">
           <!--组件1 大事记-->
-          <my-imgdata></my-imgdata>
+          <my-imgdata :data="dl_datalist"></my-imgdata>
           <!--组件1-->
           <!--组件2 基本信息及资料-->
           <table_data @ready="getInfo"></table_data>
@@ -185,6 +185,7 @@ export default {
       datalist02: this.$route.params.getalldata, //点击进来当前设备详情，左1
       linedata: {}, //图表线条数据
       video_div: false,
+      dl_datalist: [], //大事件数据
       videoUrl:
         "http://hls.open.ys7.com/openlive/669cf1ba63a34653a1c358b17ceea2b6.m3u8"
     };
@@ -223,6 +224,7 @@ export default {
       /*{id:"1",title:"告警总况",name:"及时恢复",num:"500",list:[{value:80, name:'已恢复'},{value:20, name:'未恢复'}]},		*/
     ];
     this.datalist = data;
+    this.getDeviceMemorabilia()
   },
   methods: {
     setclass(x) {
@@ -230,6 +232,20 @@ export default {
     },
     routerback() {
       this.$router.back(-1);
+    },
+    /**
+     * 获取大事件数据
+     */
+    getDeviceMemorabilia(){
+        project({
+          FAction: "GetDeviceMemorabilia",
+          DeviceID: this.$route.params.id //产品自己id
+        })
+        .then(data => {
+          this.dl_datalist = data.FObject
+        })
+        .catch(err => {
+        })
     },
     /**
      * 格式化折线图数据

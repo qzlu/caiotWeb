@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="header">
-                <img src="static/image/nav_new/nav_icon_3.png" alt="">
+                <img src="static/image/count/icon_2.png" alt="">
                 <span>使用登记</span>
             </div>
             <div class="use-time">
@@ -46,11 +46,11 @@
             </div>
             <div class="header clearfix">
                 <div class="l">
-                    <img src="static/image/nav_new/nav_icon_3.png" alt="">
+                    <img src="static/image/count/icon_3.png" alt="">
                     <span>设备参数</span>
                 </div>
                 <div class="l" style="margin-left:30%">
-                    <img src="static/image/nav_new/nav_icon_3.png" alt="">
+                    <img src="static/image/count/icon_3.png" alt="">
                     <span>配套设备参数</span>
                 </div>
             </div>

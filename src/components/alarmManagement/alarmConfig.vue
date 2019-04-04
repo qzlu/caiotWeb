@@ -2,7 +2,7 @@
     <div class="report inspection-item">
         <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog">
             <el-form :model="addConfig" ref="form">
-                <el-form-item label="设备名称"  prop='DeviceID'  :rules="[{ required: true, message: '请输入巡检点名称'}]">
+                <el-form-item label="设备名称"  prop='DeviceID'  :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="device" v-if='title ==="新增"' value-key="DeviceID" filterable  placeholder="请选择" @change="selectDevice">
                     <el-option v-for="device in deviceList" :key="device.DeviceID" :label="device.DeviceName" :value="device"></el-option>
                   </el-select>

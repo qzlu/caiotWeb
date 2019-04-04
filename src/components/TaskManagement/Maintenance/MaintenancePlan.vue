@@ -6,7 +6,7 @@
                 <ul class="l clearfix ">
                     <li>
                         <span class="label">设备名称</span>
-                        <el-input v-model="addPlanData.DeviceName" readonly></el-input>
+                        <el-input v-model="addPlanData.DeviceLedgerName" readonly></el-input>
                     </li>
                     <li>
                         <span class="label">保养等级</span>
@@ -170,7 +170,7 @@ export default {
                     sortble:'custom'
                 },
                 {
-                    prop: 'DeviceName',
+                    prop: 'DeviceLedgerName',
                     label: '设备名称',
                     sortble:'custom'
                 },
@@ -240,7 +240,7 @@ export default {
                 children:'list'
             },
             addPlanData:{
-                DeviceName:null,
+                DeviceLedgerName:null,
                 MaintenanceLevelName:null,
                 MaintenancePlanName:null,
                 MaintenancePlanDateTime:null,

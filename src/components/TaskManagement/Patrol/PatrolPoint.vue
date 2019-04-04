@@ -13,6 +13,7 @@
         <ul class="clearfix report-header">
             <li class="l" @click="add()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l" @click="exportFile"><button class="zw-btn zw-btn-export">导出</button></li>
+            <li class="l"><button class="zw-btn" style="width:120px;padding:0 10px" @click="exportPatrolPointQrCode"><i class="iconfont icon-QRcode" style="color:#3593ed"></i>导出二维码</button></li>
             <!-- <li class="l" @click="queryAreaTypeDeviceInfo"><button class="zw-btn zw-btn-import">设备导入</button></li> -->
             <li class="l" @click="pageIndex=1;filterText = '';queryData()"><button class="zw-btn zw-btn-refrest">刷新</button></li>
             <li class="r">
@@ -249,6 +250,20 @@ export default {
                 });
             })
         },
+        /**
+         * 导出二维码
+         */
+        exportPatrolPointQrCode(){
+            Patrol({
+                FAction:'ExportPatrolPointQrCode'
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(err => {
+
+            })
+        }
     }
 }
 </script>

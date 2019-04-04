@@ -548,7 +548,7 @@ export default {
             this.title = '新增保养标准'
             this.addStandard = Object.assign({},this.defaultAddStandard)
             this.addStandard.DeviceTypeID = this.device.DeviceTypeID
-            this.timeArr = [], this.timeArr2 = [], this.timeArr3 = [] ,this.contentArr = []
+            this.timeArr = [], this.timeArr2 = [], this.timeArr3 = [] ,this.contentArr = ['']
             this.show1 =true
             
         },

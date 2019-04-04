@@ -171,7 +171,7 @@
                 </el-dropdown>
             </li>
             <li class="l"><button class="zw-btn zw-btn-export" @click="queryExportDeviceInfo">导出</button></li>
-             <li class="l"><button class="zw-btn" style="width:120px;padding:0 10px" @click="exportUDeviceLedgerQRCode"><i class="iconfont icon-QRcode" style="color:#3593ed"></i>导出二维码</button></li>
+            <li class="l"><button class="zw-btn" style="width:120px;padding:0 10px" @click="exportUDeviceLedgerQRCode"><i class="iconfont icon-QRcode" style="color:#3593ed"></i>导出二维码</button></li>
             <li class="r">
                 <el-input class="search-input" placeholder="搜索设备关键字" v-model="filterText">
                     <i class="el-icon-search" slot="suffix"></i>
@@ -219,7 +219,8 @@ export default {
             tableLabel:[
                 {
                     prop: 'RowNum',
-                    label: '序号'
+                    label: '序号',
+                    width:80
                 },
                 {
                     prop: 'DeviceLedgerName',
@@ -513,7 +514,8 @@ export default {
                 IDStr:arr.join(',')
             })
             .then(data => {
-
+                this.pageIndex  = 1
+                this.queryData()
             })
             .catch(err => {})
         },

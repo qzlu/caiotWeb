@@ -16,7 +16,7 @@
 						<div class="step-border"></div>
             <!--2018-->
           </li>
-          <li v-for="(items,key) in dl_datalist" :class="{'d':key%2!=0}">
+          <li v-for="(items,key) in data" :class="{'d':key%2!=0}">
             <h2>
               {{items.HappenContext}}
               <!--报废-->
@@ -45,43 +45,19 @@
 <style>
 </style>
 <script>
-import * as comm from "@/assets/js/pro_common";
-import {project} from '@/request/api';
 export default {
   data() {
     return {
-      dl_datalist: [],
       t: ""
     };
+  },
+  props:{
+    data:Array
   },
   created() {
     var myDate = new Date();
     this.t = myDate.getFullYear();
   },
-  methods: {
-    ajaxd() {
-      return new Promise((resolve, reject) => {
-        project({
-          FAction: "GetDeviceMemorabilia",
-          DeviceID: this.$route.params.id //产品自己id
-        })
-        .then(data => {
-          this.dl_datalist = data.FObject
-          resolve("succ");
-        })
-        .catch(err => {
-          reject()
-        })
-      })
-    }
-  },
-  mounted: function() {
-    let _this = this;
-    this.ajaxd()
-      .then(function() {})
-      .then(function() {})
-      .catch(function(err) {});
-  }
 };
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->

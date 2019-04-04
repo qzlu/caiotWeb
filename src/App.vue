@@ -26,6 +26,7 @@ export default {
   created(){
     window.addEventListener('resize',this.getHeight)
     this.getHeight()
+    this.$store.commit('getProject')
   },
   methods:{
     getHeight(){

@@ -268,7 +268,7 @@ export default {
                 FAction:this.type?'UpdateSInspectionDeviceTypeCheckItem':'AddSInspectionDeviceTypeCheckItem',
                 ID:this.type?this.itemID:'',
                 DeviceTypeID:this.type?'':this.device.DeviceTypeID,
-                FName:this.inspectionItem
+                FName:this.inspectionItem.replace(/,/,'，')
             })
             .then(data => {
                 this.show1 = false

@@ -701,8 +701,27 @@ let routers_item=[
 							title: '千仞云平台',
 							requireAuth: true,
 						 },
+					},
+					{
+						path:'ProjectInfo',
+						name:'ProjectInfo', //工程管理 -项目信息
+						component: () => import('@/components/SystemManagement/projectManagement.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
+					},
+					{
+						path:'AreaInfo',
+						name:'AreaInfo', //工程管理 -项目信息
+						component: () => import('@/components/SystemManagement/areaInfo.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
 					}
-					
 					
 					]
 				

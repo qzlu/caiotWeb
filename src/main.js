@@ -3,11 +3,10 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-
+import store from '@/store/index.js';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
-
 import './router/handle' //路由拦截、设置title及强制跳转
 import axios from 'axios'
 Vue.prototype.$axios= axios
@@ -61,6 +60,7 @@ Vue.directive('loadmore', {  bind(el, binding) {   
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
