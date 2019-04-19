@@ -423,7 +423,6 @@
           <el-date-picker
             class=""
             v-model="time"
-            value-format="yyyy-MM-dd"
             type="date"
             @change="selectTime"
             placeholder="选择日期"
@@ -450,7 +449,7 @@
       <section class="btn_baritems">
         <div class="l showitem01">
           <section id="record-chart" style="height:183px; width: 90%;">
-            <pie-chart :data="chartData1" :color='["#00D294", "#89192E"]' :setting="{legend:{x:'220px'}}"></pie-chart>
+            <pie-chart :data="chartData1" :color='["#00D294", "#89192E", "#2A91FC"]' :setting="{legend:{x:'210px'}}"></pie-chart>
           </section>
           <div>
             <div class="atc_title">
@@ -474,6 +473,10 @@
               <p>
                 <!--50-->
                 {{pointsInfo.FaultCount?pointsInfo.FaultCount:0}}
+              </p>
+              <p>
+                <!--50-->
+                {{pointsInfo.WaitingCount?pointsInfo.WaitingCount:0}}
               </p>
             </div>
           </div>
@@ -569,6 +572,7 @@ import * as comm from "../../assets/js/pro_common";
 import {Inspection,FileUpLoad,project} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {pieChart} from '@/zw-components/index'
+import { clean } from 'semver';
 export default {
   mixins:[table],
   data() {
@@ -851,7 +855,6 @@ export default {
      * 查询人工巡检信息
      */
     queryPlanRecord(){
-        this.active = 0
         Inspection({
           FAction:'QueryUInspectionPlanByCount',
           StartDateTime:this.time.toLocaleDateString() +' 00:00',
@@ -860,15 +863,17 @@ export default {
         .then(data => {
           this.points = data.FObject.Table?data.FObject.Table[0].Count:0
           this.pointsInfo = data.FObject.Table1?data.FObject.Table1[0]:{}
-          this.plans = data.FObject.Table2?data.FObject.Table2:[]
+          this.plans = data.FObject.Table2?data.FObject.Table2.filter(item => item.InspectionState > 0):[]
           this.waitingPlan = data.FObject.Table3?data.FObject.Table3[0].WaitingPlanCount:0
-          let datas = [{value:this.pointsInfo.NormalCount,name:"正常"},{value:this.pointsInfo.FaultCount,name:"异常"}]
+          let datas = [{value:this.pointsInfo.NormalCount,name:"正常"},{value:this.pointsInfo.FaultCount,name:"异常"},{value:this.pointsInfo.WaitingCount,name:"待巡检"}]
           this.chartData1 = {
-            columns:['正常','异常'],
+            columns:['正常','异常','待巡检'],
             rows:datas
           }
           if(this.plans.length){
             this.queryPlan(this.plans[0].ID)
+          }else{
+            this.records = []
           }
         })
         .catch(error => {

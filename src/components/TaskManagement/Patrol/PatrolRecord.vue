@@ -7,7 +7,7 @@
         <div class="htbn">
           <section>
             <div class="hdr">
-              <p class="pn02">人工巡更月报</p>
+              <p class="pn02">人工巡更日报</p>
               <p class="l pn">
                 项目名称：{{projectNames}}
                 <!--新都汇-->
@@ -33,7 +33,7 @@
                   <li class="l">巡更次数　<span>{{item.PatrolPlanCount}}</span></li>
                   <li class="l">待巡更　<span>{{item.UnPatrolCount}}</span></li>
                   <li class="l">正常点数　<span>{{item.NormalCount}}</span></li>
-                  <li class="l">异常点数　<span>{{item.FaultCount}}</span></li>
+                  <li class="l">异常点数　<span class="no">{{item.FaultCount}}</span></li>
                 </ul>
               </div>
             </div>
@@ -46,7 +46,7 @@
                 <td width="33%">异常描述</td>
                 <!-- <td width="25%">处理情况</td> -->
               </tr>
-              <tr v-for="(item,key) in  dateReport.Table2">
+              <tr v-for="(item,key) in  dateReport.Table1">
                 <td>{{item.PatrolObject}}</td>
                 <td>{{item.PatrolTime}}</td>
                 <td style="color: red;">{{item.PatrolNote}}</td>
@@ -101,13 +101,13 @@
       <section class="btn_baritems">
         <div class="l showitem01">
           <section id="record-chart" style="height:183px; width: 90%;">
-            <pie-chart :data='chartData' :color='["#00D294", "#89192E"]'></pie-chart>
+            <pie-chart :data='chartData' :color='["#00D294", "#89192E","#2A91FC"]' :setting="{legend:{x:'210px'}}"></pie-chart>
           </section>
           <div>
             <div class="atc_title">
               <p>巡更点数</p>
               <p>
-                {{totalInfo.MeterReadingPointCount}}
+                {{totalInfo.PatrolPointCount}}
                 <!--100-->
               </p>
             </div>
@@ -126,6 +126,10 @@
                 <!--50-->
                 {{totalInfo.FaultCount?totalInfo.FaultCount:0}}
               </p>
+              <p>
+                <!--50-->
+                {{totalInfo.WaitingCount?totalInfo.WaitingCount:0}}
+              </p>
             </div>
           </div>
           <!--	<img src="/static/image/task/test.png">-->
@@ -138,7 +142,7 @@
             @click="active=key;queryPlan(item.ID)"
           >
             <section class="ui_box">
-              <h5>{{item.MeterReadingPlanName}}</h5>
+              <h5>{{item.PatrolPlanName}}</h5>
               <div class="l status">
                   {{inspectionStateArr[item.PatrolState]}}
               </div>
@@ -245,11 +249,11 @@ export default {
       chartData:{},
       tableLabel:[
           {
-            prop: 'PatrolObject',
-            label: '巡更路线'
+            prop: 'PatrolItem',
+            label: '巡更项'
           },
           {
-              prop: 'PatrolItem',
+              prop: 'PatrolObject',
               label: '巡更点'
           },
           {
@@ -291,9 +295,9 @@ export default {
         .then(data => {
           this.totalInfo = data.FObject.Table?data.FObject.Table[0]:{}
           this.plans = data.FObject.Table1?data.FObject.Table1.filter(item => item.PatrolState>0):[]
-          let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"}]
+          let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"},{value:this.totalInfo.WaitingCount,name:"待巡更"}]
           this.chartData = {
-            columns:['正常','异常'],
+            columns:['正常','异常','待巡更'],
             rows:datas
           }
           if(this.plans[0]){
@@ -317,7 +321,7 @@ export default {
           ID:id
         })
         .then(data => {
-            this.records = data.FObject
+          this.records = data.FObject
         })
         .catch(error => {
           console.log(error);

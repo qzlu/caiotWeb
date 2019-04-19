@@ -3,9 +3,9 @@
         <el-dialog :title="type?'编辑':'新增设备台账'"  class="zw-dialog add-device" :visible.sync='show' top="100">
             <el-scrollbar>
                 <h5><span class="icon-border"></span>设备铭牌</h5>
-                <el-form inline :model='deviceInfo'>
-                    <el-form-item label="设备名称" prop="DeviceLedgerName"><el-input v-model="deviceInfo.DeviceLedgerName"></el-input></el-form-item>
-                    <el-form-item label="设备编号" prop="DeviceCode"><el-input v-model="deviceInfo.DeviceCode"></el-input></el-form-item>
+                <el-form inline :model='deviceInfo' ref="form">
+                    <el-form-item label="设备名称" prop="DeviceLedgerName" :rules="[{ required: true, message: '请输入'}]"><el-input v-model="deviceInfo.DeviceLedgerName"></el-input></el-form-item>
+                    <el-form-item label="设备编码" prop="DeviceCode" :rules="[{ required: true, message: '请输入'}]"><el-input v-model="deviceInfo.DeviceCode"></el-input></el-form-item>
                     <el-form-item label="生产厂家" prop="Manufacturer"><el-input v-model="deviceInfo.Manufacturer"></el-input></el-form-item>
                     <el-form-item label="出厂型号" prop="SpecificationsCode"><el-input v-model="deviceInfo.SpecificationsCode"></el-input></el-form-item>
                     <el-form-item label="出厂编号" prop="ManufacturingNumber"><el-input v-model="deviceInfo.ManufacturingNumber"></el-input></el-form-item>
@@ -66,18 +66,18 @@
                     <el-form-item label="项目名称">
                         <el-input readonly v-model="projectName"></el-input>
                     </el-form-item>
-                    <el-form-item label="设备类型" prop="DeviceTypeName">
+                    <el-form-item label="设备类型" prop="DeviceTypeName" :rules="[{ required: true, message: '请选择'}]">
                       <el-select v-model="deviceInfo.DeviceTypeName"   placeholder="请选择">
                         <el-option v-for="device in allDevice" :key="device.DeviceTypeID" :label="device.DeviceTypeName" :value="device.DeviceTypeName"></el-option>
                       </el-select>
                     </el-form-item>
-                    <el-form-item label="区域名称">
+                    <el-form-item label="区域名称" :rules="[{ required: true, message: '请选择'}]">
                         <el-select v-model="deviceInfo.AreaName">
                             <el-option v-for="area in areaList" :key="area.AreaID" :value="area.AreaName" :label="area.AreaName">
                             </el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="系统类别">
+                    <el-form-item label="系统类别" :rules="[{ required: true, message: '请选择'}]">
                         <el-select v-model="deviceInfo.SystemParamName">
                             <el-option v-for="system in systemList" :key="system.ParamValue" :value="system.ParamValue" :label="system.ParamValue">
                             </el-option>
@@ -145,7 +145,7 @@
             <li class="l"><button class="zw-btn zw-btn-add" @click="beforeAddDevice">新增</button></li>
             <li class="l">
                 <!-- 详情 -->
-                <router-link :to="{name:'DeviceInfo',params:{deviceID:selectArr[0].DeviceLedgerID}}" v-if="this.selectArr.length === 1">
+                <router-link :to="{name:'DeviceInfo',params:{deviceID:selectArr[0].DeviceLedgerID,file:selectArr[0].LedgerFiles}}" v-if="this.selectArr.length === 1">
                     <button class="zw-btn zw-btn-detail"></button>
                 </router-link>
                 <button class="zw-btn zw-btn-detail" v-else></button>
@@ -158,6 +158,9 @@
                 <el-dropdown>
                     <button class="zw-btn zw-btn-import">导入</button>
                     <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>
+                            <a href="http://47.106.64.130:56090/CreateFile/1/设备台账.xls">导出模板</a>
+                        </el-dropdown-item>
                         <el-dropdown-item>
                             <el-upload
                                 action="http://47.106.64.130:56090/Caiot/FileUploadContext"
@@ -228,7 +231,7 @@ export default {
                 },
                 {
                     prop: 'DeviceCode',
-                    label: '设备编号'
+                    label: '设备编码'
                 },
                 {
                     prop: 'Manufacturer',
@@ -246,7 +249,8 @@ export default {
                 {
                     prop: 'ManufacturingTime',
                     label: '出厂日期',
-                    width:'160'
+                    width:'160',
+                    formatter:(row, column, cellValue, index) => row.EditorDateTime?row.ManufacturingTime.split(' ')[0]:''
                 },
                 {
                     prop: 'ServiceLife',
@@ -255,7 +259,8 @@ export default {
                 {
                     prop: 'EditorDateTime',
                     label: '质保截止',
-                    width:'160'
+                    width:'160',
+                    formatter:(row, column, cellValue, index) => row.EditorDateTime?row.EditorDateTime.split(' ')[0]:''
                 },
                 {
                     prop: 'IsIOTDevice',
@@ -384,7 +389,14 @@ export default {
         /**
          * 新增或编辑设备台账
          */
-        addOrUpdated(){
+        async addOrUpdated(){
+            await new Promise(resolve => {
+                this.$refs.form.validate((valid) => {
+                  if (valid) {
+                      resolve()
+                  }
+                });
+            })
             this.deviceInfo.InfoNameStr = this.fileList.map(item => `${item.FileName}-${item.FilePath}`).join(',')
             this.show = false
             Device({
@@ -410,14 +422,19 @@ export default {
             if(this.deviceInfo.ServiceLife == null){
                 this.deviceInfo.ServiceLife = 0
             }
-            this.fileList = this.selectArr[0].LedgerFiles.split(',').map(item => {
-                let arr = item.split('!')
-                return {
-                    FileName:arr[1],
-                    FilePath:arr[2],
-                    CreateDate:arr[3]
-                }
-            })
+            if(this.selectArr[0].LedgerFiles){
+                this.fileList = this.selectArr[0].LedgerFiles.split(',').map(item => {
+                    let arr = item.split('!')
+                    return {
+                        FileName:arr[1],
+                        FilePath:arr[2],
+                        CreateDate:arr[3]
+                    }
+                })
+            }else{
+                this.fileList = []
+            }
+
         },
         /**
          * 62.获取区域类型
@@ -427,7 +444,6 @@ export default {
                 FAction:'QueryUArea'
             })
             .then(data => {
-                console.log(data);
                 this.areaList = data.FObject
             })
             .catch(err => {
@@ -442,7 +458,6 @@ export default {
                 FAction:'SSystemParam'
             })
             .then(data => {
-                console.log(data);
                 this.systemList = data.FObject
             })
             .catch(err => {
@@ -462,11 +477,12 @@ export default {
             .catch(err => {})
         },
         /**
-         * 238.查询导出设置台账信息
+         * 302.导出设备台账
          */
         queryExportDeviceInfo(){
             Device({
-                FAction:'QueryExportDeviceInfo'
+                FAction:'QueryExportUDeviceLedger',
+                SearchKey:this.filterText
             })
             .then(data => {
                 window.location = "http://www.szqianren.com/" + data.FObject;

@@ -20,9 +20,18 @@
                     <el-form-item label="电话号码" prop="FTelephone" :rules="FTelephoneRule">
                         <el-input v-model="addFormData.FTelephone"></el-input>
                     </el-form-item>
-                    <el-form-item label="所属角色" prop="FRoleGUID" :rules="[{ required: true, message: '请选择'}]">
+                    <el-form-item label="功能角色" prop="FRoleGUID" :rules="[{ required: true, message: '请选择'}]">
                       <el-select v-model="addFormData.FRoleGUID"   placeholder="请选择角色">
                         <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="管理角色" prop="FUserType" :rules="[{ required: true, message: '请选择'}]">
+                      <el-select v-model="addFormData.FUserType"   placeholder="请选择角色">
+                        <!-- <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option> -->
+                        <el-option key="1" label="运营管理" :value="1"></el-option>
+                        <el-option key="2" label="集团管理" :value="2"></el-option>
+                        <el-option key="3" label="项目管理" :value="3"></el-option>
+                        <el-option key="4" label="项目现场运维" :value="4"></el-option>
                       </el-select>
                     </el-form-item>
                 </el-form>
@@ -76,7 +85,6 @@
 <script>
 import {system} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -162,17 +170,13 @@ export default {
             type:0,  // 0 :新增用户 1：修改用户
             FUserNameRule: [{required: true, validator: validateUserName}],//用户名规则
             FTelephoneRule:[{required: true, validator: phoneNumbre}], //联系方式规则
-            filterText:''
         }
-    },
-    components:{
-        zwPagination
     },
     watch:{
         filterText(){
             clearTimeout(timer)
             var timer = setTimeout(() => {
-                this.queryData(this.filterText)
+                this.queryData()
             },500)
         }
     },
@@ -189,11 +193,11 @@ export default {
          * @param {type String} userName 用户名
          * @param {type Number} pageIndex 页码
          */
-        queryData(userName = '',pageIndex = 1) {
+        queryData() {
             system({
                 FAction:"QueryPageTUsers",
-                FUserName:userName,
-                PageIndex:pageIndex,
+                FUserName:this.filterText,
+                PageIndex:this.pageIndex,
                 PageSize:10,
                 ProjectID:localStorage.getItem("projectid")
             })
@@ -203,6 +207,13 @@ export default {
                 this.tableData.forEach(item => {
                     item.ProjectName = item.ProjectName.replace(/,$/,'')
                 })
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -231,7 +242,7 @@ export default {
          */
         handleCurrentChange(val){
             this.pageIndex = val
-            this.queryData(this.filterText,val)
+            this.queryData()
         },
         /**
          * add 点击新增按钮

@@ -25,6 +25,7 @@
                         <el-date-picker
                           v-model="planTime"
                           type="datetime"
+                          :picker-options="pickerOptions1"
                           @change="selectPlanTime"
                           placeholder="选择日期时间">
                         </el-date-picker>
@@ -273,6 +274,11 @@ export default {
             road:null,
             loading:false,
             pointData:[],//巡检路线对应的巡检点
+            pickerOptions1:{
+                disabledDate:(val) => {
+                    return   new Date().getTime() >= val.getTime() + 24*60*60*1000
+                }
+            },
             pickerOptions2: {
                 shortcuts: [{
                   text: '最近一周',
@@ -354,6 +360,13 @@ export default {
                     }
                     this.$set(item,'InspectionPlanTypeText',item.InspectionPlanType==1?'自动生成':'手动生成')
                 });
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(error => {
 
@@ -582,7 +595,6 @@ export default {
             })
             .then(data => {
                 this.show = false
-                this.pageIndex = 1
                 this.queryData()
                 this.$message({
                   type: 'success',

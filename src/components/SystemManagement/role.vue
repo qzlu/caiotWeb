@@ -232,16 +232,23 @@ export default {
          * queryRole 分页查询查询角色
          * @param {type Number} pageIndex 页码
          */
-        queryData(pageIndex = 1) {
+        queryData() {
             system({
                 FAction:"QueryPageDataByTRole",
                 FName:"",
-                PageIndex:pageIndex,
+                PageIndex:this.pageIndex,
                 PageSize:10
             })
             .then(data => {
                 this.total = data.FObject.Table[0].count
                 this.tableData = data.FObject.Table1
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(err => {
 
@@ -252,7 +259,7 @@ export default {
          */
         handleCurrentChange(val){
             this.pageIndex = val
-            this.queryData(val)
+            this.queryData()
         },
         /**
          * add 点击新增按钮

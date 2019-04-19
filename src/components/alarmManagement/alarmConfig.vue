@@ -185,6 +185,13 @@ export default {
             .then((data) => {
                 this.total = data.FObject.Table ? data.FObject.Table[0].FTotalCount : 0
                 this.tableData = data.FObject.Table1 ? data.FObject.Table1 : []
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch((err) => {
                 
@@ -264,6 +271,7 @@ export default {
             this.show = false
             Alarm({
                 FAction:'AddOrUpdateUAlarmSet',
+                IDStr:this.addConfig.IDStr,
                 mUAlarmSet:this.addConfig
             })
             .then(data => {

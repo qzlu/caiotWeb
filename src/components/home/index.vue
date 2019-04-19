@@ -330,6 +330,7 @@ export default {
     }
 
     settimeouts_warn();
+    this.$store.commit('getProject')
   },
   components: { nav_item },
   computed: {},

@@ -259,7 +259,7 @@ let routers_item=[
 					{ path: 'DeviceInfo/:deviceID',   //设备详情
 						name: 'DeviceInfo',
 						component: () => import('@/components/DeviceManagement/deviceInfo.vue'),
-						redirect:'DeviceInfo/:deviceID/',
+						redirect:'DeviceInfo/:deviceID',
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,  
@@ -271,7 +271,7 @@ let routers_item=[
 								 component:() => import('@/components/DeviceManagement/basicInfo.vue')
 							 },
 							 {
-								path:'breakingNews/:id',
+								path:'breakingNews',
 								name:'breakingNews',//设备详情大事件
 								component:() => import('@/components/DeviceManagement/breakingNews.vue')
 							 },
@@ -714,15 +714,93 @@ let routers_item=[
 					},
 					{
 						path:'AreaInfo',
-						name:'AreaInfo', //工程管理 -项目信息
+						name:'AreaInfo', //工程管理 -区域信息
 						component: () => import('@/components/SystemManagement/areaInfo.vue'),
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,
 						 },
 
+					},
+					{
+						path:'GateWay',
+						name:'GateWay', //工程管理 -网关信息
+						component: () => import('@/components/SystemManagement/gatewayInfo.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
+					},
+					{
+						path:'Device',
+						name:'Device', //工程管理 -物联设备
+						component: () => import('@/components/SystemManagement/iotDevice.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+					},
+					{
+						path:'Meter',
+						name:'Meter', //工程管理 -物联设备
+						component: () => import('@/components/SystemManagement/meterInfo.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
+					},
+					{
+						path:'DeviceMeter',
+						name:'DeviceMeter', //工程管理 -设备仪表
+						component: () => import('@/components/SystemManagement/deviceMeter.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
+					},
+					{
+						path:'AreaMaping',
+						name:'AreaMaping', //工程管理 -区域映射
+						component: () => import('@/components/SystemManagement/areaMaping.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
+					},
+					{
+						path:'DeviceMaping',
+						name:'DeviceMaping', //工程管理 -设备映射
+						component: () => import('@/components/SystemManagement/deviceMaping.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
+					},
+					{
+						path:'Block',
+						name:'Block', //工程管理 -集团信息
+						component: () => import('@/components/SystemManagement/blockInfo.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
+					},
+					{
+						path:'ProjectConfig',
+						name:'ProjectConfig', //工程管理 -集团信息
+						component: () => import('@/components/SystemManagement/projectConfig.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+
 					}
-					
 					]
 				
 				

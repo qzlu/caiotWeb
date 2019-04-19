@@ -223,9 +223,11 @@ $img-url:'/static/image/';
 }
 .Ins_records .bg_are .btn_baritems .showitem01 .act_num02 {
   position: absolute;
-  top: 69px;
+  top: 50%;
   right: -3px;
+  transform: translateY(-50%);
   font-size: 16px;
+  line-height: 22px;
 }
 
 .Ins_records .bg_are .btn_baritems ul {

@@ -41,7 +41,7 @@
             </li>
         </ul>
         <div class="tab-content">
-            <router-view :deviceID = 'deviceID'>
+            <router-view :deviceID = 'deviceID' > 
 
             </router-view>
         </div>
@@ -52,7 +52,7 @@ import {Device} from '@/request/api.js';
 export default {
     data(){
         return{
-            deviceID:''
+            deviceID:'',
         }
     },
     created(){
@@ -75,8 +75,8 @@ export default {
             top: -32px;
             left: 0;
             background: #DCDFDE;
-            opacity:0.16;
-            color: #607AB3;
+            opacity:0.46;
+            color: black;
             font-size: 20px;
         }
         .tab-header{

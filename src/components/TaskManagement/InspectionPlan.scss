@@ -176,3 +176,8 @@ $img-url:'/static/image/';
         }
     }
 }
+.el-picker-panel__footer{
+    .el-picker-panel__link-btn.el-button--text{
+        display: none;
+    }
+}

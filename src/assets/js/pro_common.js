@@ -220,7 +220,7 @@ export function chart_utis(o){
  
  
  
- export function messageErr(x){
+ export function messageErr(x,message = ''){
  				 	switch(x)	{
  				 		
 					case 100:
@@ -248,7 +248,7 @@ export function chart_utis(o){
 					 
 					  break;
 					case 105:
-					  Message('添加/修改/删除数据错误');
+					  Message(message);
 					  break;
 					case 106:
 					  Message('上传文件保存失败');

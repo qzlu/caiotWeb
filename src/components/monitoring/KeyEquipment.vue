@@ -13,7 +13,7 @@
                             <el-col :span="11">
                                 <ul>
                                     <li v-for="(obj,j) in item.DataDetail.slice(0,3)" :key="j">
-                                        <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">{{i}}/</i></span></p>
+                                        <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
                                         <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
                                     </li>
                                 </ul>
@@ -27,7 +27,7 @@
                             <el-col :span="10">
                                 <ul>
                                     <li v-for="(obj,j) in item.DataDetail.slice(3)" :key="j">
-                                        <p><span v-for="(value,i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">{{i}}/</i></span></p>
+                                        <p><span v-for="(value,i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
                                         <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
                                     </li>
                                 </ul>
@@ -65,6 +65,7 @@ export default {
                 FAction:'QueryUFocusMonitorData'
             })
             .then((data) => {
+                console.log(data);
                 this.focusMonitorData = data.FObject
                 this.focusMonitorData.sort((a,b) => b.IsAlarm - a.IsAlarm)
                 this.timer = setTimeout(this.queryUFocusMonitorData,1000*5)

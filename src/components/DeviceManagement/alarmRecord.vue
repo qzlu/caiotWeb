@@ -59,9 +59,10 @@
         </div>
         <zw-pagination @pageIndexChange='handleCurrentChange' :pageIndex='pageIndex' :total='total'></zw-pagination>
         <!-- 报事记录 -->
-        <el-dialog class="report-dialog"  title="报事记录" :visible.sync="show">
+        <el-dialog class="report-dialog"  :visible.sync="show">
             <div class="export-container"><button class="zw-btn export " @click="exportRecord"><i class="iconfont icon-Export"></i>导出</button></div>
             <div id='record' style="width: 1150px;margin-left: -50px;padding: 0 50px;">
+                <h4>告警记录</h4>
                 <div class="clearfix project-name"><p class="l">项目名称: {{projectName}}</p><p class="r">时间:{{time[0].toLocaleDateString() + '至' + time[1].toLocaleDateString()}}</p></div>
                 <ul class="clearfix report-info" >
                     <li class="l">告警设备<span v-if="recordsInfo.Table">{{recordsInfo.Table[0].DeviceName}}</span></li>
@@ -70,26 +71,26 @@
                     <li class="l">处理时间<span v-if="recordsInfo.Table">{{recordsInfo.Table[0].RunningOrderDateTime}}</span></li>
                     <li class="l">告警名称<span v-if="recordsInfo.Table">{{recordsInfo.Table[0].RunningOrderDateTime}}</span></li>
                 </ul>
-            </div>
-            <div class="maintenance-img" v-if="recordsInfo.Table">
-                <h5>处理前</h5>
-                <ul class="clearfix">
-                    <li class="l" v-for="img in recordsInfo.Table[0].HandlingEventsBeforeImg.split(',')">
-                        <img :src="'http://www.szqianren.com/'+img" alt="">
-                    </li>
-                </ul>
-            </div>
-            <div class="maintenance-img" v-if="recordsInfo.Table">
-                <h5>处理后</h5>
-                <ul class="clearfix">
-                    <li class="l" v-for="img in recordsInfo.Table[0].HandlingEventsAfterImg.split(',')">
-                        <img :src="'http://www.szqianren.com/'+img" alt="">
-                    </li>
-                </ul>
-            </div>
-            <div class="maintenance-img" v-if="recordsInfo.Table">
-                <h5>处理结果</h5>
-                <p style="text-align:left;padding-left:20px">{{recordsInfo.Table[0].HandlingEventsAfterDescription}}</p>
+                <div class="maintenance-img" v-if="recordsInfo.Table&&recordsInfo.Table[0].HandlingEventsBeforeImg">
+                    <h5>处理前</h5>
+                    <ul class="clearfix">
+                        <li class="l" v-for="img in recordsInfo.Table[0].HandlingEventsBeforeImg.split(',')">
+                            <img :src="'http://www.szqianren.com/'+img" alt="">
+                        </li>
+                    </ul>
+                </div>
+                <div class="maintenance-img" v-if="recordsInfo.Table&&recordsInfo.Table[0].HandlingEventsAfterImg">
+                    <h5>处理后</h5>
+                    <ul class="clearfix">
+                        <li class="l" v-for="img in recordsInfo.Table[0].HandlingEventsAfterImg.split(',')">
+                            <img :src="'http://www.szqianren.com/'+img" alt="">
+                        </li>
+                    </ul>
+                </div>
+                <div class="maintenance-img" v-if="recordsInfo.Table">
+                    <h5>处理结果</h5>
+                    <p style="text-align:left;padding-left:20px">{{recordsInfo.Table[0].HandlingEventsAfterDescription}}</p>
+                </div>
             </div>
         </el-dialog>
     </div>
@@ -182,7 +183,7 @@ export default {
          * 导出记录详情
          */
         exportRecord(){
-            let fileName = this.recordsInfo.Table[0].ReportMatterObjectName + '报事记录'
+            let fileName = this.recordsInfo.Table[0].DeviceName + '告警记录'
             this.getPdf('#record',fileName);
         },
     }

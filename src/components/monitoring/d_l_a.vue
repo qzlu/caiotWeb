@@ -18,16 +18,16 @@
           </li>
           <li v-for="(items,key) in data" :class="{'d':key%2!=0}">
             <h2>
-              {{items.HappenContext}}
+              {{items[props.title]}}
               <!--报废-->
             </h2>
             <p class="gt">
-              {{items.HappenTime}}
+              {{items[props.time]}}
               <!--2017.6.12 22:23-->
             </p>
             <div class="imtems">
               <p>
-                <i class="icon iconfont" :class="items.WebIconName" style="font-size: 30px;"></i>
+                <i class="icon iconfont" :class="items[props.icon]" style="font-size: 30px;"></i>
                 <!--<img src="/static/image/indexdetail/avb.png">-->
               </p>
             </div>
@@ -52,7 +52,14 @@ export default {
     };
   },
   props:{
-    data:Array
+    data:Array,
+    props:{
+      default:{
+        title:'HappenContext',
+        time:'HappenTime',
+        icon:'WebIconName'
+      }
+    }
   },
   created() {
     var myDate = new Date();
@@ -152,7 +159,7 @@ a {
   position: relative;
   left:3px;
 }
-.pr_top .pr_are ul li:nth-of-type(2n) .step-arrow{
+.pr_top .pr_are ul li:nth-of-type(2n+1) .step-arrow{
   transform:rotate(180deg);
   transform-origin: 0 50%;
   margin-top: -32px;

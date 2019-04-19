@@ -34,7 +34,7 @@
                   <li class="l">{{item.EnergyTypeName}}　<span>{{item.EnergyTypeUnit}}</span></li>
                   <li class="l">抄表点数　<span>{{item.PointCount}}</span></li>
                   <li class="l">能耗正常　<span>{{item.NormalCount}}</span></li>
-                  <li class="l">能耗异常　<span>{{item.FaultCount}}</span></li>
+                  <li class="l">能耗异常　<span class="no">{{item.FaultCount}}</span></li>
                   <!-- <li class="l">设备异常　<span>{{item.DeviceFaultCount}}</span></li> -->
                 </ul>
               </div>
@@ -71,9 +71,9 @@
                 <!-- <td width="25%">处理情况</td> -->
               </tr>
               <tr v-for="(item,key) in  monthReport1.Table2">
-                <td>{{item.MeterReadingObject}}</td>
-                <td>{{item.MeterReadingTime}}</td>
-                <td style="color: red;">{{item.PointResult}}</td>
+                <td>{{item.DeviceName}}</td>
+                <td>{{item.NowMeterReadingDateTime}}</td>
+                <td style="color: red;">{{item.MeterReadingResult}}</td>
                 <!-- <td></td> -->
               </tr>
             </table>
@@ -122,7 +122,7 @@
                   <li class="l">{{item.EnergyTypeName}}　<span>{{item.EnergyTypeUnit}}</span></li>
                   <li class="l">抄表点数　<span>{{item.PointCount}}</span></li>
                   <li class="l">能耗正常　<span>{{item.NormalCount}}</span></li>
-                  <li class="l">能耗异常　<span>{{item.FaultCount}}</span></li>
+                  <li class="l">能耗异常　<span class="no">{{item.FaultCount}}</span></li>
                   <!-- <li class="l">设备异常　<span>{{item.DeviceFaultCount}}</span></li> -->
                 </ul>
               </div>
@@ -317,6 +317,7 @@
             @click="li_item_click(key,item.ID)"
           >
             <section class="ui_box">
+              <h5>{{item.MeterReadingPlanName}}</h5>
               <img src="/static/image/task/icon_1.png" class="l" style="margin: 5px 0 0 12px;">
               <div class="r itext">
                 <p>
@@ -436,7 +437,7 @@
       <section class="btn_baritems">
         <div class="l showitem01">
           <section id="record-chart" style="height:183px; width: 90%;">
-            <pie-chart :data='chartData1' :color='["#00D294", "#89192E"]' :setting="{legend:{x:'220px'}}"></pie-chart>
+            <pie-chart :data='chartData1' :color='["#00D294", "#89192E", "#2A91FC"]' :setting="{legend:{x:'210px'}}"></pie-chart>
           </section>
           <div>
             <div class="atc_title">
@@ -449,7 +450,7 @@
             <div class="act_num">待抄表计划：
               <span>
                 <!--6-->
-                {{totalInfo.WaitingCount}}个
+                {{totalInfo.WaitingPlanCount}}个
               </span>
             </div>
             <div class="act_num02">
@@ -460,6 +461,10 @@
               <p>
                 <!--50-->
                 {{totalInfo.FaultCount?totalInfo.FaultCount:0}}
+              </p>
+              <p>
+                <!--50-->
+                {{totalInfo.WaitingCount?totalInfo.WaitingCount:0}}
               </p>
             </div>
           </div>
@@ -707,11 +712,10 @@ export default {
     async make_paf() {
       //生成pdf文件的方法
       /*抄表报告弹ajax请求数据*/
-      let ch_time = this.value1.getFullYear() + '-' + comm.formatNumber(this.value1.getMonth()+1)
       await new Promise((resolve,reject) => {
         MeterReading({
           FAction: "QueryUMeterReadingInfoByMonthly",
-          FDateTime: ch_time
+          FDateTime: this.value1.toLocaleDateString()
         })
         .then(data => {
           this.monthReport1 = data.FObject
@@ -917,9 +921,9 @@ export default {
         .then(data => {
           this.totalInfo = data.FObject.Table?data.FObject.Table[0]:{}
           this.plans = data.FObject.Table1?data.FObject.Table1.filter(item => item.MeterReadingState>0):[]
-          let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"}]
+          let datas = [{value:this.totalInfo.NormalCount,name:"正常"},{value:this.totalInfo.FaultCount,name:"异常"},{value:this.totalInfo.WaitingCount,name:"待抄表"}]
           this.chartData1 = {
-            columns:['正常','异常'],
+            columns:['正常','异常',"待抄表"],
             rows:datas
           }
           if(this.plans[0]){

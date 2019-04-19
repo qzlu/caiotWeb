@@ -2,34 +2,41 @@
     <div class="report inspection-item">
         <el-dialog :title="type?'编辑':'新增'" :visible.sync="show" width="700px" class="zw-dialog">
             <el-form :model="addInfo" inline ref="form">
-                <el-form-item label="项目名称"  prop='DeviceID'  :rules="[{ required: true, message: '请选择'}]">
-                  <el-select v-model="addInfo.ProjectID"  value-key="ProjectID" filterable  placeholder="请选择" >
+                <el-form-item label="项目名称"  prop='ProjectID'  :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addInfo.ProjectID"  value-key="ProjectID" filterable  placeholder="请选择" @change="queryUAreaList">
                     <el-option v-for="list in projectList" :key="list.ProjectID" :label="list.ShortName" :value="list.ProjectID"></el-option>
                   </el-select>
                   <!-- <el-input readonly :value="projectName"></el-input> -->
                 </el-form-item>
-                <el-form-item label="网关名称" prop="LDasName" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input v-model="addInfo.LDasName">
+                <el-form-item label="设备编码" prop="DeviceCode" :rules="[{ required: true, message: '请输入'}]">
+                    <el-input v-model="addInfo.DeviceCode">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="网关ID" prop="LDasID" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input type="number" placeholder="网关ID只能输入数字" v-model="addInfo.LDasID">
+                <el-form-item label="设备ID" prop="DeviceID" :rules="[{ required: true, message: '请输入'}]">
+                    <el-input  v-model="addInfo.DeviceID">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="网关位置" prop="Position" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input v-model="addInfo.Position">
+                <el-form-item label="设备名称" prop="DeviceName" :rules="[{ required: true, message: '请输入'}]">
+                    <el-input v-model="addInfo.DeviceName">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="ICCID" prop="LDasPhoneNumber">
-                    <el-input v-model="addInfo.LDasPhoneNumber">
+                <el-form-item label="设备简称" prop="DeviceShortName" :rules="[{ required: true, message: '请输入'}]">
+                    <el-input v-model="addInfo.DeviceShortName">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="是否启用" prop="IsEnable" :rules="[{ required: true, message: '请输入'}]">
-                    <el-switch v-model="addInfo.IsEnable"></el-switch>
+                <el-form-item label="设备类型" prop="DeviceTypeID" :rules="[{ required: true, message: '请输入'}]">
+                  <el-select v-model="addInfo.DeviceTypeID"   filterable  placeholder="请选择" >
+                    <el-option v-for="list in deviceTypeList" :key="list.DeviceTypeID" :label="list.DeviceTypeName" :value="list.DeviceTypeID"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="区域名称" prop="AreaID" :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addInfo.AreaID"   filterable  placeholder="请选择" >
+                    <el-option v-for="list in areaList" :key="list.AreaID" :label="list.AreaName" :value="list.AreaID"></el-option>
+                  </el-select>
                 </el-form-item>
             </el-form>
             <div class="submit">
-                <button class="zw-btn zw-btn-primary" @click="addOrUpdateULdas()">确定</button>
+                <button class="zw-btn zw-btn-primary" @click="addOrUpdateUDevice()">确定</button>
             </div>
         </el-dialog>    
         <ul class="report-header clearfix">
@@ -60,27 +67,12 @@
                 >
                </el-table-column>
                <el-table-column
-                 prop="status"
-                 label="指令是否下发">
-               </el-table-column>
-               <el-table-column
-                 prop=""
-                 label="配置">
-                 <template slot-scope="scoped">
-                     <div class="role-operation">
-                        <span class="pointer" @click="createLdasConfig(scoped.row)">生成LDAS</span>
-                        <span class="pointer" v-if="scoped.row.ConfigFileAddress !=''&&scoped.row.ConfigFileAddress !=null" @click="sendFile(scoped.row)">下发指令</span>
-                        <span style="color:#999;cursor: not-allowed;" v-else>下发指令</span>
-                     </div>
-                 </template>
-               </el-table-column>
-               <el-table-column
                  prop=""
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="role-operation">
                         <span class="pointer" @click="updatedProject(scoped.row)">编辑</span>
-                        <span class="pointer" @click="deleteULdas(scoped.row)">删除</span>
+                        <span class="pointer" @click="deleteUDevice(scoped.row)">删除</span>
                      </div>
                  </template>
                </el-table-column>
@@ -91,7 +83,7 @@
 </template>
 <script>
 import table from '@/mixins/table' //表格混入数据
-import {project,system} from '@/request/api.js';
+import {project,system,Device} from '@/request/api.js';
 export default {
     mixins:[table],
     data(){
@@ -107,48 +99,60 @@ export default {
                     label:'项目名称'
                 },
                 {
-                    prop: 'LDasName',
-                    label: '网关名称',
+                    prop: 'DeviceCode',
+                    label: '设备编码',
                 },
                 {
-                    prop: 'LDasID',
-                    label: '网关ID',
+                    prop: 'DeviceName',
+                    label: '设备名称',
                 },
                 {
-                    prop: 'LDasPhoneNumber',
-                    label: 'ICCID',
+                    prop: 'DeviceTypeName',
+                    label: '设备类型',
                 },
                 {
-                    prop: 'Position',
-                    label: '网关位置',
+                    prop: 'AreaName',
+                    label: '区域名称',
                 },
-                {
-                    prop: 'IsEnableName',
-                    label: '是否启用',
-                },
+/*                 {
+                    prop: 'ProjectName',
+                    label: '系统名称',
+                }, */
             ],
             type:0,
             projectName:localStorage.getItem('projectname'),
             defaultAddInfo:{//新增项目参数默认数据
                 ProjectID:parseInt(localStorage.getItem('projectid')),
-                LDasID:null,
-                IsEnable:true,
-                LDasName:null,
-                Position:null,
-                OldLDasID:0,
-                LDasPhoneNumber:null
+                DeviceID:null,
+                DeviceName:null,
+                DeviceShortName:null,
+                DeviceTypeID:null,
+                IsVirtualDevice:null,
+                AreaID:null,
+                SortID:null,
+                ExtendAddress:null,
+                OtherSourceID:null,
+                DeviceCode:null,
+                IDStr:null
             },
             addInfo:{ //新增或修改项目参数
                 ProjectID:null,
-                LDasID:null,
-                IsEnable:true,
-                LDasName:null,
-                Position:null,
-                OldLDasID:0,
-                LDasPhoneNumber:null
+                DeviceID:null,
+                DeviceName:null,
+                DeviceShortName:null,
+                DeviceTypeID:null,
+                IsVirtualDevice:null,
+                AreaID:null,
+                SortID:null,
+                ExtendAddress:null,
+                OtherSourceID:null,
+                DeviceCode:null,
+                IDStr:null
             },
             title:'新增',
             show:false,
+            areaList:[], //区域类型
+            deviceTypeList:[], //设备类型 
         }
     },
     computed:{
@@ -163,14 +167,16 @@ export default {
     },
     created(){
         this.queryData()
+        this.queryUAreaList()
+        this.queryDeviceType()
     },
     methods:{
         /**
-         * 269.分页查询网关列表
+         * 273.分页查询物联设备列表
          */
         queryData(){
-            project({
-                FAction:'QueryPageULdas',
+            Device({
+                FAction:'QueryPageUDevice',
                 SearchKey:this.filterText,
                 PageIndex:this.pageIndex,
                 PageSize:10
@@ -198,6 +204,37 @@ export default {
             this.queryData()
         },
         /**
+         * 根据项目ID获取区域（66.获取所有区域）
+         */
+        queryUAreaList(id = localStorage.getItem('projectid')){
+            this.addInfo.AreaID = null
+            this.addInfo.DeviceTypeID = null
+            return new Promise((resolve,reject) => {
+                system({
+                    FAction:'QueryUAreaList',
+                    ProjectID:id
+                })
+                .then(data => {
+                    this.areaList = data.FObject
+                    resolve()
+                })
+                .catch(err => {reject()})
+            })
+        },
+        /**
+         * 241.获取设备类型
+         */
+        queryDeviceType(){
+            system({
+                FAction:'QueryDeviceType',
+                ProjectID:0
+            })
+            .then(data => {
+                this.deviceTypeList = data.FObject
+            })
+            .catch(err => {})
+        },
+        /**
          * 点击新增
          */
         beforeAdd(){
@@ -206,24 +243,25 @@ export default {
             this.addInfo = Object.assign({},this.defaultAddInfo)
         },
         /**
-         * 修改网关
+         * 修改物联设备
          */
-        updatedProject(row) {
+        async updatedProject(row) {
             this.show = true
             this.type = 1
+            await this.queryUAreaList(row.ProjectID)
             Object.keys(this.addInfo).forEach(key => {
                 this.addInfo[key] = row[key]
             })
-            this.addInfo.OldLDasID = this.addInfo.LDasID
         },
         /**
-         * 265.新增/修改网关
+         * 271.新增/修改物联设备
          */
-        addOrUpdateULdas(){
+        addOrUpdateUDevice(){
             this.show = false
-            project({
-                FAction:'AddOrUpdateULdas',
-                mULdas:this.addInfo
+            Device({
+                FAction:'AddOrUpdateUDevice',
+                IDStr:this.addInfo.IDStr,
+                mUDevice:this.addInfo
             })
             .then(data => {
                 this.queryData()
@@ -233,66 +271,33 @@ export default {
             })
         },
         /**
-         * 268.删除网关
+         * 272.删除物联设备
          */
-        async deleteULdas(row){
+        async deleteUDevice(row){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除`,'删除网关信息'])
+                this.$DeleteMessage([`确认删除`,'删除区域信息'])
                 .then(() => {
                     resove()
                 })
                 .catch(error => {
+
                 })
             })
-            project({
-                FAction:'DeleteULdas',
-                ID:row.LDasID
+            Device({
+                FAction:'DeleteUDevice',
+                IDStr:row.IDStr
             })
             .then(data => {
                 this.queryData()
             })
             .catch(err => {})
-        },
-        /**
-         * 308.创建Ldas配置文件
-         */
-        createLdasConfig(row){
-            project({
-                FAction:'CreateLdasConfig',
-                ID:row.LDasID
-            })
-            .then(data => {
-                this.$message({
-                  type: 'success',
-                  message: 'LDAS生成成功'
-                });
-                this.queryData()
-            })
-            .catch(err => {})
-        },
-        /**
-         * 309.发送文件命令
-         */
-        sendFile(row){
-            this.$set(row,'status','下发中。。。')
-            project({
-                FAction:'SendFile',
-                ID:row.LDasID,
-                ConfigFileAddress:row.ConfigFileAddress
-            })
-            .then(data => {
-                this.$set(row,'status','成功')
-            })
-            .catch(err => {
-                this.$set(row,'status','失败')
-            })
         },
         /**
          * exportFile 导出
          */
         exportFile(){
-            project({
-                FAction:'QueryExportULdas',
+            Device({
+                FAction:'QueryExportUDevice',
                 SearchKey:this.filterText,
             })
             .then(data => {
@@ -310,5 +315,4 @@ export default {
 </script>
 <style lang="scss">
 @import '@/components/TaskManagement/InspectionItem.scss';
-
 </style>

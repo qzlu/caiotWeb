@@ -34,13 +34,15 @@ export default {
                 PageIndex: this.pageIndex,
                 PageSize: 10,
                 TypeID: this.type,
-                AlarmLevel: this.level
+                AlarmLevel: this.level,
+                ID:this.$props.deviceID
             })
-                .then(data => {
-                    this.total = data.FObject.Table ? data.FObject.Table[0].Count : 0
-                    this.tableData = data.FObject.Table1 ? data.FObject.Table1 : []
-                })
-                .catch(err => { })
+            .then(data => {
+                console.log(data);
+                this.total = data.FObject.Table ? data.FObject.Table[0].Count : 0
+                this.tableData = data.FObject.Table1 ? data.FObject.Table1 : []
+            })
+            .catch(err => { })
         },
         /**
          * handleCurrentChange 页码改变时触发

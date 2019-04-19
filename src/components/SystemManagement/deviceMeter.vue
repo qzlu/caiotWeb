@@ -1,35 +1,28 @@
 <template>
-    <div class="report inspection-item">
-        <el-dialog :title="this.areaInfo.FType?'编辑':'新增'" :visible.sync="show" width="700px" class="zw-dialog">
-            <el-form :model="areaInfo" inline ref="form">
+    <div class="report inspection-item meter">
+        <el-dialog :title="type?'编辑':'新增'" :visible.sync="show" width="750px" class="zw-dialog">
+            <el-form :model="addInfo" inline ref="form">
                 <el-form-item label="项目名称" >
-<!--                   <el-select v-model="areaInfo.ProjectID"  value-key="ProjectID" filterable  placeholder="请选择" >
-                    <el-option v-for="list in projectList" :key="list.ProjectID" :label="list.ShortName" :value="list.ProjectID"></el-option>
-                  </el-select> -->
                   <el-input readonly :value="projectName"></el-input>
                 </el-form-item>
-                <el-form-item label="区域名称" prop="AreaName" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input v-model="areaInfo.AreaName">
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="区域类型"  prop='AreaTypeID'>
-                  <el-select v-model="areaInfo.AreaTypeID"  value-key="DeviceID" filterable  placeholder="请选择" >
-                    <el-option v-for="list in areaTypeList" :key="list.AreaTypeID" :label="list.AreaTypeName" :value="list.AreaTypeID"></el-option>
+                <el-form-item label="设备名称" prop="DeviceID" :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addInfo.DeviceID"  value-key="DeviceID" filterable  placeholder="请选择" >
+                    <el-option v-for="list in deviceList" :key="list.DeviceID" :label="list.DeviceName" :value="list.DeviceID"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="区域位置" prop="Location" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input v-model="areaInfo.Location">
-                    </el-input>
+                <el-form-item label="仪表名称" prop="MeterID" :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addInfo.MeterID"  value-key="" filterable  placeholder="请选择" >
+                    <el-option v-for="list in meterList" :key="list.MeterID" :label="list.MeterName" :value="list.MeterID"></el-option>
+                  </el-select>
                 </el-form-item>
             </el-form>
             <div class="submit">
-                <button class="zw-btn zw-btn-primary" @click="addUpdateUArea()">确定</button>
+                <button class="zw-btn zw-btn-primary" @click="addUpdateUMeter()">确定</button>
             </div>
         </el-dialog>    
         <ul class="report-header clearfix">
             <li class="l"><button class="zw-btn zw-btn-add" @click="beforeAdd">新增</button></li>
             <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile">导出</button></li>
-            <li class="l"><button class="zw-btn" style="width:120px;padding:0 10px" @click="exportUAreaQrCode"><i class="iconfont icon-QRcode" style="color:#3593ed"></i>导出二维码</button></li>
             <li class="r">
                 <el-input class="search-input" placeholder="搜索关键字" v-model="filterText">
                     <i class="el-icon-search" slot="suffix"></i>
@@ -54,22 +47,13 @@
                  show-overflow-tooltip
                 >
                </el-table-column>
-<!--                <el-table-column
-                label="二维码"
-               >
-                 <template slot-scope="scoped">
-                     <div>
-                         <img :src="`http://www.szqianren.com/${scoped.row.AreaQrCode}`" style="height:50px;width:60px;vertical-align: middle;" alt="">
-                     </div>
-                 </template>
-               </el-table-column> -->
                <el-table-column
                  prop=""
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="role-operation">
                         <span class="pointer" @click="updatedProject(scoped.row)">编辑</span>
-                        <span class="pointer" @click="deleteUArea(scoped.row)">删除</span>
+                        <span class="pointer" @click="deleteUDeviceMeter(scoped.row)">删除</span>
                      </div>
                  </template>
                </el-table-column>
@@ -80,7 +64,7 @@
 </template>
 <script>
 import table from '@/mixins/table' //表格混入数据
-import {project,system} from '@/request/api.js';
+import {project,system,Device,ReportMatter} from '@/request/api.js';
 export default {
     mixins:[table],
     data(){
@@ -92,36 +76,34 @@ export default {
                     width:80
                 },
                 {
-                    prop:'ShortName',
+                    prop:'ProjectName',
                     label:'项目名称'
                 },
                 {
-                    prop: 'AreaName',
-                    label: '区域名称',
+                    prop: 'DeviceName',
+                    label: '设备名称',
                 },
                 {
-                    prop: 'AreaTypeName',
-                    label: '区域类型',
-                },
+                    prop: 'MeterName',
+                    label: '仪表名称',
+                }
             ],
+            type:0,
             projectName:localStorage.getItem('projectname'),
-            defaultAreaInfo:{//新增项目参数默认数据
-                AreaID:null,
-                AreaName:null,
-                Location:null,
-                AreaTypeID:null,
-                FType:0
+            defaultAddInfo:{//新增仪表信息参数默认数据
+                DeviceID:null,
+                MeterID:null,
+                IDStr:null,
             },
-            areaInfo:{ //新增或修改项目参数
-                AreaID:null,
-                AreaName:null,
-                Location:null,
-                AreaTypeID:null,
-                FType:0
+            addInfo:{ //新增或修改仪表信息参数
+                DeviceID:null,
+                MeterID:null,
+                IDStr:null,
             },
             title:'新增',
             show:false,
-            areaTypeList:[]
+            meterList:[], //仪表
+            deviceList:[] , //设备列表
         }
     },
     computed:{
@@ -136,15 +118,16 @@ export default {
     },
     created(){
         this.queryData()
-        this.queryUArea()
+        this.queryUMeterList()
+        this.queryUDevice()
     },
     methods:{
         /**
-         * 263.分页查询区域
+         * 278.分页查询设备仪表
          */
         queryData(){
-            system({
-                FAction:'QueryPageUArea',
+            Device({
+                FAction:'QueryPageUDeviceMeter',
                 SearchKey:this.filterText,
                 PageIndex:this.pageIndex,
                 PageSize:10
@@ -172,53 +155,60 @@ export default {
             this.queryData()
         },
         /**
-         * 270.查询区域类型信息
+         * 291.查询所有物联设备列表
          */
-        queryUArea(){
-            system({
-                FAction:'QuerySAreaType'
+        queryUDevice(){
+            Device({
+                FAction:'QueryUDeviceList',
+                SearchKey:''
             })
             .then(data => {
-                this.areaTypeList = data.FObject
+                this.deviceList = data.FObject
             })
-            .catch(err =>{})
+            .catch(err => {})
+        },
+        /**
+         * 277.查询仪表列表
+         */
+        queryUMeterList(){
+            Device({
+                FAction:'QueryUMeterList'
+            })
+            .then(data => {
+                this.meterList = data.FObject
+            })
+            .catch(err => {
+
+            })
         },
         /**
          * 点击新增
          */
         beforeAdd(){
             this.show =true
-            this.areaInfo = Object.assign({},this.defaultAreaInfo)
+            this.type = 0
+            this.addInfo = Object.assign({},this.defaultAddInfo)
         },
         /**
-         * 修改项目
+         * 修改网关
          */
         updatedProject(row) {
             this.show = true
-            Object.keys(this.areaInfo).forEach(key => {
-                this.areaInfo[key] = row[key]
+            this.type = 1
+            Object.keys(this.addInfo).forEach(key => {
+                this.addInfo[key] = row[key]
             })
-            if(this.areaInfo.AreaTypeID == 0) this.areaInfo.AreaTypeID = null
-            this.areaInfo.FType = 1
         },
         /**
-         * 256.新增/修改区域
+         * 新增/修改设备仪表
          */
-        async addUpdateUArea(){
-            await new Promise(resolve => {
-                this.$refs.form.validate((valid) => {
-                  if (valid) {
-                      resolve()
-                  } 
-                });
-            })
+        addUpdateUMeter(){
             this.show = false
-            if(this.areaInfo.AreaTypeID ==null){
-                this.areaInfo.AreaTypeID = 0
-            }
-            system({
-                FAction:'AddUpdateUArea',
-                mUArea:this.areaInfo
+            Device({
+                FAction:'AddOrUpdateUDeviceMeter',
+                DeviceID:this.addInfo.DeviceID,
+                MeterID:this.addInfo.MeterID,
+                IDStr:this.addInfo.IDStr
             })
             .then(data => {
                 this.queryData()
@@ -228,11 +218,11 @@ export default {
             })
         },
         /**
-         * 264.删除区域
+         * 279.删除设备仪表
          */
-        async deleteUArea(row){
+        async deleteUDeviceMeter(row){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除`,'删除区域信息'])
+                this.$DeleteMessage([`确认删除`,'删除设备仪表'])
                 .then(() => {
                     resove()
                 })
@@ -240,9 +230,9 @@ export default {
 
                 })
             })
-            system({
-                FAction:'DeleteUArea',
-                ID:row.AreaID
+            Device({
+                FAction:'DeleteUDeviceMeter',
+                IDStr:row.IDStr
             })
             .then(data => {
                 this.queryData()
@@ -253,8 +243,8 @@ export default {
          * exportFile 导出
          */
         exportFile(){
-            system({
-                FAction:'ExportUArea',
+            Device({
+                FAction:'QueryExportUDeviceMeter',
                 SearchKey:this.filterText,
             })
             .then(data => {
@@ -267,28 +257,10 @@ export default {
                 });
             })
         },
-        /**
-         * 254.导出区域二维码
-         */
-        exportUAreaQrCode(){
-            system({
-                FAction:'ExportUAreaQrCode'
-            })
-            .then(data => {
-                window.location = "http://www.szqianren.com/" + data.FObject;
-            })
-            .catch(error => {
-                this.$message({
-                  type: 'error',
-                  message: '导出失败!请重试'
-                });
-            })
-        }
     }
 }
 </script>
 <style lang="scss">
 @import '@/components/TaskManagement/InspectionItem.scss';
- 
 
 </style>

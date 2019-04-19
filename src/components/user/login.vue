@@ -152,6 +152,7 @@ export default {
               //登录成功，写入用户名       ,iuserName用于用户登录及退出，name用于记住用户
               localStorage.setItem("iuserName", this.ruleForm2.username); //用户账号
               localStorage.setItem("Token", data.FObject[0].FToken); //用户Token
+              localStorage.setItem("FUserType",data.FObject[0].FUserType)//用户管理角色
               localStorage.setItem(
                 "FUserNickname",
                 data.FObject[0].FUserNickname
@@ -397,10 +398,10 @@ export default {
 }
 
 .el-input__suffix {
-  position: absolute;
-  top: 15px;
+  height: 100%;
+  /* top: 15px; */
+  line-height: 50px;
   -webkit-transition: all 0.3s;
-  height: 25px;
   color: #c0c4cc;
   text-align: center;
 }

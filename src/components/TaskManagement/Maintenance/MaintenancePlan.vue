@@ -208,7 +208,6 @@ export default {
                 value:3
             }],
             year:'',
-            filterText:'',
             defaultFilterObj:{
                 FName:'',
                 FDeviceName:'',
@@ -332,6 +331,13 @@ export default {
                         item.MaintenanceUserGUID = ''
                     }
                 });
+                /**
+                * 删除操作时，当前页面无数据时跳到上一页
+                */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(error => {
             
@@ -492,7 +498,6 @@ export default {
             })
             .then(data => {
                 this.show = false
-                this.pageIndex = 1
                 this.queryData()
                 this.$message({
                   type: 'success',

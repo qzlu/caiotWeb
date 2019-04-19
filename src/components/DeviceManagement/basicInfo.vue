@@ -8,7 +8,7 @@
             <div class="info-content">
                 <ul class="l">
                     <li class="l"><span class="label">设备名称：</span>　<span>{{info.DeviceLedgerName}}</span></li>
-                    <li class="l"><span class="label">设备编号：</span>　<span>{{info.DeviceCode}}</span></li>
+                    <li class="l"><span class="label">设备编码：</span>　<span>{{info.DeviceCode}}</span></li>
                     <li class="l"><span class="label">生产厂家：</span>　<span>{{info.Manufacturer}}</span></li>
                     <li class="l"><span class="label">出厂型号：</span>　<span>{{info.SpecificationsCode}}</span></li>
                     <li class="l"><span class="label">出厂编号：</span>　<span>{{info.ManufacturingNumber}}</span></li>
@@ -96,7 +96,6 @@ export default {
                 ID:this.$props.deviceID
             })
             .then(data => {
-                console.log(data);
                 this.info = data.FObject[0]
             })
             .catch(err => {})

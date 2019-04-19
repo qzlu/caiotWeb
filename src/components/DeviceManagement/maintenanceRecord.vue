@@ -58,7 +58,7 @@
         </div>
         <zw-pagination @pageIndexChange='handleCurrentChange' :pageIndex='pageIndex' :total='total'></zw-pagination>
         <!-- 报事记录 -->
-        <el-dialog class="report-dialog"  title="" :visible.sync="show">
+        <el-dialog class="report-dialog"  :visible.sync="show">
             <div class="export-container"><button class="zw-btn export " @click="exportRecord"><i class="iconfont icon-Export"></i>导出</button></div>
             <div id='record'>
                 <h4>保养记录</h4>
@@ -107,22 +107,22 @@
                       </tr>
                     </table>
                 </div>
-            </div>
-            <div class="maintenance-img" v-if="recordsInfo.Table3">
-                <h5>保养前</h5>
-                <ul class="clearfix">
-                    <li class="l" v-for="img in recordsInfo.Table3">
-                        <img :src="'http://www.szqianren.com/'+img.MaintenanceBeforeImg" alt="">
-                    </li>
-                </ul>
-            </div>
-            <div class="maintenance-img" v-if="recordsInfo.Table4">
-                <h5>保养后</h5>
-                <ul class="clearfix">
-                    <li class="l" v-for="img in recordsInfo.Table4">
-                        <img :src="'http://www.szqianren.com/'+img.MaintenanceAfterImg" alt="">
-                    </li>
-                </ul>
+                <div class="maintenance-img" v-if="recordsInfo.Table3">
+                    <h5>保养前</h5>
+                    <ul class="clearfix">
+                        <li class="l" v-for="img in recordsInfo.Table3">
+                            <img :src="'http://www.szqianren.com/'+img.MaintenanceBeforeImg" alt="">
+                        </li>
+                    </ul>
+                </div>
+                <div class="maintenance-img" v-if="recordsInfo.Table4">
+                    <h5>保养后</h5>
+                    <ul class="clearfix">
+                        <li class="l" v-for="img in recordsInfo.Table4">
+                            <img :src="'http://www.szqianren.com/'+img.MaintenanceAfterImg" alt="">
+                        </li>
+                    </ul>
+                </div>
             </div>
         </el-dialog>
     </div>

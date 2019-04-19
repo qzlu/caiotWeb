@@ -74,7 +74,6 @@ export default {
                     label: '所属项目'
                 }
             ],
-            filterText:'',
             title:'新增',
             show:false,
             addPointData:{ //新增或编辑巡更点数据
@@ -97,7 +96,7 @@ export default {
         filterText(){
             clearTimeout(timer)
             var timer = setTimeout(() => {
-                this.queryData(this.filterText)
+                this.queryData()
             },500)
         }
     },
@@ -116,7 +115,7 @@ export default {
         /**
          * 查询巡更点
          */
-        queryData(name = '', pageIndex = 1){
+        queryData(){
             const loading = this.$loading({
               customClass: 'hahahah',
               background: 'rgba(0, 0, 0, 0.7)',
@@ -124,13 +123,20 @@ export default {
             });
             Patrol({
                 FAction:'QueryPageUPatrolPoint',
-                SearchKey:name,
-                PageIndex:pageIndex,
+                SearchKey:this.filterText,
+                PageIndex:this.pageIndex,
                 PageSize:10
             })
             .then(data => {
                 this.total = data.FObject.Table[0].Count
                 this.tableData = data.FObject.Table1
+                /**
+                * 删除操作时，当前页面无数据时跳到上一页
+                */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(error => {
                 console.log(error);
@@ -171,7 +177,6 @@ export default {
                   type: 'success',
                   message: this.type?'修改成功！':'新增成功！'
                 });
-                this.pageIndex = 1
                 this.queryData()
             })
             .catch(error => {

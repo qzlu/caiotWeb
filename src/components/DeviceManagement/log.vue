@@ -33,7 +33,7 @@
         <div class="log-content">
             <div class="l circle">
                 <div class="chart">
-                    <pie-chart :data="chartData" :color='["#00D294", "#89192E"]'></pie-chart>
+                    <pie-chart :data="chartData" :color='["#00D294", "#89192E"]' :setting="{legend:{x:'230px'}}"></pie-chart>
                 </div>
             </div>
             <div class="l table">
@@ -131,7 +131,6 @@ export default {
                 PageSize:10
             })
             .then((data) => {
-                console.log(data);
                 this.total = data.FObject.Table ? data.FObject.Table[0].Count : 0
                 this.tableData = data.FObject.Table1 ? data.FObject.Table1 : []
             }).catch((err) => {

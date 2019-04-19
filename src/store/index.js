@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {project} from '@/request/api.js';
+import {project, system} from '@/request/api.js';
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: { 
-      projectList:[] //所有项目
+      projectList:[], //所有项目
+      areaList:[], //所有区域
     },
     mutations: {
         /**
@@ -15,11 +16,23 @@ const store = new Vuex.Store({
                 FAction: "GetProject"
             })
             .then((data) => {
-                console.log(data);
                 state.projectList = data.FObject
             }).catch((err) => {
                 
             });
+        },
+        /**
+         * 66.获取所有区域
+         * @param {*} state 
+         */
+        queryUAreaList(state){
+            system({
+                FAction:'QueryUAreaList'
+            })
+            .then(data => {
+                state.areaList  = data.FObject
+            })
+            .catch(err => {})
         }
     },
     actions:{

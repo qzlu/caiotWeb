@@ -257,7 +257,7 @@
                       show-overflow-tooltip
                       label="保养时间">
                       <template slot-scope="scope">
-                          <div>
+                          <div v-if="scope.row.MaintenanceDateTime">
                              <!--  <span v-if="scope.row.MaintenanceDateTime.split('-')[0] != 0">{{scope.row.MaintenanceDateTime.split('-')[0]}}月</span>
                               <span v-if="scope.row.MaintenanceDateTime.split('-')[1] != 0">{{scope.row.MaintenanceDateTime.split('-')[1]}}号</span> -->
                               <span v-for="time in scope.row.MaintenanceDateTime.split('、')">
@@ -427,6 +427,7 @@ export default {
             })
             .then(data => {
                 this.tableData = data.FObject
+                console.log(this.tableData);
                 this.tableData1 = []
                 if(this.tableData[0]){
                     this.queryUMaintenanceContent(this.tableData[0])

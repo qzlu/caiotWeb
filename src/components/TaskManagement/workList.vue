@@ -50,7 +50,7 @@
                          label="操作">
                          <template slot-scope="scoped">
                              <div class="detail">
-                                <span v-if="(scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6)&&(scoped.row.OrderState==3||scoped.row.OrderState==4)" @click="beforeChangeUser(scoped.row)">派单</span>
+                                <span v-if="(scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6)&&(scoped.row.OrderState==3||scoped.row.OrderState==4)&&FUserType != 4" @click="beforeChangeUser(scoped.row)">派单</span>
                                 <span v-else @click="queryDetail(scoped.row)">详情</span>
                              </div>
                          </template>
@@ -141,7 +141,7 @@
                          label="操作">
                          <template slot-scope="scoped">
                              <div class="detail">
-                                <span v-if="scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6" @click="beforeChangeUser(scoped.row)">派单</span>
+                                <span v-if="(scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6)&&FUserType != 4" @click="beforeChangeUser(scoped.row)">派单</span>
                                 <span v-else @click="queryDetail(scoped.row)">详情</span>
                              </div>
                          </template>
@@ -172,7 +172,7 @@
                          label="操作">
                          <template slot-scope="scoped">
                              <div class="detail">
-                                <span v-if="scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6" @click="beforeChangeUser(scoped.row)">派单</span>
+                                <span v-if="(scoped.row.OrderType==3||scoped.row.OrderType==5||scoped.row.OrderType==6)&&FUserType != 4" @click="beforeChangeUser(scoped.row)">派单</span>
                                 <span v-else @click="queryDetail(scoped.row)">详情</span>                             
                             </div>
                          </template>
@@ -339,7 +339,7 @@
                                         <div class="border r"></div>
                                     </div>
                                     <ul class="area-info clearfix">
-                                        <li class="l "><span>{{workInfo.FContacts}}　</span>{{item.FDateTime}}</li>
+                                        <li class="l "><span>{{item.FContacts}}　</span>{{item.FDateTime}}</li>
                                     </ul>
                                 </div>
                                 <div class="clearfix" v-else>
@@ -356,7 +356,7 @@
                                           <el-collapse-item name="1">
                                             <template slot="title">
                                                 <ul class="area-info clearfix">
-                                                    <li class="l "><span>{{workInfo.FContacts}}　</span>{{item.FDateTime}}</li>
+                                                    <li class="l "><span>{{item.FContacts}}　</span>{{item.FDateTime}}</li>
                                                 </ul>
                                             </template>
                                             <div class="collapse-content">
@@ -412,10 +412,10 @@
                                 </div>
                             </li>
                         </ul>
-                        <!-- 维修 -->
-                        <ul class="progress clearfix" v-if="areaArr.Table1&&(workInfo.OrderType==3||workInfo.OrderType==6)">
+                        <!-- 维修 (报事)-->
+                        <ul class="progress clearfix" v-if="areaArr.Table1&&(workInfo.OrderType==3||workInfo.OrderType==6||workInfo.OrderType==5)">
                             <li class="clearfix" v-for="(item,index) in areaArr.Table1" :key="index">
-                                <div v-if="index !==3">
+                                <div v-if="item.ordername !=='处理'">
                                     <div class="l area-name">
                                         <div>
                                             <span>{{item.ordername}}</span>
@@ -426,7 +426,8 @@
                                         <div class="border r"></div>
                                     </div>
                                     <ul class="area-info clearfix">
-                                        <li class="l "><span>{{workInfo.FContacts}}　</span>{{item.Fdatetime}}</li>
+                                        <li class="l " v-if="workInfo.OrderType==5"><span>{{item.FContacts}}　</span>{{item.Fdatetime}}</li>
+                                        <li class="l " v-else><span>{{item.FContacts}}　</span>{{item.Fdatetime}}</li>
                                     </ul>
                                 </div>
                                 <div class="clearfix" v-else>
@@ -438,16 +439,16 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="clearfix collapse" >
+                                    <div class="clearfix collapse" v-if="workInfo.OrderType==3||workInfo.OrderType==6">
                                         <el-collapse accordion >
                                           <el-collapse-item name="1">
                                             <template slot="title">
                                                 <ul class="area-info clearfix">
-                                                    <li class="l "><span>{{workInfo.FContacts}}　</span>{{item.Fdatetime}}</li>
+                                                    <li class="l "><span>{{item.FContacts}}　</span>{{item.Fdatetime}}</li>
                                                 </ul>
                                             </template>
                                             <div class="collapse-content">
-                                                <div class="collapse-content-item" v-if="areaArr.Table">
+                                                <div class="collapse-content-item" v-if="areaArr.Table&&areaArr.Table[0].ReportMatterBeforeImg">
                                                     <h5>{{workInfo.OrderType==3?'维修前':'处理前'}}</h5>
                                                     <ul class="clearfix">
                                                         <li class="l" v-for="img in areaArr.Table[0].ReportMatterBeforeImg.split(',')">
@@ -455,13 +456,8 @@
                                                         </li>
                                                     </ul>
                                                 </div>
-<!--                                                 <div class="collapse-content-item">
-                                                    <h5>保养内容</h5>
-                                                    <p style="">
-                                                        <span v-for="(content,i) in areaArr.Table1">{{i+1}}.{{content.MaintenanceDetail}}　</span>
-                                                    </p>
-                                                </div> -->
-                                                <div class="collapse-content-item" v-if="areaArr.Table">
+
+                                                <div class="collapse-content-item" v-if="areaArr.Table&&areaArr.Table[0].ReportMatterBeforeImg">
                                                     <h5>{{workInfo.OrderType==3?'维修后':'处理后'}}</h5>
                                                     <ul class="clearfix">
                                                         <li class="l" v-for="img in areaArr.Table[0].ReportMatterAfterImg.split(',')">
@@ -491,6 +487,40 @@
                                                         <td>{{item.SuppliesCount}}</td>
                                                       </tr>
                                                     </table>
+                                                </div>
+                                            </div>
+                                          </el-collapse-item>
+                                        </el-collapse>
+                                    </div>
+                                    <div class="clearfix collapse" v-else>
+                                        <el-collapse accordion >
+                                          <el-collapse-item name="1">
+                                            <template slot="title">
+                                                <ul class="area-info clearfix">
+                                                    <li class="l "><span>{{item.FContacts}}　</span>{{item.AlarmTime}}</li>
+                                                </ul>
+                                            </template>
+                                            <div class="collapse-content">
+                                                <div class="collapse-content-item" v-if="areaArr.Table&&areaArr.Table[0].HandlingEventsBeforeImg">
+                                                    <h5>处理前</h5>
+                                                    <ul class="clearfix">
+                                                        <li class="l" v-for="img in areaArr.Table[0].HandlingEventsBeforeImg.split(',')">
+                                                            <img :src="'http://www.szqianren.com/'+img" alt="">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="collapse-content-item" v-if="areaArr.Table&&areaArr.Table[0].HandlingEventsAfterImg">
+                                                    <h5>处理后</h5>
+                                                    <ul class="clearfix">
+                                                        <li class="l" v-for="img in areaArr.Table[0].HandlingEventsAfterImg.split(',')">
+                                                            <img :src="'http://www.szqianren.com/'+img" alt="">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="collapse-content-item">
+                                                    <h5>处理情况</h5>
+                                                    <p>{{areaArr.Table[0].HandlingEventsAfterDescription}}</p>
                                                 </div>
                                             </div>
                                           </el-collapse-item>
@@ -719,7 +749,6 @@ export default {
                 ID:row.ID
             })
             .then(data => {
-                console.log(data);
                 this.areaArr = data.FObject
             })
             .catch(error => {
@@ -1121,6 +1150,10 @@ export default {
                         }
                         .el-collapse-item__header,.el-collapse-item__wrap{
                             background: none
+                        }
+                        .el-collapse-item__arrow.el-icon-arrow-right{
+                            font-size: 30px;
+                            font-weight: bold;
                         }
                         .collapse-content{
                             background: #f2f2f2;

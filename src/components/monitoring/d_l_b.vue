@@ -36,7 +36,7 @@
       <div class="tin_left">
         <div class="tin_t1" v-for="(items,key) in data_information" style="position: relative;">
           <ul class="clearfix l">
-            <li>设备编号：
+            <li>设备编码：
               <span>{{items.DeviceCode}}</span>
             </li>
             <li>设备名称：

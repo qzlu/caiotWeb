@@ -25,6 +25,7 @@
                         <el-date-picker
                           v-model="planTime"
                           type="datetime"
+                          :picker-options="pickerOptions1"
                           @change="selectPlanTime"
                           placeholder="选择日期时间">
                         </el-date-picker>
@@ -270,13 +271,10 @@ export default {
             road:null,
             loading:false,
             pointData:[],//抄表路线对应的抄表点
-            pickerOptions:{ //新增或编辑抄表计划只能选择大于当前时间的
-/*                 disabledDate:val => {
-                    if(Date.parse(new Date(val)) < Date.parse(new Date())){
-                        console.log(new Date(val),new Date());
-                        return true
-                    }
-                } */
+            pickerOptions1:{
+                disabledDate:(val) => {
+                    return   new Date().getTime() >= val.getTime() + 24*60*60*1000
+                }
             },
             pickerOptions2: {
                 shortcuts: [{

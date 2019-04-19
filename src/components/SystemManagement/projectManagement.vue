@@ -2,7 +2,7 @@
     <div class="report inspection-item">
         <el-dialog :title="type?'编辑':'新增'" :visible.sync="show" width="700px" class="zw-dialog">
             <el-form :model="addProject" inline ref="form">
-                <el-form-item label="集团简称"  prop='DeviceID'  :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="集团简称"  prop='BlocID'  :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addProject.BlocID"  value-key="DeviceID" filterable  placeholder="请选择" >
                     <el-option v-for="list in blocList" :key="list.BlocID" :label="list.ShortName" :value="list.BlocID"></el-option>
                   </el-select>
@@ -28,13 +28,13 @@
                 <el-form-item label="地址" prop="Address" :rules="[{ required: true, message: '请输入'}]">
                     <el-input  v-model="addProject.Address"></el-input>
                 </el-form-item>
-                <el-form-item label="建筑类型" filterable :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="建筑类型" prop="BuildTypeID" filterable :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addProject.BuildTypeID" filterable  value-key="ParamID"  placeholder="请选择">
                     <el-option v-for="item in buildTypeList" :key="item.ParamID" :value="item.ParamID" :label="item.Value">
                     </el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="所属系统" filterable :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="所属系统" filterable prop="SystemType" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="systemType" filterable multiple collapse-tags value-key="ParamID"  placeholder="请选择">
                     <el-option v-for="system in systemList" :key="system.ParamID" :value="system.ParamID" :label="system.ParamValue">
                     </el-option>
@@ -43,7 +43,7 @@
                 <el-form-item label="第三方ID" prop="OtherSourceID" :rules="[{ required: true, message: '请输入'}]">
                     <el-input  v-model="addProject.OtherSourceID"></el-input>
                 </el-form-item>
-                <el-form-item label="上线时间" prop="OnlineDateTime">
+                <el-form-item label="上线时间" prop="OnlineDateTime" :rules="[{ required: true, message: '请选择'}]">
                     <el-date-picker
                         type="date"
                         v-model="addProject.OnlineDateTime"
@@ -146,7 +146,7 @@ export default {
                 Address:null,
                 BuildArea:null,
                 BuildTypeID:null,
-                OtherSourceID:null,
+                OtherSourceID:0,
                 SystemType:null,
                 OnlineDateTime:null,
                 ProjectID:0
@@ -159,7 +159,7 @@ export default {
                 Address:null,
                 BuildArea:null,
                 BuildTypeID:null,
-                OtherSourceID:null,
+                OtherSourceID:0,
                 SystemType:null,
                 OnlineDateTime:null,
                 ProjectID:0
@@ -187,7 +187,6 @@ export default {
         this.queryBuildType()
     },
     mounted() {
-        console.log(this.$store.state.projectList);
     },
     methods:{
         /**
@@ -203,6 +202,13 @@ export default {
             .then((data) => {
                 this.total = data.FObject.Table ? data.FObject.Table[0].FTotalCount : 0
                 this.tableData = data.FObject.Table1 ? data.FObject.Table1 : []
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch((err) => {
                 
@@ -296,15 +302,21 @@ export default {
         /**
          * 256.新增/修改项目
          */
-        addOrUpdateUProject(){
+        async addOrUpdateUProject(){
             this.addProject.SystemType = this.systemType.join(',')
+            await new Promise(resolve => {
+                this.$refs.form.validate((valid) => {
+                  if (valid) {
+                      resolve()
+                  } 
+                });
+            })
+            this.show = false
             project({
                 FAction:'AddOrUpdateUProject',
                 mUProject:this.addProject
             })
             .then(data => {
-
-                this.pageIndex = 1
                 this.queryData()
             })
             .catch(err => {
@@ -329,7 +341,6 @@ export default {
                 ID:row.ProjectID
             })
             .then(data => {
-                this.pageIndex  = 1
                 this.queryData()
             })
             .catch(err => {})
@@ -339,7 +350,7 @@ export default {
          */
         exportFile(){
             project({
-                FAction:'ExportUAlarmSet',
+                FAction:'QueryExporteUProject',
                 SearchKey:this.filterText,
             })
             .then(data => {

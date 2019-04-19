@@ -46,7 +46,7 @@
              <li class="l" @click="queryAreaTypeDeviceInfo"><button class="zw-btn zw-btn-import">设备导入</button></li>
             <li class="l" @click="pageIndex=1;filterText = '';queryData()"><button class="zw-btn zw-btn-refrest">刷新</button></li>
             <li class="r">
-                <el-input class="search-input" placeholder="搜索设备关键字" v-model="filterText">
+                <el-input class="search-input" placeholder="搜索关键字" v-model="filterText">
                     <i class="el-icon-search" slot="suffix"></i>
                 </el-input>
                 <button class="zw-btn zw-btn-primary" @click="filterText = '' ">重置</button>
@@ -111,7 +111,6 @@ export default {
                     label: '系统名称'
                 }
             ],
-            filterText:'',
             title:'新增',
             show:false,
             defalutAddPoint:{//新增巡检点默认数据
@@ -170,7 +169,7 @@ export default {
         /**
          * 查询巡检点
          */
-        queryData(name = '', pageIndex = 1){
+        queryData(){
             const loading = this.$loading({
               customClass: 'hahahah',
               background: 'rgba(0, 0, 0, 0.7)',
@@ -178,13 +177,20 @@ export default {
             });
             Inspection({
                 FAction:'QueryPageUInspectionPointInfo',
-                FName:name,
-                PageIndex:pageIndex,
+                FName:this.filterText,
+                PageIndex:this.pageIndex,
                 PageSize:10
             })
             .then(data => {
                 this.total = data.FObject.Table[0].Count
                 this.tableData = data.FObject.Table1
+                /**
+                * 删除操作时，当前页面无数据时跳到上一页
+                */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(error => {
                 console.log(error);
@@ -292,7 +298,6 @@ export default {
                   type: 'success',
                   message: this.type?'修改成功！':'新增成功！'
                 });
-                this.pageIndex = 1
                 this.queryData()
             })
             .catch(error => {
@@ -346,7 +351,6 @@ export default {
                   type: 'success',
                   message: '删除成功!'
                 });
-                this.pageIndex = 1
                 this.queryData()
             })
             .catch(error => {

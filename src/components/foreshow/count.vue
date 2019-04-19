@@ -520,7 +520,8 @@
 		    },
 		    yAxis: {
 		         type: 'value',
-		         splitLine:{show: false},//去除网格线
+				 splitLine:{show: false},//去除网格线
+				 minInterval: 1,
 		         axisLine:{ //y轴色
 					 lineStyle:{
 					 color:'#fff',
@@ -593,7 +594,8 @@
 				    yAxis : [
 				        {
 				            type : 'value',
-				             splitLine:{show: false},//去除网格线
+							splitLine:{show: false},//去除网格线
+							minInterval: 1,
 				             axisLine:{ //y轴色
 								   lineStyle:{
 								   color:'#d5d5d5',

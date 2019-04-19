@@ -25,6 +25,7 @@
                         <el-date-picker
                           v-model="planTime"
                           type="datetime"
+                          :picker-options="pickerOptions1"
                           @change="selectPlanTime"
                           placeholder="选择日期时间">
                         </el-date-picker>
@@ -216,7 +217,6 @@ export default {
                 value:3
             }],
             year:'',
-            filterText:'',
             defaultFilterObj:{
                 PatrolPlanName:'',
                 PatrolLineName:'',
@@ -266,13 +266,10 @@ export default {
             road:null,
             loading:false,
             pointData:[],//巡更路线对应的巡更点
-            pickerOptions:{ //新增或编辑巡更计划只能选择大于当前时间的
-/*                 disabledDate:val => {
-                    if(Date.parse(new Date(val)) < Date.parse(new Date())){
-                        console.log(new Date(val),new Date());
-                        return true
-                    }
-                } */
+            pickerOptions1:{
+                disabledDate:(val) => {
+                    return   new Date().getTime() >= val.getTime() + 24*60*60*1000
+                }
             },
             pickerOptions2: {
                 shortcuts: [{
@@ -352,6 +349,13 @@ export default {
                     }
                     this.$set(item,'PatrolPlanTypeText',item.PatrolPlanType==1?'自动生成':'手动生成')
                 });
+                /**
+                * 删除操作时，当前页面无数据时跳到上一页
+                */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(error => {
             
@@ -518,7 +522,6 @@ export default {
             })
             .then(data => {
                 this.pointData = data.FObject
-                console.log(this.pointData);
                 this.loading = false
             })
             .catch(error => {
@@ -568,7 +571,6 @@ export default {
             })
             .then(data => {
                 this.show = false
-                this.pageIndex = 1
                 this.queryData()
                 this.$message({
                   type: 'success',
