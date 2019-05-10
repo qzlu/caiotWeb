@@ -74,9 +74,8 @@ export default {
             position: absolute;
             top: -32px;
             left: 0;
-            background: #DCDFDE;
-            opacity:0.46;
-            color: black;
+            background:#2A91FC;
+            color: white;
             font-size: 20px;
         }
         .tab-header{

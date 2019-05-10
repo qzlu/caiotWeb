@@ -386,14 +386,6 @@ export default {
             left: -8px;
             border-radius: 4px;
         }
-        .unit{
-            display: inline-block;
-            padding: 0 20px;
-            background: #2a90fb;
-            border-radius: 4px;
-            position: relative;
-            left: 4px;
-        }
     }
 }
  

@@ -28,6 +28,14 @@ $img-url:'/static/image/';
                 left: 50%;
                 transform: translateX(-50%)
             }
+            .unit{
+                display: inline-block;
+                padding: 0 20px;
+                background: #2a90fb;
+                border-radius: 4px;
+                position: relative;
+                left: 4px;
+            }
         }
     }
     .zw-dialog.import-point{

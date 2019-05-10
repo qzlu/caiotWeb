@@ -495,7 +495,7 @@
               </div>
               <div class="r itext">
                 <p>
-                  <span class="colors"></span>
+                  <span class="colors" style="background:#2A91FC"></span>
                   <span class="igh">待巡检</span>
                   <span class="hgy">
                     <!--70-->

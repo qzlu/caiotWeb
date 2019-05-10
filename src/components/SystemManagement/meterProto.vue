@@ -1,35 +1,27 @@
 <template>
-    <div class="report inspection-item">
+    <div class="report inspection-item system-type">
         <el-dialog :title="type?'编辑':'新增'" :visible.sync="show" width="700px" class="zw-dialog">
             <el-form :model="addInfo" inline ref="form">
-                <el-form-item label="项目名称"  prop='DeviceID'  :rules="[{ required: true, message: '请选择'}]">
-                  <el-select v-model="addInfo.ProjectID"  value-key="ProjectID" filterable  placeholder="请选择" >
-                    <el-option v-for="list in projectList" :key="list.ProjectID" :label="list.ShortName" :value="list.ProjectID"></el-option>
-                  </el-select>
-                  <!-- <el-input readonly :value="projectName"></el-input> -->
+                <el-form-item label="仪表型号" prop="MeterModelID" :rules="[{ required: true, message: '请输入'}]">
+                    <el-select v-model="addInfo.MeterModelID">
+                        <el-option v-for="(item,i) in systemModelList" :key="i" :label="item.MeterModelName" :value="item.MeterModelID"></el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="网关名称" prop="LDasName" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input v-model="addInfo.LDasName">
-                    </el-input>
+                <el-form-item label="仪表协议名称" prop="MeterModelName">
+                    <el-input v-model="addInfo.MeterModelName"></el-input>
                 </el-form-item>
-                <el-form-item label="网关ID" prop="LDasID" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input type="number" placeholder="网关ID只能输入数字" v-model="addInfo.LDasID">
-                    </el-input>
+                <el-form-item label="指令功能码" prop="FunctionCode">
+                    <el-input  v-model="addInfo.FunctionCode"></el-input>
                 </el-form-item>
-                <el-form-item label="网关位置" prop="Position" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input v-model="addInfo.Position">
-                    </el-input>
+                <el-form-item label="开始读取地址" prop="Beginaddr">
+                    <el-input  v-model="addInfo.Beginaddr"></el-input>
                 </el-form-item>
-                <el-form-item label="ICCID" prop="LDasPhoneNumber">
-                    <el-input v-model="addInfo.LDasPhoneNumber">
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="是否启用" prop="IsEnable" :rules="[{ required: true, message: '请输入'}]">
-                    <el-switch v-model="addInfo.IsEnable"></el-switch>
+                <el-form-item label="读取个数" prop="ReadCount">
+                    <el-input v-model="addInfo.ReadCount"></el-input>
                 </el-form-item>
             </el-form>
             <div class="submit">
-                <button class="zw-btn zw-btn-primary" @click="addOrUpdateULdas()">确定</button>
+                <button class="zw-btn zw-btn-primary" @click="addOrUpdate()">确定</button>
             </div>
         </el-dialog>    
         <ul class="report-header clearfix">
@@ -60,28 +52,12 @@
                 >
                </el-table-column>
                <el-table-column
-                 prop="status"
-                 label="指令是否下发">
-               </el-table-column>
-               <el-table-column
-                 prop=""
-                 width="200"
-                 label="配置">
-                 <template slot-scope="scoped">
-                     <div class="role-operation">
-                        <span class="pointer" @click="createLdasConfig(scoped.row)">生成LDAS</span>
-                        <span class="pointer" v-if="scoped.row.ConfigFileAddress !=''&&scoped.row.ConfigFileAddress !=null" @click="sendFile(scoped.row)">下发指令</span>
-                        <span style="color:#999;cursor: not-allowed;" v-else>下发指令</span>
-                     </div>
-                 </template>
-               </el-table-column>
-               <el-table-column
                  prop=""
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="role-operation">
                         <span class="pointer" @click="updatedProject(scoped.row)">编辑</span>
-                        <span class="pointer" @click="deleteULdas(scoped.row)">删除</span>
+                        <span class="pointer" @click="deleteItem(scoped.row)">删除</span>
                      </div>
                  </template>
                </el-table-column>
@@ -105,58 +81,50 @@ export default {
                     width:80
                 },
                 {
-                    prop:'ProjectName',
-                    label:'项目名称'
+                    prop:'ProtocolID',
+                    label:'仪表协议ID'
                 },
                 {
-                    prop: 'LDasName',
-                    label: '网关名称',
+                    prop:'MeterModelName',
+                    label:'仪表协议名称'
                 },
                 {
-                    prop: 'LDasID',
-                    label: '网关ID',
+                    prop: 'FunctionCode',
+                    label: '指令功能码',
                 },
                 {
-                    prop: 'LDasPhoneNumber',
-                    label: 'ICCID',
+                    prop: 'Beginaddr',
+                    label: '开始读取地址',
                 },
                 {
-                    prop: 'Position',
-                    label: '网关位置',
-                },
-                {
-                    prop: 'IsEnableName',
-                    label: '是否启用',
+                    prop: 'ReadCount',
+                    label: '读取个数',
                 },
             ],
             type:0,
-            projectName:localStorage.getItem('projectname'),
             defaultAddInfo:{//新增项目参数默认数据
-                ProjectID:parseInt(localStorage.getItem('projectid')),
-                LDasID:null,
-                IsEnable:true,
-                LDasName:null,
-                Position:null,
-                OldLDasID:0,
-                LDasPhoneNumber:null
+                ProtocolID:0,
+                FunctionCode:null,
+                Beginaddr:null,
+                ReadCount:null,
+                MeterModelID:null,
+                MeterModelName:null
             },
             addInfo:{ //新增或修改项目参数
-                ProjectID:null,
-                LDasID:null,
-                IsEnable:true,
-                LDasName:null,
-                Position:null,
-                OldLDasID:0,
-                LDasPhoneNumber:null
+                ProtocolID:0,
+                FunctionCode:null,
+                Beginaddr:null,
+                ReadCount:null,
+                MeterModelID:null,
+                MeterModelName:null
             },
             title:'新增',
             show:false,
+            systemModelList:[]
+    
         }
     },
     computed:{
-        projectList(){
-            return this.$store.state.projectList
-        }
     },
     watch:{
         filterText(val){
@@ -165,14 +133,15 @@ export default {
     },
     created(){
         this.queryData()
+        this.queryPageSMeterModel()
     },
     methods:{
         /**
-         * 269.分页查询网关列表
+         * 316.标准配置-分页查询仪表协议
          */
         queryData(){
-            project({
-                FAction:'QueryPageULdas',
+            system({
+                FAction:'QueryPageSprotocol',
                 SearchKey:this.filterText,
                 PageIndex:this.pageIndex,
                 PageSize:10
@@ -200,6 +169,23 @@ export default {
             this.queryData()
         },
         /**
+         * 340.标准配置-分页查询仪表型号
+         */
+        queryPageSMeterModel(){
+            system({
+                FAction:'QueryPageSMeterModel',
+                SearchKey:'',
+                PageIndex:1,
+                PageSize:10000
+            })
+            .then((data) => {
+                this.systemModelList = data.FObject.Table1 ? data.FObject.Table1 : []
+            })
+            .catch((err) => {
+                
+            });
+        },
+        /**
          * 点击新增
          */
         beforeAdd(){
@@ -208,7 +194,7 @@ export default {
             this.addInfo = Object.assign({},this.defaultAddInfo)
         },
         /**
-         * 修改网关
+         * 编辑
          */
         updatedProject(row) {
             this.show = true
@@ -216,18 +202,29 @@ export default {
             Object.keys(this.addInfo).forEach(key => {
                 this.addInfo[key] = row[key]
             })
-            this.addInfo.OldLDasID = this.addInfo.LDasID
         },
         /**
-         * 265.新增/修改网关
+         * 317.标准配置-新增/修改仪表协议
          */
-        addOrUpdateULdas(){
+        async addOrUpdate(){
+            await new Promise(resolve => {
+                this.$refs.form.validate((valid) => {
+                  if (valid) {
+                      resolve()
+                  } 
+                });
+            })
             this.show = false
-            project({
-                FAction:'AddOrUpdateULdas',
-                mULdas:this.addInfo
+            system({
+                FAction:'AddOrUpdateSprotocol',
+                FType:this.type,
+                mSprotocol:this.addInfo
             })
             .then(data => {
+                this.$message({
+                  type: 'success',
+                  message: '配置成功！'
+                });
                 this.queryData()
             })
             .catch(err => {
@@ -235,59 +232,25 @@ export default {
             })
         },
         /**
-         * 268.删除网关
+         * 319.标准配置-删除仪表协议
          */
-        async deleteULdas(row){
+        async deleteItem(row){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除`,'删除网关信息'])
+                this.$DeleteMessage([`确认删除`,'删除仪表协议'])
                 .then(() => {
                     resove()
                 })
                 .catch(error => {
                 })
             })
-            project({
-                FAction:'DeleteULdas',
-                ID:row.LDasID
+            system({
+                FAction:'DeleteSprotocol',
+                ID:row.ProtocolID
             })
             .then(data => {
                 this.queryData()
             })
             .catch(err => {})
-        },
-        /**
-         * 308.创建Ldas配置文件
-         */
-        createLdasConfig(row){
-            project({
-                FAction:'CreateLdasConfig',
-                ID:row.LDasID
-            })
-            .then(data => {
-                this.$message({
-                  type: 'success',
-                  message: 'LDAS生成成功'
-                });
-                this.queryData()
-            })
-            .catch(err => {})
-        },
-        /**
-         * 309.发送文件命令
-         */
-        sendFile(row){
-            this.$set(row,'status','下发中。。。')
-            project({
-                FAction:'SendFile',
-                ID:row.LDasID,
-                ConfigFileAddress:row.ConfigFileAddress
-            })
-            .then(data => {
-                this.$set(row,'status','成功')
-            })
-            .catch(err => {
-                this.$set(row,'status','失败')
-            })
         },
         /**
          * exportFile 导出
@@ -311,6 +274,12 @@ export default {
 }
 </script>
 <style lang="scss">
-
-
+.system-type.inspection-item {
+    .el-form-item {
+        .el-form-item__label{
+            width: 120px
+        }
+    }
+    
+}
 </style>

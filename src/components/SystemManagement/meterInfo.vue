@@ -22,9 +22,10 @@
                     <el-input  v-model="addInfo.MeterName">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="仪表型号ID" prop="MeterModelID" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input  v-model="addInfo.MeterModelID">
-                    </el-input>
+                <el-form-item label="仪表型号" prop="MeterModelID" :rules="[{ required: true, message: '请选择'}]">
+                    <el-select v-model="addInfo.MeterModelID" filterable>
+                        <el-option v-for="(item,index) in meterModel" :key="index" :label="item.MeterModelName" :value="item.MeterModelID"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="通信IP地址" prop="Ip" >
                     <el-input v-model="addInfo.Ip">
@@ -163,6 +164,7 @@ export default {
             show:false,
             areaList:[],//区域
             ldasList:[], //网关
+            meterModel:[],//仪表型号列表
         }
     },
     computed:{
@@ -179,6 +181,7 @@ export default {
         this.queryData()
         this.queryULdasByProjectID()
         this.queryUAreaList()
+        this.queryPageSMeterModel()
     },
     methods:{
         /**
@@ -230,6 +233,22 @@ export default {
                 })
                 .catch(err => {})
             })
+        },
+        /**
+         * 查询仪表型号
+         */
+        queryPageSMeterModel(){
+            system({
+                FAction:'QueryPageSMeterModel',
+                SearchKey:'',
+                PageIndex:1,
+                PageSize:1000000
+            })
+            .then((data) => {
+                this.meterModel = data.FObject.Table1?data.FObject.Table1:[]
+            }).catch((err) => {
+                
+            });
         },
         /**
          * 284.获取项目网关信息

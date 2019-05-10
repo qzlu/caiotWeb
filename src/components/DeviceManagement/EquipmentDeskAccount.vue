@@ -144,17 +144,6 @@
         <ul class="clearfix report-header">
             <li class="l"><button class="zw-btn zw-btn-add" @click="beforeAddDevice">新增</button></li>
             <li class="l">
-                <!-- 详情 -->
-                <router-link :to="{name:'DeviceInfo',params:{deviceID:selectArr[0].DeviceLedgerID,file:selectArr[0].LedgerFiles}}" v-if="this.selectArr.length === 1">
-                    <button class="zw-btn zw-btn-detail"></button>
-                </router-link>
-                <button class="zw-btn zw-btn-detail" v-else></button>
-            </li>
-            <!-- 编辑 -->
-            <li class="l"><button class="zw-btn zw-btn-edit" @click="editDevice()"></button></li>
-            <!-- 删除 -->
-            <li class="l"><button class="zw-btn zw-btn-delete" @click="deleteDeviceInfo"></button></li>
-            <li class="l">
                 <el-dropdown>
                     <button class="zw-btn zw-btn-import">导入</button>
                     <el-dropdown-menu slot="dropdown">
@@ -187,14 +176,7 @@
                style="width: 100%"
                header-row-class-name="el-table-header"
                :row-class-name="tableRowClassName"
-                @selection-change="handleSelectionChange"
                >
-               <el-table-column
-                type="selection"
-                width="55"
-               >
-               
-               </el-table-column>   
                <el-table-column
                  v-for="item in tableLabel"
                  :key="item.prop"
@@ -204,6 +186,17 @@
                  :formatter="item.formatter"
                  show-overflow-tooltip
                 >
+               </el-table-column>
+               <el-table-column label="操作" width="160">
+                   <template slot-scope="scoped">
+                       <div>
+                            <router-link :to="{name:'DeviceInfo',params:{deviceID:scoped.row.DeviceLedgerID}}">
+                                <span style="color:white">详情</span>
+                            </router-link>
+                            <span class="pointer" style="margin-left:16px;" @click="editDevice(scoped.row)">编辑</span>  
+                            <span class="pointer" @click="deleteDeviceInfo(scoped.row)">删除</span>    
+                       </div>
+                   </template>
                </el-table-column>
             </el-table>
         </div>
@@ -227,7 +220,8 @@ export default {
                 },
                 {
                     prop: 'DeviceLedgerName',
-                    label: '设备名称'
+                    label: '设备名称',
+                    width:180
                 },
                 {
                     prop: 'DeviceCode',
@@ -240,26 +234,29 @@ export default {
                 },
                 {
                     prop: 'SpecificationsCode',
-                    label: '出厂型号'
+                    label: '出厂型号',
+                    width:200
                 },
                 {
                     prop: 'ManufacturingNumber',
-                    label: '出厂编号'
+                    label: '出厂编号',
+                    width:90
                 },
                 {
                     prop: 'ManufacturingTime',
                     label: '出厂日期',
-                    width:'160',
-                    formatter:(row, column, cellValue, index) => row.EditorDateTime?row.ManufacturingTime.split(' ')[0]:''
+                    width:'100',
+                    formatter:(row, column, cellValue, index) => row.EditorDateTime?row.ManufacturingTime.split(' ')[0]:'',
                 },
                 {
                     prop: 'ServiceLife',
-                    label: '使用年限'
+                    label: '使用年限',
+                    width:90
                 },
                 {
                     prop: 'EditorDateTime',
                     label: '质保截止',
-                    width:'160',
+                    width:'100',
                     formatter:(row, column, cellValue, index) => row.EditorDateTime?row.EditorDateTime.split(' ')[0]:''
                 },
                 {
@@ -268,11 +265,11 @@ export default {
                     width:130,
                     formatter:(row, column, cellValue, index) => row.IsIOTDevice?'是':'否'
                 },
-                {
+/*                 {
                     prop: 'stateText',
                     label: '设备使用状态',
                     width:130
-                }
+                } */
             ],
             show:false,
             defaultDeviceInfo:{
@@ -370,6 +367,13 @@ export default {
                 this.tableData.forEach(element => {
                     this.$set(element,'stateText',element.RunState?'启用':'停用')
                 });
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(err => {})
         },
@@ -411,19 +415,19 @@ export default {
         /**
          * 编辑设备台账
          */
-        editDevice(){
+        editDevice(row){
             this.show = true
             this.type = 1
             Object.keys(this.deviceInfo).forEach(key => {
-                if(this.selectArr[0][key]){
-                    this.deviceInfo[key] = this.selectArr[0][key]
+                if(row[key]){
+                    this.deviceInfo[key] = row[key]
                 }
             })
             if(this.deviceInfo.ServiceLife == null){
                 this.deviceInfo.ServiceLife = 0
             }
-            if(this.selectArr[0].LedgerFiles){
-                this.fileList = this.selectArr[0].LedgerFiles.split(',').map(item => {
+            if(row.LedgerFiles){
+                this.fileList = row.LedgerFiles.split(',').map(item => {
                     let arr = item.split('!')
                     return {
                         FileName:arr[1],
@@ -512,11 +516,11 @@ export default {
             }
         },
         /**
-         * 236.批量删除设备台账信息
+         * 236.删除设备台账信息
          */
-        async deleteDeviceInfo(){
+        async deleteDeviceInfo(row){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除`,'删除设备'])
+                this.$DeleteMessage([`确认删除`,'删除设备台账'])
                 .then(() => {
                     resove()
                 })
@@ -524,13 +528,11 @@ export default {
 
                 })
             })
-            let arr = this.selectArr.map(item => item.DeviceLedgerID)
             Device({
-                FAction:'DeleteDeviceInfo',
-                IDStr:arr.join(',')
+                FAction:'DeleteUDeviceLedger',
+                IDStr:row.DeviceLedgerID
             })
             .then(data => {
-                this.pageIndex  = 1
                 this.queryData()
             })
             .catch(err => {})

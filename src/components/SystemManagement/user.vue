@@ -64,6 +64,7 @@
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
+                 :width="item.width"
                 >
                </el-table-column>
                <el-table-column
@@ -113,15 +114,16 @@ export default {
             tableLabel:[
                 {
                     prop: 'RowNum',
-                    label: '序号'
-                },
-                {
-                    prop: 'FUserName',
-                    label: '账号'
+                    label: '序号',
+                    width:80
                 },
                 {
                     prop: 'FContacts',
                     label: '用户名'
+                },
+                {
+                    prop: 'FUserName',
+                    label: '账号'
                 },
                 {
                     prop: 'FName',
@@ -129,7 +131,8 @@ export default {
                 },
                 {
                     prop: 'ProjectName',
-                    label: '所属项目'
+                    label: '所属项目',
+                    width:400
                 },
 /*                 {
                     prop: 'FPassword',

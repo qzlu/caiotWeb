@@ -347,7 +347,7 @@ let routers_item=[
 					
 					{ path: 'CalculationSettings',//计算设置
 				  	name: 'CalculationSettings',
-					  component: () => import('@/components/home/test'),
+					  component: () => import('@/components/energy/energyConfig.vue'),
 					  meta: {
 						title: '千仞云平台',
 						requireAuth: true, 
@@ -355,7 +355,7 @@ let routers_item=[
 					},
 					{ path: 'EnergyPlan',//"能源计划"
 				  	  name: 'EnergyPlan',
-					  component: () => import('@/components/home/test'),
+					  component: () => import('@/components/energy/energyPlan.vue'),
 					  meta: {
 						title: '千仞云平台',
 						requireAuth: true, 
@@ -783,7 +783,7 @@ let routers_item=[
 					},
 					{
 						path:'Block',
-						name:'Block', //工程管理 -集团信息
+						name:'Block', //标准配置 -集团信息
 						component: () => import('@/components/SystemManagement/blockInfo.vue'),
 						meta: {
 							title: '千仞云平台',
@@ -793,14 +793,103 @@ let routers_item=[
 					},
 					{
 						path:'ProjectConfig',
-						name:'ProjectConfig', //工程管理 -集团信息
+						name:'ProjectConfig', //工程管理 -项目流程
 						component: () => import('@/components/SystemManagement/projectConfig.vue'),
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,
 						 },
 
-					}
+					},{
+						path:'SystemType', //标准配置 - 系统分类
+						name:'SystemType',
+						component: () => import('@/components/SystemManagement/systemType.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						 },
+						},
+						{
+							path:'DeviceType', //标准配置 - 设备分类
+							name:'DeviceType',
+							component: () => import('@/components/SystemManagement/deviceType.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'AlarmType', //标准配置 - 告警类型
+							name:'AlarmType',
+							component: () => import('@/components/SystemManagement/alarmType.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'EnergyType', //标准配置 - 能源类型
+							name:'EnergyType',
+							component: () => import('@/components/SystemManagement/energyType.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'DataItem', //标准配置 - 数据标识
+							name:'DataItem',
+							component: () => import('@/components/SystemManagement/dataItem.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'MeterType', //标准配置 - 仪表类型
+							name:'MeterType',
+							component: () => import('@/components/SystemManagement/meterType.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'MeterModel', //标准配置 - 仪表型号
+							name:'MeterModel',
+							component: () => import('@/components/SystemManagement/meterModel.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'MeterProto', //标准配置 - 仪表协议
+							name:'MeterProto',
+							component: () => import('@/components/SystemManagement/meterProto.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'Protocol', //标准配置 - 协议解析
+							name:'Protocol',
+							component: () => import('@/components/SystemManagement/protocol.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'SystemLog', //系统管理- 操作日志
+							name:'SystemLog',
+							component: () => import('@/components/SystemManagement/systemLog.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						}
 					]
 				
 				

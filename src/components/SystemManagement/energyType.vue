@@ -1,35 +1,23 @@
 <template>
-    <div class="report inspection-item">
-        <el-dialog :title="this.areaInfo.FType?'编辑':'新增'" :visible.sync="show" width="700px" class="zw-dialog">
-            <el-form :model="areaInfo" inline ref="form">
-                <el-form-item label="项目名称" >
-<!--                   <el-select v-model="areaInfo.ProjectID"  value-key="ProjectID" filterable  placeholder="请选择" >
-                    <el-option v-for="list in projectList" :key="list.ProjectID" :label="list.ShortName" :value="list.ProjectID"></el-option>
-                  </el-select> -->
-                  <el-input readonly :value="projectName"></el-input>
-                </el-form-item>
-                <el-form-item label="区域名称" prop="AreaName" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input v-model="areaInfo.AreaName">
+    <div class="report inspection-item system-type">
+        <el-dialog :title="type?'编辑':'新增'" :visible.sync="show" width="700px" class="zw-dialog">
+            <el-form :model="addInfo" inline ref="form">
+                <el-form-item label="能源类型" prop="FName" :rules="[{ required: true, message: '请输入'}]">
+                    <el-input v-model="addInfo.FName">
                     </el-input>
                 </el-form-item>
-<!--                 <el-form-item label="区域类型"  prop='AreaTypeID'>
-                  <el-select v-model="areaInfo.AreaTypeID"  value-key="DeviceID" filterable  placeholder="请选择" >
-                    <el-option v-for="list in areaTypeList" :key="list.AreaTypeID" :label="list.AreaTypeName" :value="list.AreaTypeID"></el-option>
-                  </el-select>
-                </el-form-item> -->
-                <el-form-item label="区域位置" prop="Location" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input v-model="areaInfo.Location">
+                <el-form-item label="单位" prop="FUnit">
+                    <el-input v-model="addInfo.FUnit">
                     </el-input>
                 </el-form-item>
             </el-form>
             <div class="submit">
-                <button class="zw-btn zw-btn-primary" @click="addUpdateUArea()">确定</button>
+                <button class="zw-btn zw-btn-primary" @click="addOrUpdate()">确定</button>
             </div>
         </el-dialog>    
         <ul class="report-header clearfix">
             <li class="l"><button class="zw-btn zw-btn-add" @click="beforeAdd">新增</button></li>
             <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile">导出</button></li>
-            <li class="l"><button class="zw-btn" style="width:120px;padding:0 10px" @click="exportUAreaQrCode"><i class="iconfont icon-QRcode" style="color:#3593ed"></i>导出二维码</button></li>
             <li class="r">
                 <el-input class="search-input" placeholder="搜索关键字" v-model="filterText">
                     <i class="el-icon-search" slot="suffix"></i>
@@ -54,22 +42,13 @@
                  show-overflow-tooltip
                 >
                </el-table-column>
-<!--                <el-table-column
-                label="二维码"
-               >
-                 <template slot-scope="scoped">
-                     <div>
-                         <img :src="`http://www.szqianren.com/${scoped.row.AreaQrCode}`" style="height:50px;width:60px;vertical-align: middle;" alt="">
-                     </div>
-                 </template>
-               </el-table-column> -->
                <el-table-column
                  prop=""
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="role-operation">
                         <span class="pointer" @click="updatedProject(scoped.row)">编辑</span>
-                        <span class="pointer" @click="deleteUArea(scoped.row)">删除</span>
+                        <span class="pointer" @click="deleteItem(scoped.row)">删除</span>
                      </div>
                  </template>
                </el-table-column>
@@ -80,7 +59,8 @@
 </template>
 <script>
 import table from '@/mixins/table' //表格混入数据
-import {project,system} from '@/request/api.js';
+import {project,Energy} from '@/request/api.js';
+import '@/components/TaskManagement/InspectionItem.scss';
 export default {
     mixins:[table],
     data(){
@@ -92,42 +72,35 @@ export default {
                     width:80
                 },
                 {
-                    prop:'ShortName',
-                    label:'项目名称'
+                    prop:'ID',
+                    label:'能源类型ID'
                 },
                 {
-                    prop: 'AreaName',
-                    label: '区域名称',
+                    prop: 'EnergyTypeName',
+                    label: '能源类型名称',
                 },
                 {
-                    prop: 'Location',
-                    label: '区域位置',
-                },
+                    prop: 'EnergyTypeUnit',
+                    label: '单位',
+                }
             ],
-            projectName:localStorage.getItem('projectname'),
-            defaultAreaInfo:{//新增项目参数默认数据
-                AreaID:null,
-                AreaName:null,
-                Location:null,
-                AreaTypeID:null,
-                FType:0
+            type:0,
+            defaultAddInfo:{//新增项目参数默认数据
+                ID:0,
+                FName:null,
+                FUnit:null,
             },
-            areaInfo:{ //新增或修改项目参数
-                AreaID:null,
-                AreaName:null,
-                Location:null,
-                AreaTypeID:null,
-                FType:0
+            addInfo:{ //新增或修改项目参数
+                ID:0,
+                FName:null,
+                FUnit:null,
             },
             title:'新增',
             show:false,
-            areaTypeList:[]
+    
         }
     },
     computed:{
-        projectList(){
-            return this.$store.state.projectList
-        }
     },
     watch:{
         filterText(val){
@@ -136,15 +109,14 @@ export default {
     },
     created(){
         this.queryData()
-        this.queryUArea()
     },
     methods:{
         /**
-         * 263.分页查询区域
+         * 310.分页查询能源类型
          */
         queryData(){
-            system({
-                FAction:'QueryPageUArea',
+            Energy({
+                FAction:'QueryPageSEnergyType',
                 SearchKey:this.filterText,
                 PageIndex:this.pageIndex,
                 PageSize:10
@@ -172,39 +144,27 @@ export default {
             this.queryData()
         },
         /**
-         * 270.查询区域类型信息
-         */
-        queryUArea(){
-            system({
-                FAction:'QuerySAreaType'
-            })
-            .then(data => {
-                this.areaTypeList = data.FObject
-            })
-            .catch(err =>{})
-        },
-        /**
          * 点击新增
          */
         beforeAdd(){
             this.show =true
-            this.areaInfo = Object.assign({},this.defaultAreaInfo)
+            this.type = 0
+            this.addInfo = Object.assign({},this.defaultAddInfo)
         },
         /**
-         * 修改项目
+         * 编辑
          */
         updatedProject(row) {
             this.show = true
-            Object.keys(this.areaInfo).forEach(key => {
-                this.areaInfo[key] = row[key]
-            })
-            if(this.areaInfo.AreaTypeID == 0) this.areaInfo.AreaTypeID = null
-            this.areaInfo.FType = 1
+            this.type = 1
+            this.addInfo.ID = row.ID
+            this.addInfo.FName = row.EnergyTypeName
+            this.addInfo.FUnit = row.EnergyTypeUnit
         },
         /**
-         * 256.新增/修改区域
+         * 311.新增/修改能源类型
          */
-        async addUpdateUArea(){
+        async addOrUpdate(){
             await new Promise(resolve => {
                 this.$refs.form.validate((valid) => {
                   if (valid) {
@@ -213,14 +173,18 @@ export default {
                 });
             })
             this.show = false
-            if(this.areaInfo.AreaTypeID ==null){
-                this.areaInfo.AreaTypeID = 0
-            }
-            system({
-                FAction:'AddUpdateUArea',
-                mUArea:this.areaInfo
+            Energy({
+                FAction:'AddOrUpdateSEnergyType',
+                ID:this.addInfo.ID,
+                FName:this.addInfo.FName,
+                FUnit:this.addInfo.FUnit,
+                FIcon:''
             })
             .then(data => {
+                this.$message({
+                  type: 'success',
+                  message: '配置成功！'
+                });
                 this.queryData()
             })
             .catch(err => {
@@ -228,21 +192,20 @@ export default {
             })
         },
         /**
-         * 264.删除区域
+         * 268.删除能源类型
          */
-        async deleteUArea(row){
+        async deleteItem(row){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除`,'删除区域信息'])
+                this.$DeleteMessage([`确认删除`,'删除能源类型'])
                 .then(() => {
                     resove()
                 })
                 .catch(error => {
-
                 })
             })
-            system({
-                FAction:'DeleteUArea',
-                ID:row.AreaID
+            Energy({
+                FAction:'DeleteSEnergyType',
+                ID:row.ID
             })
             .then(data => {
                 this.queryData()
@@ -253,8 +216,8 @@ export default {
          * exportFile 导出
          */
         exportFile(){
-            system({
-                FAction:'ExportUArea',
+            project({
+                FAction:'QueryExportULdas',
                 SearchKey:this.filterText,
             })
             .then(data => {
@@ -267,28 +230,8 @@ export default {
                 });
             })
         },
-        /**
-         * 254.导出区域二维码
-         */
-        exportUAreaQrCode(){
-            system({
-                FAction:'ExportUAreaQrCode'
-            })
-            .then(data => {
-                window.location = "http://www.szqianren.com/" + data.FObject;
-            })
-            .catch(error => {
-                this.$message({
-                  type: 'error',
-                  message: '导出失败!请重试'
-                });
-            })
-        }
     }
 }
 </script>
 <style lang="scss">
-@import '@/components/TaskManagement/InspectionItem.scss';
- 
-
 </style>

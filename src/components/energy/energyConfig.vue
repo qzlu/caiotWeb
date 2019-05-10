@@ -1,53 +1,47 @@
 <template>
     <div class="report inspection-item">
-        <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog">
+        <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog energy-config">
             <el-form :model="addConfig" ref="form">
-                <el-form-item label="设备名称"  prop='DeviceID'  :rules="[{ required: true, message: '请选择'}]">
-                  <el-select v-model="device" v-if='title ==="新增"' value-key="DeviceID" filterable  placeholder="请选择" @change="selectDevice">
-                    <el-option v-for="device in deviceList" :key="device.DeviceID" :label="device.DeviceName" :value="device"></el-option>
-                  </el-select>
-                  <span v-else>{{device.DeviceName}}</span>
-                </el-form-item>
-                <el-form-item label="数据标识" prop="DataItemID" filterable :rules="[{ required: true, message: '请选择'}]">
-                  <el-select v-model="addConfig.DataItemID" filterable  placeholder="请选择">
-                    <el-option v-for="item in device.mDeviceDataItems?device.mDeviceDataItems:[]" :key="item.DataItemID" :label="item.DataItemName" :value="item.DataItemID"></el-option>
+                <el-form-item label="设备名称"  prop='Expression'   :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addConfig.Expression" multiple collapse-tags  value-key="DeviceID" filterable  placeholder="请选择">
+                    <el-option v-for="device in deviceList" :key="device.DeviceID" :label="device.DeviceName" :value="device.DeviceID"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="告警类型" prop="AlarmType" :rules="[{ required: true, message: '请选择'}]">
-                  <el-select v-model="addConfig.AlarmType" filterable   placeholder="请选择">
-                    <el-option v-for="type in alarmTypeList" :key="type.AlarmTypeID" :label="type.AlarmTypeName" :value="type.AlarmTypeID"></el-option>
+                <el-form-item label="能源类型" prop="EnergyType" filterable :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addConfig.EnergyType" filterable  placeholder="请选择">
+                    <el-option v-for="item in energyTypeList" :key="item.ID" :label="item.EnergyTypeName" :value="item.ID"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="限制值" prop="LimitValue" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input type="number" v-model="addConfig.LimitValue"></el-input>
+                <el-form-item label="抄表类型" prop="MeterReadingKind" :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addConfig.MeterReadingKind" filterable   placeholder="请选择">
+                    <el-option label="物联抄表" :value="1"></el-option>
+                    <el-option label="人工抄表" :value="2"></el-option>
+                  </el-select>
                 </el-form-item>
-                <el-form-item label="告警条件" prop="TriggerType" :rules="[{ required: true, message: '请输入'}]">
-                    <el-select v-model="addConfig.TriggerType" class="condition" filterable   placeholder="请选择">
-                        <el-option v-for="(item,index) in type" :key="index" :label="item" :value="index+1"></el-option>
-                    </el-select>
-                    <span class="limit-value">限制值</span>
+                <el-form-item label="统计类型" prop="CountType" :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addConfig.CountType" filterable   placeholder="请选择">
+                    <el-option label="总能耗" :value="0"></el-option>
+                    <el-option label="分项能耗" :value="1"></el-option>
+                    <el-option label="分区域能耗" :value="2"></el-option>
+                    <el-option label="重点设备" :value="3"></el-option>
+                  </el-select>
                 </el-form-item>
-                <el-form-item label="持续时长" prop="Duration" :rules="[{ required: true, message: '请输入'}]">
-                    <el-input type="number" v-model="addConfig.Duration">
-                        <i slot="suffix" class="unit">S</i>
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="是否启用" prop="IsEnable">
-                    <el-switch v-model="addConfig.IsEnable"></el-switch>
+                <el-form-item label="统计名称" prop="CountName" :rules="[{ required: true, message: '请输入'}]">
+                    <el-input type="text" v-model="addConfig.CountName"></el-input>
                 </el-form-item>
             </el-form>
             <div class="submit">
-                <button class="zw-btn zw-btn-primary" @click="addOrUpdateUAlarmSet()">确定</button>
+                <button class="zw-btn zw-btn-primary" @click="addOrUpdateUSet()">确定</button>
             </div>
         </el-dialog>    
         <ul class="report-header clearfix">
             <li class="l"><button class="zw-btn zw-btn-add" @click="beforeAdd">新增</button></li>
             <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile">导出</button></li>
-            <li class="r">
+<!--             <li class="r">
                 <el-input class="search-input" placeholder="搜索关键字" v-model="filterText">
                     <i class="el-icon-search" slot="suffix"></i>
                 </el-input>
-            </li>
+            </li> -->
         </ul>
         <div class="zw-table">
             <el-table
@@ -84,7 +78,8 @@
 </template>
 <script>
 import table from '@/mixins/table' //表格混入数据
-import {Alarm,Device,system} from '@/request/api.js';
+import {Energy,Device,system,MeterReading} from '@/request/api.js';
+import '@/components/TaskManagement/InspectionItem.scss';
 export default {
     mixins:[table],
     data(){
@@ -95,68 +90,48 @@ export default {
                     label: '序号'
                 },
                 {
-                    prop:'DeviceName',
-                    label:'设备名称'
+                    prop:'ProjectName',
+                    label:'项目名称'
                 },
                 {
-                    prop: 'DataItemName',
-                    label: '数据标识',
+                    prop: 'EnergyTypeName',
+                    label: '能源类型',
                 },
                 {
-                    prop: 'AlarmTypeName',
-                    label: '告警类型名称'
+                    prop: 'CountTypeName',
+                    label: '统计类型'
                 },
                 {
-                    prop: 'LimitValue',
-                    label: '限制值'
+                    prop: 'CountName',
+                    label: '统计名称'
                 },
                 {
-                    prop: 'TriggerType',
-                    label: '告警条件',
-                    formatter:(row, column, cellValue, index) => this.type[row.TriggerType-1] + row.LimitValue
+                    prop: 'Expression',
+                    label: '计算公式',
+                    formatter:(row, column, cellValue, index) => `[${row.Expression}]`
                 },
-                {
-                    prop: 'Duration',
-                    label: '持续时长(s)',
-                },
-                {
-                    prop:'IsEnable',
-                    label:'是否启用',
-                    formatter:(row, column, cellValue, index) => row.IsEnable?'是':'否'
-                },
-                {
-                    prop:'AlarmLevel',
-                    label:'告警级别',
-                    formatter:(row, column, cellValue, index) => this.alarmLevel[row.AlarmLevel]
-                }
             ],
-            alarmLevel:['','提示','一般','严重'],
-            type:['>','<','='],
             defaultConfig:{//新增配置参数默认数据
-                DeviceID:null,
-                DataItemID:null,
-                AlarmType:null,
-                Duration:null,
-                TriggerType:null,
-                LimitValue:0,
-                IsEnable:true,
-                IDStr:null
+                ID:0,
+                EnergyType:null,
+                CountType:null,
+                CountName:null,
+                Expression:[],
+                MeterReadingKind:null,
             },
             addConfig:{ //新增或修改配置参数
-                DeviceID:null,
-                DataItemID:null,
-                AlarmType:null,
-                Duration:null,
-                TriggerType:null,
-                LimitValue:0,
-                IsEnable:true,
-                IDStr:null
+                ID:0,
+                EnergyType:null,
+                CountType:null,
+                CountName:null,
+                Expression:[],
+                MeterReadingKind:null,
             },
             device:{},//所选设备
             title:'新增',
             show:false,
             deviceList:[],
-            alarmTypeList:[]
+            energyTypeList:[]
         }
     },
     watch:{
@@ -167,15 +142,15 @@ export default {
     created(){
         this.queryData()
         this.queryDeviceAndDataItem()
-        this.querySystemAlarmType()
+        this.querySEnergyType()
     },
     methods:{
         /**
          * 251.查询设备报警配置列表
          */
         queryData(){
-            Alarm({
-                FAction:'QueryUAlarmSet',
+            Energy({
+                FAction:'QueryPageUEnergyConfig',
                 SearchKey:this.filterText,
                 PageIndex:this.pageIndex,
                 PageSize:10
@@ -216,24 +191,18 @@ export default {
             });
         },
         /**
-         * 21.获取告警类型
+         * 查询能耗类型
          */
-        querySystemAlarmType(){
-            system({
-                FAction:'QuerySystemAlarmType'
+        querySEnergyType(){
+            MeterReading({
+                FAction:'QuerySEnergyType',
             })
-            .then((data) => {
-                this.alarmTypeList = data.FObject
+            .then(data => {
+                this.energyTypeList = data.FObject
             })
-            .catch((err) => {
-                
-            });
-        },
-        /**
-         * 选择设备
-         */
-        selectDevice(){
-            this.addConfig.DeviceID = this.device.DeviceID
+            .catch(error => {
+
+            })
         },
         /**
          * 点击新增
@@ -253,12 +222,13 @@ export default {
             Object.keys(this.addConfig).forEach(key => {
                 this.addConfig[key] = row[key]
             })
-            this.device = this.deviceList.find(item => item.DeviceID === row.DeviceID)
+            this.addConfig.ID = row.EnergyConfigID
+            this.addConfig.Expression = this.addConfig.Expression.split(',').map(item => Number(item))
         },
         /**
-         * 249.新增或修改设备报警配置
+         * 249.新增或修改能源配置
          */
-        async addOrUpdateUAlarmSet(){
+        async addOrUpdateUSet(){
             await new Promise(resolve => {
                 this.$refs.form.validate((valid) => {
                   if (valid) {
@@ -267,10 +237,11 @@ export default {
                 });
             })
             this.show = false
-            Alarm({
-                FAction:'AddOrUpdateUAlarmSet',
-                IDStr:this.addConfig.IDStr,
-                mUAlarmSet:this.addConfig
+            this.addConfig.Expression = this.addConfig.Expression.join(',')
+            Energy({
+                FAction:'AddOrUpdateUEnergyConfig',
+                ID:this.addConfig.ID,
+                mUEnergyConfig :this.addConfig
             })
             .then(data => {
                 this.$message({
@@ -282,11 +253,11 @@ export default {
             .catch(err => {})
         },
         /**
-         * 删除告警配置
+         * 删除能源配置
          */
         async deleteSet(row){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除`,'删除告警配置'])
+                this.$DeleteMessage([`确认删除`,'删除能源配置'])
                 .then(() => {
                     resove()
                 })
@@ -294,9 +265,9 @@ export default {
 
                 })
             })
-            Alarm({
-                FAction:'DeleteDeviceAndDataItem',
-                IDStr:`${row.ProjectID}_${row.DeviceID}_${row.DataItemID}_${row.AlarmType}`
+            Energy({
+                FAction:'DeleteUEnergyConfigByIDs',
+                IDStr:row.EnergyConfigID
             })
             .then(data => {
                 this.$message({
@@ -317,7 +288,7 @@ export default {
          * exportFile 导出
          */
         exportFile(){
-            Alarm({
+            Energy({
                 FAction:'ExportUAlarmSet',
                 SearchKey:this.filterText,
             })
@@ -335,36 +306,14 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '@/components/TaskManagement/InspectionItem.scss';
-.inspection-item {
-    .el-form-item{
-        .condition{
-            .el-input {
-                width: 120px;
-                &__inner{
-                    width: 120px
-                }
-            }
-        }
-        .limit-value{
-            display: inline-block;
-            padding: 0 4px;
-            background: #2a90fb;
-            position: relative;
-            left: -8px;
-            border-radius: 4px;
-        }
-        .unit{
-            display: inline-block;
-            padding: 0 20px;
-            background: #2a90fb;
-            border-radius: 4px;
-            position: relative;
-            left: 4px;
-        }
+.inspection-item{
+ .zw-dialog.energy-config{
+    .el-form-item .el-input{
+        width: 200px;
     }
+ }
 }
- 
+
 
 
 </style>

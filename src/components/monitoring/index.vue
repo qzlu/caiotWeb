@@ -24,7 +24,7 @@
         <my-componentLeft :datas="datalist"></my-componentLeft>
       </div>
     </div>
-    <div class="m_right">
+    <div class="m_right ">
       <router-view></router-view>
     </div>
   </div>
@@ -44,7 +44,6 @@
 }
 </style>
 <script>
-var echarts = require("echarts");
 import * as comm from "../../assets/js/pro_common";
 import cm_left from "./c_left.vue"; //左组件
 import {project} from '@/request/api';

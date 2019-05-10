@@ -19,7 +19,10 @@
     td{
         height: 60px;
         line-height: 60px;
-        padding: 0px!important
+        padding: 0px!important;
+        span+span{
+            margin-left: 16px;
+        }
     }
     td,th.is-leaf{
         border: none!important

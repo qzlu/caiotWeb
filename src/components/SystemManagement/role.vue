@@ -93,6 +93,7 @@
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
+                 :width="item.width"
                 >
                </el-table-column>
                <el-table-column
@@ -120,6 +121,11 @@ export default {
     data(){
         return{
             tableLabel:[
+                {
+                    prop: 'RowNum',
+                    label: '序号',
+                    width:80
+                },
                 {
                     prop: 'FName',
                     label: '角色名称'

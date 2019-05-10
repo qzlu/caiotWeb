@@ -148,7 +148,7 @@
               </div>
               <div class="r itext">
                 <p>
-                  <span class="colors"></span>
+                  <span class="colors" style="background:#2A91FC"></span>
                   <span class="igh">待巡更</span>
                   <span class="hgy">
                     <!--70-->
@@ -176,7 +176,7 @@
             <p class="ghj_time">
               <span>
                 <!--00:00-->
-                {{item.MeterReadingStartDateTime?item.MeterReadingStartDateTime.split(' ')[1]:"--"}}
+                {{item.PatrolStartDateTime?item.PatrolStartDateTime.split(' ')[1]:"--"}}
               </span>
               <span>
                 {{item.FUserNickname}}

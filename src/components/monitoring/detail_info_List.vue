@@ -32,6 +32,14 @@
         </div>
       </section>
     </div>
+    <div v-else-if="datalist02.DeviceTypeID==100005">
+      <div class="iframe-container">
+        <p class="btn_back" @click="routerback()">
+          <img src="static/image/index/back_btn.png">返回
+        </p>
+        <iframe src=" https://www.daantc.com:8443/cas/autoLogin?token=eyJhbGciOiJIUzI1NiJ9.eyJsb2dpblVzZXIiOiJqaWFuZ2dvbmcxIiwibG9naW5Qc3N3b3JkIjoiamc1MTg4In0.Qi2ETx3m-wgBIJmdsDa8Our_MrKWBSMRpmZ5w8Dk3dg&se&service=https://www.daantc.com:8444/elevator-monitor/shiro-cas" frameborder="0"></iframe>
+      </div>
+    </div>
     <div v-else>
       <section class="det_top">
         <p class="btn_back" @click="routerback()">
@@ -131,7 +139,7 @@
   </div>
 </template>
 <style>
-.det_top .btn_back {
+ .btn_back {
   cursor: pointer;
   z-index: 118;
   position: absolute;
@@ -146,7 +154,7 @@
   background: #4379cd;
   font-size: 20px;
 }
-.det_top .btn_back img {
+ .btn_back img {
   vertical-align: 2px;
 }
 /*滚动条样式*/
@@ -496,7 +504,6 @@ export default {
         settimeouts_detil_info_list,
         24000
       );
-      console.log(_this.linedata);
       let router_currt = _this.$route.name;
       if (router_currt != "detail_info_list") {
         clearTimeout(timeoutId_detal_info_list);
@@ -809,5 +816,12 @@ a {
 }
 .info .table_bh {
   padding: 0px 50px 5px 50px;
+}
+.iframe-container{
+  position: relative;
+}
+.iframe-container iframe{
+  width: 100%;
+  height: 900px;
 }
 </style>
