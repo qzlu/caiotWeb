@@ -11,6 +11,43 @@ $img-url:'/static/image/';
     >li{
         margin-left: 10px;
     }
+    .label{
+        font-size: 14px;
+    }
+    .el-select{
+        .el-input{
+            .el-input__inner{
+                width: 100px;
+                height: 46px;
+                background: #042E74;
+                border-color: #005099;
+                color: white
+            }
+        }
+    }
+    .el-date-editor{
+        width: 200px;
+        height: 46px;
+        .el-input__inner{
+            width: 200px;
+            height: 46px;
+            background: #042E74;
+            border-color: #005099;
+            color: white
+        }
+    }
+    .el-date-editor.el-date-editor--daterange{
+        width: 270px;
+        background: #042E74;
+        border-color: #005099;
+        .el-range-input{
+            background: #042E74;
+            color: white;
+        }
+        .el-range-separator{
+            color: white
+        }
+    }
 }
 .zw-btn{
     width: 88px;
@@ -23,7 +60,15 @@ $img-url:'/static/image/';
     font-size: 14px;
     color: #F1F1F2;
     text-align: center;
-    box-sizing: border-box
+    box-sizing: border-box;
+    background: #042E74;
+    [class*='icon']{
+        font-size: 16px;
+        margin-right: 10px;
+    }
+}
+.zw-btn:active,.zw-btn:hover{
+    background: #12559D
 }
 .zw-btn-primary{
     background: #12559D
@@ -67,6 +112,32 @@ $img-url:'/static/image/';
 .zw-btn-import:active,.zw-btn-import:hover{
     background-image: url('#{$img-url}count/import1.png');
 }
+.zw-btn-report{
+    width: 119px;
+    background-image: url('#{$img-url}task/b5.png');
+    padding-left: 28px;
+}
+.zw-btn-report:active,.zw-btn-report:hover{
+    background-image: url('#{$img-url}task/b6.png');
+}
+.zw-btn-detail{
+    background-image: url('#{$img-url}count/button_nor_details.png')
+}
+.zw-btn-detail:active,.zw-btn-detail:hover{
+    background-image: url('#{$img-url}count/button_sel_details.png')
+}
+.zw-btn-edit{
+    background-image: url('#{$img-url}count/button_nor_edit.png')
+}
+.zw-btn-edit:active,.zw-btn-edit:hover{
+    background-image: url('#{$img-url}count/button_sel_edit.png')
+}
+.zw-btn-delete{
+    background-image: url('#{$img-url}count/button_nor_delete.png')
+}
+.zw-btn-delete:active,.zw-btn-delete:hover{
+    background-image: url('#{$img-url}count/button_sel_delete.png')
+}
 .search-input{
     width: 174px;
     margin-right: 10px;
@@ -86,7 +157,7 @@ $img-url:'/static/image/';
     }
 }
 .el-input__inner{
-    color: #F1F1F2
+    color: #F1F1F2;
 }
 .el-date-picker__time-header{
     .el-input__inner{
@@ -95,6 +166,13 @@ $img-url:'/static/image/';
 }
 .pointer{
     cursor: pointer;
+}
+.month-picker.el-date-editor.el-input.el-date-editor--month,.month-picker.el-date-editor.el-input.el-date-editor--month .el-input__inner{
+    width: 200px;
+    height: 46px;
+    background: #042E74;
+    border-color: #005099;
+    color: white
 }
 .zw-dialog{
     .el-dialog{
@@ -123,4 +201,7 @@ $img-url:'/static/image/';
             text-align: center;
         }
     }
+}
+.v-modal{
+    display: none
 }

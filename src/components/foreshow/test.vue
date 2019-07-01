@@ -25,7 +25,7 @@
     	</div>
     	<div class="table_info" style="  margin-top: 25px; border: solid 1px #112e6a; margin: 0 auto; background: #03234c;">
     		 <div class="table_ltop">
-    		 	<ul><li>设备编号</li><li>设备ID<!--名称--></li><li>内容</li><li>温度</li><li>时间</li><li>操作</li></ul>
+    		 	<ul><li>设备编码</li><li>设备ID<!--名称--></li><li>内容</li><li>温度</li><li>时间</li><li>操作</li></ul>
     		 </div>
     		 
     		 <div class="table_ltop data_item_gh" v-for="(item,key) in arrs_page">
@@ -150,7 +150,7 @@ export default {
     	let _this=this;
     	 return new Promise(function (resolve, reject) {  	
     	   // console.log(gettime)    	     	
-				    _this.$axios.post(_this.mypro+'Caiot/Project',{
+				    _this.$axios.post('Project',{
 						        "FTokenID":"43324155-7af5-475b-ad7d-50321483f945",
 						        "FAction":"GetHisAlarmData",
 						        "FVersion":"1.0.0",

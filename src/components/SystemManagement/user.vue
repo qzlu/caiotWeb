@@ -2,28 +2,38 @@
     <div class="user-main report">
         <!-- 新增或编辑用户弹框 -->
         <div class="config-dialog">
-            <el-dialog  :title="title" :visible.sync="show" width="676" class="zw-dialog">
+            <el-dialog  :title="title" :visible.sync="show" :close-on-click-modal='false' width="676" class="zw-dialog">
                 <el-form :model='addFormData' ref='form' inline>
-                    <el-form-item label="所属角色" prop="FRoleGUID" :rules="[{ required: true, message: '请选择'}]">
-                      <el-select v-model="addFormData.FRoleGUID"   placeholder="请选择角色">
-                        <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option>
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item label="用户名称" prop="FUserNickname" :rules="[{ required: true, message: '请输入用户名称'}]">
+<!--                     <el-form-item label="用户名称" prop="FUserNickname" :rules="[{ required: true, message: '请输入用户名称'}]">
                         <el-input v-model="addFormData.FUserNickname"></el-input>
-                    </el-form-item>
+                    </el-form-item> -->
                     <el-form-item label="账号" prop="FUserName" :rules="FUserNameRule">
                         <el-input v-model="addFormData.FUserName"></el-input>
                     </el-form-item>
-                    <el-form-item label="联系人" prop="FContacts" :rules="[{ required: true, message: '请输入联系人'}]">
+                    <el-form-item label="密码" prop="FPassword">
+                        <span style="margin-left:10px;">{{addFormData.FPassword}}</span>
+                        <!-- <el-input v-model="addFormData.FPassword" :disabled="true"></el-input> -->
+                    </el-form-item>
+                    <el-form-item label="用户名" prop="FContacts" :rules="[{ required: true, message: '请输入用户名'}]">
                         <el-input v-model="addFormData.FContacts"></el-input>
                     </el-form-item>
                     <el-form-item label="电话号码" prop="FTelephone" :rules="FTelephoneRule">
                         <el-input v-model="addFormData.FTelephone"></el-input>
                     </el-form-item>
-                    <el-form-item label="密码" prop="FPassword">
-                        <span style="margin-left:10px;">{{addFormData.FPassword}}</span>
-                        <!-- <el-input v-model="addFormData.FPassword" :disabled="true"></el-input> -->
+                    <el-form-item label="功能角色" prop="FRoleGUID" :rules="[{ required: true, message: '请选择'}]">
+                      <el-select v-model="addFormData.FRoleGUID"   placeholder="请选择角色">
+                        <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="管理身份" prop="FUserType" :rules="[{ required: true, message: '请选择'}]">
+                      <el-select v-model="addFormData.FUserType"   placeholder="请选择角色">
+                        <!-- <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option> -->
+<!--                         <el-option key="1" label="运营管理" :value="1"></el-option>
+                        <el-option key="2" label="集团管理" :value="2"></el-option>
+                        <el-option key="3" label="项目管理" :value="3"></el-option>
+                        <el-option key="4" label="项目现场运维" :value="4"></el-option> -->
+                        <el-option v-for="(item,i) in userType" :key="i" :value="item.id" :label="item.name"></el-option>
+                      </el-select>
                     </el-form-item>
                 </el-form>
                 <div class="submit">
@@ -55,10 +65,12 @@
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
+                 :width="item.width"
                 >
                </el-table-column>
                <el-table-column
                  prop=""
+                 width="200"
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="user-operation">
@@ -76,7 +88,7 @@
 <script>
 import {system} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination} from '@/zw-components/index'
+const userType = ['',{id:1,name:'运营管理'},{id:2, name:'集团管理'},{id:3,name:'项目管理'},{id:4,name:'项目现场运维'}]
 export default {
     mixins:[table],
     data(){
@@ -105,15 +117,16 @@ export default {
             tableLabel:[
                 {
                     prop: 'RowNum',
-                    label: '序号'
+                    label: '序号',
+                    width:80
+                },
+                {
+                    prop: 'FContacts',
+                    label: '用户名'
                 },
                 {
                     prop: 'FUserName',
                     label: '账号'
-                },
-                {
-                    prop: 'FUserNickname',
-                    label: '用户名称'
                 },
                 {
                     prop: 'FName',
@@ -121,12 +134,22 @@ export default {
                 },
                 {
                     prop: 'ProjectName',
-                    label: '所属项目'
+                    label: '所属项目',
+                    width:400
                 },
                 {
+                    prop: 'FCreateUser',
+                    label: '创建人',
+                },
+                {
+                    prop: 'FCreateTime',
+                    label: '创建时间',
+                    width:'160'
+                },
+/*                 {
                     prop: 'FPassword',
                     label: '密码'
-                }
+                } */
             ],
             roleList:null, // 新增或修改弹框中的角色列表
             //新增用户默认数据
@@ -157,22 +180,19 @@ export default {
                 FIMG:'',
                 FRoleGUID:null
             },
+            userType:userType.slice(localStorage.getItem('FUserType')),
             title:'新增', //新增或修改用户弹框标题
             show:false, //控制新增弹框是否显示
             type:0,  // 0 :新增用户 1：修改用户
             FUserNameRule: [{required: true, validator: validateUserName}],//用户名规则
             FTelephoneRule:[{required: true, validator: phoneNumbre}], //联系方式规则
-            filterText:''
         }
-    },
-    components:{
-        zwPagination
     },
     watch:{
         filterText(){
             clearTimeout(timer)
             var timer = setTimeout(() => {
-                this.queryData(this.filterText)
+                this.queryData()
             },500)
         }
     },
@@ -189,20 +209,28 @@ export default {
          * @param {type String} userName 用户名
          * @param {type Number} pageIndex 页码
          */
-        queryData(userName = '',pageIndex = 1) {
+        queryData() {
             system({
                 FAction:"QueryPageTUsers",
-                FUserName:userName,
-                PageIndex:pageIndex,
+                FUserName:this.filterText,
+                PageIndex:this.pageIndex,
                 PageSize:10,
                 ProjectID:localStorage.getItem("projectid")
             })
             .then(data => {
+                console.log(data)
                 this.total = data.FObject.Table[0].Count
                 this.tableData = data.FObject.Table1
                 this.tableData.forEach(item => {
                     item.ProjectName = item.ProjectName.replace(/,$/,'')
                 })
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -231,7 +259,7 @@ export default {
          */
         handleCurrentChange(val){
             this.pageIndex = val
-            this.queryData(this.filterText,val)
+            this.queryData()
         },
         /**
          * add 点击新增按钮
@@ -290,6 +318,7 @@ export default {
          * 
          */
         addUser(){
+            this.addFormData.FUserNickname =  this.addFormData.FContacts
             system({
                 FAction:this.type?'UpdateTUsers':'AddTUsers',
                 FRoleGUID:this.addFormData.FRoleGUID,

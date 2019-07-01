@@ -25,6 +25,7 @@
                         <el-date-picker
                           v-model="planTime"
                           type="datetime"
+                          :picker-options="pickerOptions1"
                           @change="selectPlanTime"
                           placeholder="选择日期时间">
                         </el-date-picker>
@@ -48,7 +49,8 @@
         </el-dialog>
         <ul class="report-header plan-header clearfix"> 
             <li class="l" @click="beforeAdd()"><button class="zw-btn zw-btn-add">新增</button></li>
-            <li class="l"><button class="zw-btn zw-btn-export">导出</button></li>
+            <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile">导出</button></li>
+            <li class="l"><button class="zw-btn zw-btn-primary" @click="deletePlans()"><i class="el-icon-delete"></i> 删除</button></li>
             <li class="l select-plan-time">
                 <span class="label">生成计划</span>
                 <el-date-picker
@@ -62,9 +64,9 @@
                 <el-input class="search-input" v-model="filterText" placeholder="搜索计划关键字">
                      <i class="el-icon-search" slot="suffix"></i>
                 </el-input>
-                <el-button type="primary" @click="showFilterBox = !showFilterBox">
+              <!--   <el-button type="primary" @click="showFilterBox = !showFilterBox">
                   高级搜索<i class=" el-icon--right" :class="{'el-icon-arrow-down':!showFilterBox,'el-icon-arrow-up':showFilterBox}"></i>
-                </el-button>
+                </el-button> -->
                 <transition>
                     <ul class="search-box"  v-if="showFilterBox">
                         <li>
@@ -73,7 +75,9 @@
                         </li>
                         <li>
                             <span>路线名称</span>
-                            <el-input v-model="filterObj.InspectionLineName"></el-input>
+                            <el-select v-model="filterObj.InspectionLineName"  filterable value-key="ID"  placeholder="请选择">
+                                <el-option v-for="road in roadDatas" :key="road.ID" :label="road.InspectionLineName" :value="road.InspectionLineName"></el-option>
+                            </el-select>
                         </li>
                         <li class="plan-select-time">
                             <span>巡检时间</span>
@@ -107,19 +111,51 @@
                     </ul>
                 </transition>
             </li>
+            <li  class="r">
+                <span class="label">负责人</span>
+                <el-select v-model="filterObj.InspectionUserGUID"  placeholder="请选择" @change="queryData()">
+                    <el-option value="" label="全部"></el-option>
+                    <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
+                </el-select>
+            </li>
+            <li class="r select-month-time">
+                <span class="label">月份</span>
+                <el-date-picker
+                  v-model="month"
+                  type="month"
+                  @change='queryData()'
+                  placeholder="选择月">
+                </el-date-picker>
+            </li>
         </ul>
         <div class="zw-table plan-table">
             <el-table
+              ref="multipleTable"
               :data="tableData"
               style="width: 100%"
               header-row-class-name="el-table-header"
               :row-class-name="tableRowClassName"
+              @selection-change="handleSelectionChange"
+              @sort-change="sortChange"
             >
+                <el-table-column
+                  type="selection"
+                  width="55">
+                </el-table-column>
+                <el-table-column label="序号" width="80">
+                    <template slot-scope="scope">
+                        <div>
+                            {{scope.$index+1+(pageIndex-1)*10}}
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column
                  v-for="item in tableLabel"
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
+                 :width="item.width"
+                 :sortable="item.sortble"
                  show-overflow-tooltip
                 >
                </el-table-column>
@@ -138,7 +174,7 @@
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="role-operation">
-                        <span class="pointer" @click="deletePlan(scoped.row)">删除</span>
+                        <span class="pointer" @click="deletePlan(scoped.row.ID)">删除</span>
                         <span class="pointer" @click="changePlan(scoped.row)">编辑</span>
                      </div>
                  </template>
@@ -159,10 +195,6 @@ export default {
         return{
             tableLabel:[
                 {
-                    prop: 'RowNum',
-                    label: '序号'
-                },
-                {
                     prop: 'InspectionPlanName',
                     label: '计划名称'
                 },
@@ -176,7 +208,8 @@ export default {
                 },
                 {
                     prop: 'PointCount',
-                    label: '设备数'
+                    label: '巡检点数',
+                    sortble:'custom'
                 },
                 {
                     prop: 'InspectionCycleName',
@@ -188,10 +221,15 @@ export default {
                 }, */
                 {
                     prop: 'InspectionDatetime',
-                    label: '计划巡检时间'
+                    label: '计划巡检时间',
+                    sortble:'custom'
                 }
             ],
             timeList:[{
+                label:'全部',
+                value:0
+            },
+            {
                 label:'日巡检',
                 value:1
             },
@@ -204,11 +242,12 @@ export default {
                 value:3
             }],
             year:'',
+            month:new Date(),
             filterText:'',
             defaultFilterObj:{
                 InspectionPlanName:'',
                 InspectionLineName:'',
-                InspectionCycle:1,
+                InspectionCycle:0,
                 InspectionUserGUID:'',
                 StartDateTime:'',
                 EndDateTime:''
@@ -216,19 +255,18 @@ export default {
             filterObj:{ //高级搜索条件
                 InspectionPlanName:'',
                 InspectionLineName:'',
-                InspectionCycle:1,
+                InspectionCycle:0,
                 InspectionUserGUID:'',
                 StartDateTime:'',
                 EndDateTime:''
             },
             time:'',
-            planTime:'',
+            planTime:new Date(),
             showFilterBox:false,
-            queryType:0,//查询方式，0为普通查询，1为高级搜索
+            queryType:1,//查询方式，0为普通查询，1为高级搜索
             type:0,//0为新增 1为编辑计划
             show:false, //控制新增或编辑弹框
             title:'新增巡检计划',
-            users:[], //所有用户
             roadDatas:[],//所有路线
             showPointTree:false,
             inspectionCycleName:'临时巡检',
@@ -252,13 +290,10 @@ export default {
             road:null,
             loading:false,
             pointData:[],//巡检路线对应的巡检点
-            pickerOptions:{ //新增或编辑巡检计划只能选择大于当前时间的
-/*                 disabledDate:val => {
-                    if(Date.parse(new Date(val)) < Date.parse(new Date())){
-                        console.log(new Date(val),new Date());
-                        return true
-                    }
-                } */
+            pickerOptions1:{
+                disabledDate:(val) => {
+                    return   new Date().getTime() >= val.getTime() + 24*60*60*1000
+                }
             },
             pickerOptions2: {
                 shortcuts: [{
@@ -290,8 +325,12 @@ export default {
         }
     },
     components:{
-        zwPagination,
         zwTree
+    },
+    computed:{
+        users(){
+            return this.$store.state.orderUser //负责人
+        }
     },
     watch:{
         filterText(val){
@@ -302,8 +341,8 @@ export default {
     },
     created(){
         this.queryData()
-        this.queryUser()
         this.queryRoad()
+        this.$store.dispatch('queryOrderTUsers')
     },
     mounted(){
 
@@ -317,16 +356,22 @@ export default {
         /**
          * 查询巡检计划
          * @param { Number } type :1 高级查询 0:普通查询
+         * prop 排序字段
+         * order 升序或降序
          */
         queryData(){
             if(this.queryType ===1){
                 this.showFilterBox = false
             }
+            this.filterObj.StartDateTime = new Date(this.month.getFullYear() + '-' + (this.month.getMonth()+1)).toLocaleDateString() + ' 00:00'
+            this.filterObj.EndDateTime = new Date(new Date(this.month.getFullYear() + '-' + (this.month.getMonth()+2)).getTime() - 24*60*60*1000).toLocaleDateString() + ' 23:59'
             Inspection({
                 FAction:'QueryPageUInspectionPlan',
                 FType:this.queryType?'Advanced':'Normal',
                 PageIndex:this.pageIndex,
                 PageSize:10,
+                Field:this.orderProp,
+                FOrder:this.order,
                 mSearchInspectionPlan:this.queryType?this.filterObj:{}
             })
             .then(data => {
@@ -338,11 +383,26 @@ export default {
                     }
                     this.$set(item,'InspectionPlanTypeText',item.InspectionPlanType==1?'自动生成':'手动生成')
                 });
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(error => {
 
             })
         },
+        /**
+         * 排序
+         */
+        sortChange(column){
+            this.orderProp = column.prop
+            this.order = column.order
+            this.queryData()
+        }, 
         /**
          * handleCurrentChange 页码改变时触发
          */
@@ -367,32 +427,10 @@ export default {
                 PageSize:10000000000
             })
             .then(data => {
-                console.log(data);
                 this.roadDatas = data.FObject.Table1
-/*                 this.tableData.forEach(item => {
-                    item.InspectionTime = item.InspectionTime.replace(/,$/ig,'').split(',')
-                    item.InspectionTime = item.InspectionTime.map(obj => {
-                       return obj.split('-')
-                    })
-                }); */
             })
             .catch(error => {
 
-            })
-        },
-        /**
-         * 查询所有用户
-         */
-        queryUser(){
-            system({
-                FAction:'QueryTUsers',
-                FName:''
-            })
-            .then(data => {
-                this.users = data.FObject
-            })
-            .catch(error => {
-                console.log(error);
             })
         },
         /**
@@ -436,9 +474,9 @@ export default {
          * 删除巡检计划
          * @param {Object} row 删除的计划
          */
-        async deletePlan(row){
+        async deletePlan(idStr){
             await new Promise(resove => {
-                this.$DeleteMessage([`确认删除　　${row.InspectionPlanName}`,'删除计划'])
+                this.$DeleteMessage([`确认删除`,'删除计划'])
                 .then(() => {
                     resove()
                 })
@@ -448,7 +486,7 @@ export default {
             })
             Inspection({
                 FAction:'DeleteUInspectionPlanByID',
-                ID:row.ID
+                IDStr:idStr
             })
             .then(data => {
                 this.$message({
@@ -511,7 +549,8 @@ export default {
         queryPoints(id){
             Inspection({
                 FAction:'QueryAreaUInspectionPointBySort',
-                ID:id
+                ID:id,
+                FType:1
             })
             .then(data => {
                 this.pointData = data.FObject
@@ -563,8 +602,8 @@ export default {
                 mUInspectionPlan:this.type?{InspectionDatetime:this.addPlanData.InspectionDatetime,InspectionUserGUID:this.addPlanData.InspectionUserGUID}:this.addPlanData
             })
             .then(data => {
-                console.log(data);
                 this.show = false
+                this.queryData()
                 this.$message({
                   type: 'success',
                   message: this.type?'修改成功！':'新增成功！'
@@ -582,7 +621,7 @@ export default {
             this.title = '新增巡检计划'
             this.type = 0
             this.inspectionCycleName = '临时巡检'
-            this.planTime = ''
+            this.planTime = new Date()
             this.addPlanData = Object.assign({},this.defaultAddPlanData)
         },
         /**
@@ -601,187 +640,31 @@ export default {
             this.$set(this.addPlanData,'InspectionLineName',row.InspectionLineName)
             this.$set(this.addPlanData,'ID',row.ID)
             this.queryPoints(row.InspectionLineID)
-        }
+        },
+        /**
+         * exportFile 导出
+         */
+        exportFile(){
+            Inspection({
+                FAction:'QueryExportUInspectionPlan',
+                FType:this.queryType?'Advanced':'Normal',
+                Field:this.orderProp,
+                FOrder:this.order,
+                mSearchInspectionPlan:this.queryType?this.filterObj:{}
+            })
+            .then(data => {
+                window.location = "http://www.szqianren.com/" + data.FObject;
+            })
+            .catch(error => {
+                this.$message({
+                  type: 'error',
+                  message: '导出失败!请重试'
+                });
+            })
+        },
     }
 }
 </script>
 <style lang="scss">
-$img-url:'/static/image/';
-.plan{
-    .showPointTree{
-        .el-dialog{
-            width: 700px;
-        }
-    }
-    .el-dialog{
-        width: 460px;
-        height: 520px;
-        background: url(#{$img-url}task/inspection.png);
-        background-size: 100% 100%;
-        padding-left: 48px;
-        &__header{
-            text-align: left
-        }
-        li{
-            margin-top: 15px;
-            .zw-btn{
-                height: 40px;
-                line-height: 40px;
-                background:rgba(0,80,153,1);
-            }
-        }
-        li.plan-time{
-            .el-input{
-                width: 220px;
-            }
-        }
-        .label{
-            width: 85px;
-            display: inline-block;
-            text-align: right
-        }
-        .el-input{
-            width: 165px;
-            height: 39px;
-            line-height: 39px;
-            margin-left: 10px;
-            &__inner{
-                background:rgba(24,64,107,1);
-                border:1px solid rgba(5,103,158,1);
-            }
-        }
-        .tree-content{
-            width: 240px;
-            position: relative;
-            margin-top: 16px;
-            .arrow {
-                display: inline-block;
-                width: 22px;
-                height: 16px;
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                background: url("#{$img-url}admin/icon_1.png");
-            }
-            .zw-tree{
-                float: right;
-                margin-right: 20px;
-            }
-        }
-        .zw-btn{
-            background: #12559D;
-        }
-    }
-    &-header{
-        position: relative;
-        li.select-plan-time{
-            .label{
-                font-size:17px;
-                margin-left: 20px;
-                margin-right: 4px;
-            }
-            .el-input__inner{
-                width: 122px;
-                height: 46px;
-                background:rgba(0,80,153,1);
-                border:1px solid rgba(12,55,110,1);
-            }
-        }
-        li.r{
-            .el-button.el-button--primary{
-                width:94px;
-                height:46px;
-                margin-left: 10px;
-                background:#042E74;
-                border:1px solid rgba(12,55,110,1);
-                padding-left: 4px;
-                .el-icon--right{
-                    color: #2A91FC
-                }
-            }
-        }
-        .search-box{
-            width: 1436px;
-            height: 163px;
-            // line-height: 95px;
-            box-sizing: border-box;
-            position: absolute;
-            top: 65px;
-            left: 10px;
-            z-index: 100;
-            background: #005099;
-            border:1px solid rgba(13, 97, 156, 1);
-            text-align: left;
-            li{
-                margin-right: 90px;
-                margin-top: 22px;
-                display: inline-block;
-                >span{
-                    width: 110px;
-                    text-align: right;
-                    display: inline-block;
-                    font-size:16px;
-                }
-                .el-input{
-                    width:209px;
-                    height:46px;
-                    &__inner{
-                        width:209px;
-                        margin-left: 10px;
-                        color: #F1F1F2;
-                        background:#042E74;
-                        border:1px solid rgba(12,55,110,1);
-                    }
-                }
-                .el-date-editor .el-range-separator{
-                     color: #F1F1F2;
-                }
-                .el-range-input{
-                    color: #F1F1F2;
-                    background:#042E74;
-                }
-                button{
-                    margin-left: 60px;
-                    background: #12559D
-                }
-                button:last-of-type{
-                    margin-left: 39px;
-                }
-            }
-            li.plan-select-time{
-                margin-right: 0;
-                .el-input__inner{
-                    width: 400px;
-                }
-            }
-        }
-    }
-    &-table{
-        .el-select{
-            left: 10px;
-            .el-input{
-                .el-input__suffix{
-                    display: none
-                }
-            }
-            .el-input:hover{
-                .el-input__suffix{
-                    display: block
-                }
-            }
-            .el-input__inner{
-                width: 94px;
-                height: 40px;
-                line-height: 40px;
-                background:none;
-                border:none;
-                color: white
-            }
-            .el-input__inner:hover{
-                background:rgba(4,46,116,1);
-                border:1px solid rgba(42,145,252,1);
-            }
-        }
-    }
-}
+@import './InspectionPlan.scss'
 </style>

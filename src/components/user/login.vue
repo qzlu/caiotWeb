@@ -146,11 +146,13 @@ export default {
             .then(data => {
               this.$message({
                 message: "登录成功！",
-                type: "success"
+                type: "success",
+                duration:1000
               });
               //登录成功，写入用户名       ,iuserName用于用户登录及退出，name用于记住用户
               localStorage.setItem("iuserName", this.ruleForm2.username); //用户账号
               localStorage.setItem("Token", data.FObject[0].FToken); //用户Token
+              localStorage.setItem("FUserType",data.FObject[0].FUserType)//用户管理角色
               localStorage.setItem(
                 "FUserNickname",
                 data.FObject[0].FUserNickname
@@ -183,9 +185,9 @@ export default {
         .then(data => {
           /*设置默认项目 FIsDefault==1为默认项目*/
           let projects = data.FObject; //所有项目
-          let fist = projects.filter(item => item.FIsDefault == 1);
-          localStorage.setItem("projectid", fist[0].ProjectID);
-          localStorage.setItem("projectname", fist[0].ShortName);
+          let fist = projects.find(item => item.FIsDefault);
+          localStorage.setItem("projectid", fist.ProjectID);
+          localStorage.setItem("projectname", fist.ShortName);
           /*设置默认项目*/
         })
         .catch(error => {});
@@ -396,10 +398,10 @@ export default {
 }
 
 .el-input__suffix {
-  position: absolute;
-  top: 15px;
+  height: 100%;
+  /* top: 15px; */
+  line-height: 50px;
   -webkit-transition: all 0.3s;
-  height: 25px;
   color: #c0c4cc;
   text-align: center;
 }

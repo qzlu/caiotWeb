@@ -7,13 +7,13 @@
                     <el-form-item v-for="item in addFormList" :key="item.prop" :prop="item.prop" :label="item.label" :rules="item.rule">
                       <el-input v-model="addFormData[item.prop]"></el-input>
                     </el-form-item>
-                    <el-form-item label="角色类型" :rules="[{ required: true, message: '请选择'}]">
+<!--                     <el-form-item label="角色类型" :rules="[{ required: true, message: '请选择'}]">
                       <el-select v-model="addFormData.FType" placeholder="请选择角色类型">
                         <el-option label="超级管理员" value="0"></el-option>
                         <el-option label="系统管理员" value="1"></el-option>
                         <el-option label="其他" value="2"></el-option>
                       </el-select>
-                    </el-form-item>
+                    </el-form-item> -->
                 </el-form>
                 <div class="submit">
                     <button class="zw-btn zw-btn-primary" @click="submit()">确定</button>
@@ -55,6 +55,7 @@
                     <tree-transfer
                         :data='menuData'
                         :data1='menuData'
+                        :checkStrictly="checkStrictly"
                         leftTitle='所有权限'
                         rightTitle='已选权限'
                         nodeKey="FGUID"
@@ -92,6 +93,7 @@
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
+                 :width="item.width"
                 >
                </el-table-column>
                <el-table-column
@@ -119,6 +121,11 @@ export default {
     data(){
         return{
             tableLabel:[
+                {
+                    prop: 'RowNum',
+                    label: '序号',
+                    width:80
+                },
                 {
                     prop: 'FName',
                     label: '角色名称'
@@ -195,7 +202,8 @@ export default {
                 children: 'list',
                 label: 'FMenuName'
             },
-            showDelete:false
+            showDelete:false,
+            checkStrictly:false
         }
     },
     components:{
@@ -230,16 +238,23 @@ export default {
          * queryRole 分页查询查询角色
          * @param {type Number} pageIndex 页码
          */
-        queryData(pageIndex = 1) {
+        queryData() {
             system({
                 FAction:"QueryPageDataByTRole",
                 FName:"",
-                PageIndex:pageIndex,
+                PageIndex:this.pageIndex,
                 PageSize:10
             })
             .then(data => {
                 this.total = data.FObject.Table[0].count
                 this.tableData = data.FObject.Table1
+                /**
+                 * 删除操作时，当前页面无数据时跳到上一页
+                 */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(err => {
 
@@ -250,7 +265,7 @@ export default {
          */
         handleCurrentChange(val){
             this.pageIndex = val
-            this.queryData(val)
+            this.queryData()
         },
         /**
          * add 点击新增按钮
@@ -355,9 +370,10 @@ export default {
                 //递归获取树形菜单已有权限的菜单
                 function findTree(data) {
                     data.forEach(item => {
-                        if(item.IsExist == 1){
+                        if(item.IsExist == 1&&(!item.list||!item.list.length)){
                             _this.defaultCheckedMenu.push(item.FGUID)
-                        }else if(item.list){
+                        } 
+                        if(item.list){
                             findTree(item.list)
                         }
                     })
@@ -468,11 +484,14 @@ export default {
         },
         /**
          * 修改菜单权限
+         * menuArr全√菜单
+         * halfMenuArr 半选中菜单
          */
         updateTRoleMenu(){
-            let menuArr = []
+            let menuArr = [], halfMenuArr = []
             this.findTree(this.menuData,'list','FGUID',menuArr)
-            console.log('所有菜单',menuArr)
+            halfMenuArr = this.$refs.transfer.$refs.tree.getHalfCheckedNodes().map(item => item.FGUID)
+            menuArr.push(...halfMenuArr)
             system({
                 FAction:'UpdateTRoleMenu',
                 FGUID:this.roleGuid,

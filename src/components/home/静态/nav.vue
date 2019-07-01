@@ -80,7 +80,7 @@
 				let ref_router=this.$route.path.split("/")[2]
 				this.curr=ref_router
 					/*动态用户一级菜单Banner */
-				 	 _this.$axios.post(_this.mypro+'Caiot/System',{
+				 	 _this.$axios.post('System',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"QueryUsersMenu",
 						        "FVersion":"1.0.0",

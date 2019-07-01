@@ -1,6 +1,6 @@
 <template>
     <div class=" road report">
-        <el-dialog title="新增巡检路线" :visible.sync="show" class="zw-dialog">
+        <el-dialog :title="type?'编辑巡检路线':'新增巡检路线'" :visible.sync="show" class="zw-dialog">
             <div class="clearfix">
                 <ul class="l clearfix ">
                     <li>
@@ -11,13 +11,12 @@
                     <li>
                         <span class="label">巡检周期</span>
                         <el-select v-model="addRoadData.InspectionCycle"  placeholder="请选择">
-                            <el-option v-for="time in timeList" :key="time.value" :label="time.label" :value="time.value"></el-option>
+                            <el-option v-for="time in timeList1" :key="time.value" :label="time.label" :value="time.value"></el-option>
                         </el-select>
                     </li>
                     <li>
                         <span class="label">频次</span>
                         <div class="date-select"  v-if="addRoadData.InspectionCycle === 1">
-                            
                             <ul class="l clearfix time-content">
                                 <li  style="margin-top:0" v-for="(time, i) in timeArr" :key="i">{{time}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr',i)"></i></li>
                             </ul>
@@ -148,18 +147,13 @@
                         </div>
                     </li>
                 </ul>
-<!--                 <div class="r clearfix tree-content" v-if="showPointTree">
-                    <i class="arrow"></i>       
-                    <zw-tree :data='pointData' :renderContent='renderContent' :defaultProps='defaultProps'>
-                    </zw-tree>                                                                                                                                       
-                </div> -->
             </div>
             <div style="text-align:center;height:42px;margin-top:37px;">
-                <button class="zw-btn" @click="addRoad()">确定</button>
+                <button class="zw-btn" @click="addRoad()">{{type?'确定':'下一步'}}</button>
             </div>
         </el-dialog>
         <ul class="road-head clearfix report-header">
-            <li class="l road-head-add" @click="addNewRoad()"><button class="zw-btn zw-btn-add">新增</button></li>
+            <li class="l road-head-add" @click="beforeAddNewRoad()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l road-head-export" @click="exportFile()"><button class="zw-btn zw-btn-export">导出</button></li>
             <!-- <li class="l road-head-print"><button class="zw-btn zw-btn-print">打印</button></li> -->
             <li class="r">
@@ -230,10 +224,10 @@
                             <span v-for="time in scoped.row.InspectionTime">{{time[1]}}　</span>
                         </div>
                         <div v-if="scoped.row.InspectionCycleID == 2">
-                            <span v-for="time in scoped.row.InspectionTime">{{weekArr[time[0]-1]}}_{{time[1]}}　</span>
+                            <span v-for="time in scoped.row.InspectionTime">{{weekArr[time[0]-1]}}{{time[1]}}　</span>
                         </div>
                         <div v-if="scoped.row.InspectionCycleID == 3">
-                            <span v-for="time in scoped.row.InspectionTime">{{time[0]}}号_{{time[1]}}　</span>
+                            <span v-for="time in scoped.row.InspectionTime">{{time[0]}}号{{time[1]}}　</span>
                         </div>
                     </template>
                </el-table-column>
@@ -275,56 +269,36 @@
                 </el-scrollbar>
 
             </div>
-<!--             <div class="zw-table">
-                <el-table 
-                 :data = 'points' 
-                 max-height="330"
-                 style="width: 100%"                
-                 header-row-class-name="el-table-header"
-                 :row-class-name="tableRowClassName">
-                    <el-table-column type="index" label="序号" width="100" align='center'>
-                    </el-table-column>
-                    <el-table-column prop="AreaName" label="区域名称" align='center'>
-                    </el-table-column>
-                    <el-table-column prop="InspectionPointName" label="巡检点" align='center'>
-                    </el-table-column>
-                    <el-table-column prop="Value" label="设备系统" align='center'>
-                    </el-table-column>
-                    <el-table-column prop="PointSortID" label="巡检顺序" align='center'>
-                    </el-table-column>
-                    <el-table-column prop="" label="巡检点" align='center'>
-                    </el-table-column>
-                </el-table>
-            </div> -->
         </div>
-        <el-dialog title="设置巡检点" :visible.sync="showPointTree" class="zw-dialog showPointTree">
-            <div style="padding-right: 16px;">
-                <tree-transfer
-                 ref="transfer"
-                 :data='pointData' 
-                 :data1='pointData'
-                 leftTitle="所有巡检点"
-                 rightTitle="已选巡检点"
-                 nodeKey="ID"
-                 :filterNode="filterNode"
-                  @check-change="checkChange"
-                 :defaultChecked="[]"
-                 :renderContent='renderContent'
-                 :renderContent1='renderContent'
-                 :defaultProps='defaultProps'
-                 :defaultProps1='defaultProps'>
-                </tree-transfer>    
-            </div>
-            <div style="text-align:center;margin-top:20px;">
-                <button class="zw-btn zw-btn-primary" @click="setPoint()">确定</button>
-            </div>
-        </el-dialog>
+            <el-dialog title="设置巡检点" :visible.sync="showPointTree" class="zw-dialog showPointTree">
+                <div style="padding-right: 16px;">
+                    <tree-transfer
+                     ref="transfer"
+                     :data='pointData' 
+                     :data1='pointData'
+                     leftTitle="所有巡检点"
+                     rightTitle="已选巡检点"
+                     nodeKey="ID"
+                     :filterNode="filterNode"
+                      @check-change="checkChange"
+                     :defaultChecked="[]"
+                     :renderContent='renderContent'
+                     :renderContent1='renderContent'
+                     :defaultProps='defaultProps'
+                     :defaultProps1='defaultProps'>
+                    </tree-transfer>    
+                </div>
+                <div style="text-align:center;margin-top:20px;">
+                    <button class="zw-btn" style="background:none" @click="preStep()">上一步</button>
+                    <button class="zw-btn zw-btn-primary" @click="setPoint()">确定</button>
+                </div>
+            </el-dialog>
     </div>
 </template>
 <script>
 import {system,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination,treeTransfer} from '@/zw-components/index'
+import {treeTransfer} from '@/zw-components/index'
 import * as comm from "../../assets/js/pro_common";
 export default {
     mixins:[table],
@@ -336,16 +310,12 @@ export default {
                     label: '序号'
                 },
                 {
-                    prop: 'ID',
-                    label: '路线ID'
-                },
-                {
                     prop: 'InspectionLineName',
                     label: '路线名称'
                 },
                 {
                     prop: 'DeviceCount',
-                    label: '设备总数'
+                    label: '巡检点数'
                 },
                 {
                     prop: 'Frequency',
@@ -357,7 +327,25 @@ export default {
                 }
             ],
             showFilterBox:false,//是否显示高级搜索框
-            timeList:[{
+            timeList:[
+            {
+                label:'全部',
+                value:0
+            },
+            {
+                label:'日巡检',
+                value:1
+            },
+            {
+                label:'周巡检',
+                value:2
+            },
+            {
+                label:'月巡检',
+                value:3
+            }],
+            timeList1:[
+            {
                 label:'日巡检',
                 value:1
             },
@@ -390,7 +378,7 @@ export default {
             showPopover:false,
             showPointTree:false,
             roadName:'',//巡检路线名称
-            InspectionCycle:1, //巡检周期
+            InspectionCycle:0, //巡检周期
             startDateTime:'00:00',
             endDateTime:'23:59',
             time:'', //时间
@@ -412,7 +400,6 @@ export default {
         }
     },
     components:{
-        zwPagination,
         treeTransfer
     },
     watch:{
@@ -541,7 +528,8 @@ export default {
         queryPoint(){
             Inspection({
                 FAction:'QueryUInspectionPointTree',
-                ID:0
+                ID:0,
+                FType:1
             })
             .then(data => {
                 this.pointData  = data.FObject
@@ -550,53 +538,96 @@ export default {
                 console.log(error);
             })
         },
-        handleCurrentChange(){
-
+        /**
+         * 新增或修改路线
+         * type 0:为新增 1：为修改
+         */
+        addOrUpdatedRoad(type) {
+            this.show = false
+            return new Promise((resolve,reject) => {
+                    Inspection({
+                        FAction:type?'UpdateUInspectionLineInfo':'AddUInspectionLineInfo',
+                        mUInspectionLine:this.addRoadData
+                    })
+                    .then(data => {
+                        this.queryData()
+                        this.$message({
+                          type: 'success',
+                          message: type?'修改成功！':'新增成功'
+                        });
+                        resolve()
+                    })
+                    .catch(error => {
+                        this.$message({
+                          type: 'error',
+                          message: error
+                        });
+                        reject()       
+                    })
+            })
         },
         /**
          * 新增或修改巡检路线
          */
         addRoad(){
+            if(this.addRoadData.InspectionLineName.length ===0 ){
+                this.$message({
+                    type:'warning',
+                    message:'请填写巡检路线名称'
+                })
+                return
+            }
             if(this.addRoadData.InspectionCycle == 1){
                 let arr = this.timeArr.map(item => {
                     return '0-' + item
                 })
+                if(arr.length ===0){
+                    this.$message({
+                        type:'warning',
+                        message:'请填写频次'
+                    })
+                    return
+                }
                 this.addRoadData.InspectionTimeStr = arr.join(',')
             }else if(this.addRoadData.InspectionCycle == 2){
                 let arr = this.timeArr1.map(item => {
-                    let week = this.weekArr.indexOf(item[0]) + 1
-                    return week + '-' + item[1]
+                    return item[0] + '-' + item[1]
                 })
-                 this.addRoadData.InspectionTimeStr = arr.join(',')
+                if(arr.length ===0){
+                    this.$message({
+                        type:'warning',
+                        message:'请填写频次'
+                    })
+                    return
+                }
+                this.addRoadData.InspectionTimeStr = arr.join(',')
             }else if(this.addRoadData.InspectionCycle == 3){
                 let arr = this.timeArr2.map(item => {
                     return item.join('-')
                 })
-                 this.addRoadData.InspectionTimeStr = arr.join(',')
-            }
-            return new Promise(resolve => {
-                Inspection({
-                    FAction:this.type?'UpdateUInspectionLineInfo':'AddUInspectionLineInfo',
-                    mUInspectionLine:this.addRoadData
-                })
-                .then(data => {
-                    this.queryData()
-                    this.show = false
+                if(arr.length ===0){
                     this.$message({
-                      type: 'success',
-                      message: this.type?'修改成功！':'新增成功！'
-                    });
-                    resolve()
-                })
-                .catch(error => {
-
-                })
-            })
+                        type:'warning',
+                        message:'请填写频次'
+                    })
+                    return
+                }
+                this.addRoadData.InspectionTimeStr = arr.join(',')
+            }
+            if(this.type){
+                this.addRoadData.InspectionPointIDStr = -1,
+                this.addRoadData.AreaIDStr = -1
+                return this.addOrUpdatedRoad(this.type)
+            }else{
+                this.show = false
+                this.defaultChecked = []
+                this.showPointTree = true
+            }
         },
         /**
          * 新增路线
          */
-        addNewRoad(){
+        beforeAddNewRoad(){
             this.show = true
             this.type = 0
             this.addRoadData.InspectionLineName = ''
@@ -617,14 +648,22 @@ export default {
             this.addRoadData.InspectionLineName = item.InspectionLineName
             this.addRoadData.InspectionCycle = item.InspectionCycleID
             this.addRoadData.ID = item.ID
-            if(item.InspectionCycleID == 1){
-                this.timeArr = item.InspectionTime.map(item => {
-                    return item[1]
+            //显示弹框时，默认填入时间
+            if(show){
+                if(item.InspectionCycleID == 1){
+                    this.timeArr = item.InspectionTime.map(item => {
+                        return item[1]
+                    })
+                }else if(item.InspectionCycleID == 2){
+                    this.timeArr1 = JSON.parse(JSON.stringify(item.InspectionTime))
+                }else if(item.InspectionCycleID == 3){
+                    this.timeArr2 = JSON.parse(JSON.stringify(item.InspectionTime))
+                }
+            }else{
+                let timeArr = item.InspectionTime.map(item => {
+                    return item.join('-')
                 })
-            }else if(item.InspectionCycleID == 2){
-                this.timeArr1 = JSON.parse(JSON.stringify(item.InspectionTime))
-            }else if(item.InspectionCycleID == 3){
-                this.timeArr2 = JSON.parse(JSON.stringify(item.InspectionTime))
+                this.addRoadData.InspectionTimeStr = timeArr.join(',')
             }
         },
         /**
@@ -654,12 +693,17 @@ export default {
 
             })
         },
+        /**
+         * 点击每一行（修改路线）
+         */
         changeRoad(row){
+            this.type = 1
             this.roadObj = row
             this.defaultChecked = []
             Inspection({
                 FAction:'QueryAreaUInspectionPointBySort',
-                ID:row.ID
+                ID:row.ID,
+                FType:1
             })
             .then(data => {
                 this.points = data.FObject
@@ -722,16 +766,20 @@ export default {
          */
         beforeSetPoint(){
             if(this.roadObj){
+                this.type = 1
                 this.showPointTree = true
             }else{
                 this.$DeleteMessage(['请选择巡检路线','提示信息'],false)
             }
         },
         /**
-         * 设置巡检路线
+         * 设置巡检路线（设置巡检点弹框）
          */
         async setPoint(){
-            this.editRoad(this.roadObj,false)
+            //修改路线
+            if(this.type){
+                this.editRoad(this.roadObj,false)
+            }
             let arr = []
             let areaArr = []
             // 遍历获取选中的巡检点
@@ -745,11 +793,26 @@ export default {
                     }
                 })
             })
+            if(arr.length === 0){
+                this.$message({
+                    type:'warning',
+                    message:'请选择巡检点'
+                })
+            }
             this.addRoadData.InspectionPointIDStr = arr.join(',')
             this.addRoadData.AreaIDStr = areaArr.join(',')
-            await this.addRoad()
+            await this.addOrUpdatedRoad(this.type)
             this.showPointTree = false
-            this.changeRoad(this.roadObj)
+            if(this.type){
+                this.changeRoad(this.roadObj)
+            }
+        },
+        /**
+         * 点击上一步
+         */
+        preStep(){
+            this.showPointTree = false
+            this.show = true
         },
         /**
          * 改变巡检点或巡检区域顺序
@@ -827,7 +890,7 @@ export default {
          * 周巡检 ，选择时间
          */
         selectWeek(){
-            if(this.week==null||this.hh == null||this.mm == null){
+            if(this.week==null||this.h1 == null||this.m1 == null){
                 this.$message({
                     type:'warning',
                     message:'请选择时间'
@@ -843,7 +906,7 @@ export default {
          * 月巡检 ，选择时间
          */
         selectMonth(){
-            if(this.month==null||this.hh == null||this.mm == null){
+            if(this.month==null||this.h2 == null||this.m2 == null){
                 this.$message({
                     type:'warning',
                     message:'请选择时间'
@@ -872,314 +935,6 @@ export default {
 }
 </script>
 <style lang="scss">
-$img-url:'/static/image/';
-.road.report{
-    background: url('#{$img-url}admin/bg_1.png') center no-repeat;
-    .showPointTree{
-        .el-dialog{
-            width: 560px;
-            height: 480px;
-        }
-    }
-    .el-dialog{
-        width: 460px;
-        height: 380px;
-        background: url(#{$img-url}task/inspection.png);
-        background-size: 100% 100%;
-        padding-left: 48px;
-        &__header{
-            text-align: left
-        }
-        li{
-            margin-top: 15px;
-            .zw-btn{
-                height: 40px;
-                line-height: 40px;
-                background:rgba(0,80,153,1);
-            }
-        }
-        .label{
-            width: 85px;
-            display: inline-block;
-            text-align: right
-        }
-        .el-input{
-            width: 165px;
-            height: 39px;
-            line-height: 39px;
-            margin-left: 10px;
-            &__inner{
-                background:rgba(24,64,107,1);
-                border:1px solid rgba(5,103,158,1);
-            }
-        }
-        .date-select{
-            display: inline-block;
-            width:204px;
-            height: 39px;
-            line-height: 39px;
-            margin-left: 10px;
-            background:rgba(24,64,107,1);
-            border:1px solid rgba(5,103,158,1);
-            padding-left: 4px;
-            padding-right: 20px;
-            >span{
-                position: relative;
-                left: 208px;
-            }
-            .time-content{
-                position: absolute;
-                width: 204px;
-                height: 39px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                li{
-                    position: relative;
-                    margin-right: 20px;
-                    display: inline-block;
-                    .el-icon-circle-close-outline{
-                        width: 14px;
-                        height: 14px;
-                        position: absolute;
-                        cursor: pointer;
-                    }
-                }
-            }
-        }
-        .tree-content{
-            width: 240px;
-            position: relative;
-            margin-right: 20px;
-            margin-top: 16px;
-            .arrow {
-                display: inline-block;
-                width: 22px;
-                height: 16px;
-                position: absolute;
-                top: 10px;
-                left: 14px;
-                background: url("#{$img-url}admin/icon_1.png");
-            }
-            .zw-tree{
-                float: right
-            }
-        }
-        .zw-btn{
-            background: #12559D;
-        }
-    }
-    .road-head{
-        position: relative;
-        li.r{
-            .el-button.el-button--primary{
-                width:94px;
-                height:46px;
-                margin-left: 10px;
-                background:#042E74;
-                border:1px solid rgba(12,55,110,1);
-                padding-left: 4px;
-                .el-icon--right{
-                    color: #2A91FC
-                }
-            }
-        }
-        .search-box{
-            width: 1436px;
-            height: 95px;
-            line-height: 95px;
-            box-sizing: border-box;
-            position: absolute;
-            top: 65px;
-            left: 10px;
-            z-index: 100;
-            background: #005099;
-            border:1px solid rgba(13, 97, 156, 1);
-            li{
-                margin-left: 97px;
-                .el-input{
-                    width:209px;
-                    height:46px;
-                    &__inner{
-                        width:209px;
-                        margin-left: 10px;
-                        color: #F1F1F2;
-                        background:#042E74;
-                        border:1px solid rgba(12,55,110,1);
-                    }
-                }
-                .el-date-editor .el-range-separator{
-                     color: #F1F1F2;
-                }
-                .el-range-input{
-                    color: #F1F1F2;
-                    background:#042E74;
-                }
-                button{
-                    margin-left: 60px;
-                    background: #12559D
-                }
-                button:last-of-type{
-                    margin-left: 39px;
-                }
-            }
-            li:first-of-type{
-                margin-left: 32px;
-            }
-        }
-    }
-    .el-icon-circle-plus-outline{
-        cursor: pointer;
-        background:rgba(24,64,107,1);
-    }
-    .road-table{
-        height: 300px;
-/*         .el-table{
-            max-height: 300px;
-        } */
-    }
-    .point-info{
-        margin-top: 80px;
-        text-align: left;
-        .point{
-            width: 137px;
-            height: 46px;
-            background: url(#{$img-url}task/t1.png)
-        }
-        .set-point{
-            width: 132px;
-            height: 46px;
-            margin-left: 20px;
-            padding-left: 26px;
-            background: url(#{$img-url}task/setPoint-1.png);
-        }
-        .set-point:hover,.set-point:active{
-            background: url(#{$img-url}task/setPoint-2.png);
-        }
-    }
-    .tree-table{
-        &-header{
-            width: 100%;
-            height: 64px;
-            line-height: 64px;
-            background: #03234A;
-            li{
-                width:15%;
-                font-size: 17px;
-                text-align: center;
-            }
-        }
-        &-body.el-tree{
-            max-height: 264px;
-            background: none;
-            .el-tree-node:focus>.el-tree-node__content {
-                background:rgba(19,79,164,1);
-                opacity:0.5;
-            }
-            .el-tree-node__content:hover {
-                background:rgba(19,79,164,1);
-                opacity:0.5;
-            }
-            .el-tree-node__content{
-                height: 60px;
-                line-height: 60px;
-                color: white;
-                border-bottom: 1px solid rgba(13, 97, 156, 1);;
-            }
-            .el-tree-node__content:nth-of-type(2n){
-                background: #053077
-            }
-            .tree-row{
-                height: 60px;
-                font-size: 14px;
-                width: 1462px;
-                margin-left: -24px;
-                li{
-                    width:15%;
-                    height: 60px;
-                    text-align: center
-                }
-            }
-            .sort{
-                display: inline-block;
-                width: 22px;
-                height: 26px;
-                margin-right: 30px;
-            }
-            .sort-up{
-                background: url(#{$img-url}task/button_up.png);
-            }
-            .sort-down{
-                background: url(#{$img-url}task/button_down.png);
-            }
-        }
-    }
-}
-// 时间选择popover
-.el-popover.select-time-popover{
-    width: 150px!important;
-    padding: 0;
-    border-radius: 0px;
-}
-.el-popover.select-week-popover{
-    width: 296px!important;
-    padding: 0;
-    border-radius: 0px;
-    background: none;
-    .week-select{
-        width: 97px;
-        height: 100px;
-        text-align: center;
-        background: #ffffff;
-        li{
-            height: 31px;
-            line-height: 30px;
-            text-align: center;
-            cursor: pointer;
-            background: #ffffff;
-        }
-        li.active{
-            background: #2194FF
-        }
-    }
-}
-.time-title{
-   height: 30px;
-   line-height: 30px;
-   text-align: center;
-   font-size: 14px;
-   color: #525E7E;
-   background: #DEDBDB
-}
-.time-select-main{
-    width: 50%;
-    background: #ffffff;
-}
-.time-select{
-    height: 90px;
-    margin-right: 2px;
-    .active{
-        background: #2194FF
-    }
-    li{
-        height: 30px;
-        line-height: 30px;
-        text-align: center;
-        cursor: pointer;
-    }
-}
-.time-select-footer{
-    text-align: right;
-    height: 30px;
-    line-height: 30px;
-    background: #DEDBDB;
-    a{
-        padding: 10px;
-        cursor: pointer;
-    }
-    a:last-of-type{
-        color: #409EFF
-    }
-}
+@import './InspectionRoad.scss'
 </style>
 

@@ -5,14 +5,19 @@
                 <el-form-item label="巡检点名称"  prop='InspectionPointName' :rules="[{ required: true, message: '请输入巡检点名称'}]">
                     <el-input v-model="addPoint.InspectionPointName"></el-input>
                 </el-form-item>
-                <el-form-item label="所属区域" prop="AreaID" :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="区域名称" prop="AreaID" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addPoint.AreaID"   placeholder="请选择">
                     <el-option v-for="area in areaList" :key="area.AreaID" :label="area.AreaName" :value="area.AreaID"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="所属系统" prop="SystemParamID" :rules="[{ required: true, message: '请选择'}]">
+                <el-form-item label="系统名称" prop="SystemParamID" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addPoint.SystemParamID"   placeholder="请选择">
                     <el-option v-for="system in systemTypeList" :key="system.Key" :label="system.ParamValue" :value="system.Key"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="设备类型" prop="DeviceTypeID" :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addPoint.DeviceTypeID"   placeholder="请选择">
+                    <el-option v-for="device in allDevice" :key="device.DeviceTypeID" :label="device.DeviceTypeName" :value="device.DeviceTypeID"></el-option>
                   </el-select>
                 </el-form-item>
             </el-form>
@@ -20,13 +25,28 @@
                 <button class="zw-btn zw-btn-primary" @click="addUInspectionPoint()">确定</button>
             </div>
         </el-dialog>
+        <el-dialog title="导入巡检点" :visible.sync="showImportDialog" class="zw-dialog import-point">
+            <zw-tree
+            ref='pointTree' 
+             title="选择巡检点" 
+             :data='allDefaultPoint' 
+             :renderContent='renderContent' 
+             :defaultProps='defaultProps'
+             nodeKey='DeviceLedgerID'
+             :defaultChecked='defaultChecked'
+             showCheckbox>
+            </zw-tree>
+            <div class="submit">
+                <button class="zw-btn zw-btn-primary" @click="importDevice">确定</button>
+            </div>
+        </el-dialog>
         <ul class="clearfix report-header">
             <li class="l" @click="add()"><button class="zw-btn zw-btn-add">新增</button></li>
             <li class="l" @click="exportFile"><button class="zw-btn zw-btn-export">导出</button></li>
-             <li class="l" @click="importDevice"><button class="zw-btn zw-btn-import">设备导入</button></li>
+             <li class="l" @click="queryAreaTypeDeviceInfo"><button class="zw-btn zw-btn-import">设备导入</button></li>
             <li class="l" @click="pageIndex=1;filterText = '';queryData()"><button class="zw-btn zw-btn-refrest">刷新</button></li>
             <li class="r">
-                <el-input class="search-input" placeholder="搜索设备关键字" v-model="filterText">
+                <el-input class="search-input" placeholder="搜索关键字" v-model="filterText">
                     <i class="el-icon-search" slot="suffix"></i>
                 </el-input>
                 <button class="zw-btn zw-btn-primary" @click="filterText = '' ">重置</button>
@@ -62,9 +82,9 @@
     </div>
 </template>
 <script>
-import {system,Inspection} from '@/request/api.js'//api接口（接口统一管理）;
+import {system,Inspection,MeterReading,ReportMatter} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
-import {zwPagination} from '@/zw-components/index'
+import {zwTree} from '@/zw-components/index'
 export default {
     mixins:[table],
     data(){
@@ -79,15 +99,18 @@ export default {
                     label: '巡检点'
                 },
                 {
+                    prop: 'DeviceTypeName',
+                    label: '设备类型'
+                },
+                {
                     prop: 'AreaName',
-                    label: '所属区域'
+                    label: '区域名称'
                 },
                 {
                     prop: 'Value',
-                    label: '所属系统'
+                    label: '系统名称'
                 }
             ],
-            filterText:'',
             title:'新增',
             show:false,
             defalutAddPoint:{//新增巡检点默认数据
@@ -95,7 +118,8 @@ export default {
                 ProjectID:localStorage.getItem('projectid'),
                 AreaID:null,
                 FDescription:'',
-                SystemParamID:null
+                SystemParamID:null,
+                DeviceTypeID:null
             },
             addPoint:{ //新增或编辑巡检点数据
                 InspectionPointName:'',
@@ -103,15 +127,21 @@ export default {
                 AreaID:null,
                 FDescription:'',
                 SystemParamID:null,
-                ID:null
+                ID:null,
+                DeviceTypeID:null
             },
             areaList:[], //区域列表
             systemTypeList:[], //系统分类
-            type:0
+            type:0,
+            showImportDialog:false,
+            allDefaultPoint:[],//设备导入的所有巡检点
+            defaultProps:{children:'list',disabled:'disabled'},
+            defaultChecked:[],//已经导入的
+            allDevice:[] //所有设备
         }
     },
     components:{
-        zwPagination
+        zwTree
     },
     watch:{
         filterText(){
@@ -125,15 +155,21 @@ export default {
         this.queryData()
         this.queryAreaType()
         this.querySystemType()
+        this.queryAllDeviceType()
     },
     mounted(){
 
     },
     methods:{
+        renderContent(h, { node, data, store }){
+            return(
+                <span>{data.AreaName?data.AreaName:data.DeviceLedgerName}</span>
+            )
+        },
         /**
          * 查询巡检点
          */
-        queryData(name = '', pageIndex = 1){
+        queryData(){
             const loading = this.$loading({
               customClass: 'hahahah',
               background: 'rgba(0, 0, 0, 0.7)',
@@ -141,13 +177,20 @@ export default {
             });
             Inspection({
                 FAction:'QueryPageUInspectionPointInfo',
-                FName:name,
-                PageIndex:pageIndex,
+                FName:this.filterText,
+                PageIndex:this.pageIndex,
                 PageSize:10
             })
             .then(data => {
                 this.total = data.FObject.Table[0].Count
                 this.tableData = data.FObject.Table1
+                /**
+                * 删除操作时，当前页面无数据时跳到上一页
+                */
+                if(this.tableData.length === 0&&this.pageIndex > 1){
+                    --this.pageIndex
+                    this.queryData()
+                }
             })
             .catch(error => {
                 console.log(error);
@@ -196,6 +239,45 @@ export default {
             })
         },
         /**
+         * 获取巡检点区域设备
+         */
+        queryAreaTypeDeviceInfo(){
+            this.showImportDialog = true
+            this.defaultChecked = []
+            MeterReading({
+                FAction:'QueryAreaTypeDeviceInfo',
+                FType:1
+            })
+            .then(data => {
+                this.allDefaultPoint = data.FObject
+                this.allDefaultPoint.forEach(item => {
+                    item.list.forEach(node => {
+                        if(node.IsExist == 1){
+                            this.defaultChecked.push(node.DeviceLedgerID)
+                            node.disabled = true
+                        }else{
+                            node.disabled = false
+                        }
+                    })
+                })
+            })
+            .catch(error => {
+
+            })
+        },
+        /**
+         * 获取所有设备类型
+         */
+        queryAllDeviceType(){
+            system({
+                FAction:'QueryDeviceType',
+            })
+            .then(data => {
+                this.allDevice = data.FObject
+            })
+            .catch(err => {})
+        },
+        /**
          * 新增或编辑巡检点
          */
         async addUInspectionPoint(){
@@ -238,7 +320,7 @@ export default {
          * update 修改巡检点
          */
         update(item) {
-            this.title = '修改'
+            this.title = '编辑'
             this.show = true
             this.type = 1
             for(let key in this.addPoint){
@@ -301,11 +383,20 @@ export default {
          * 
          */
         importDevice(){
+            let arr = this.$refs.pointTree.$refs.tree.getCheckedNodes()
+            //过滤区域节点
+            arr = arr.filter(item => {
+                return item.DeviceLedgerID
+            })
+            arr = arr.map(item => {
+                return item.DeviceLedgerID
+            })
             Inspection({
                 FAction:'AddImportUInspectionPoint',
+                IDStr:arr.join(',')
             })
             .then(data => {
-                console.log(data);
+                this.showImportDialog = false
                 this.queryData()
                 this.$message({
                   type: 'success',
@@ -323,37 +414,6 @@ export default {
 }
 </script>
 <style lang="scss">
-$img-url:'/static/image/';
-.inspection-item{
-    .el-dialog{
-        width: 426px;
-        height: 367px;
-        background: url(#{$img-url}task/inspection.png);
-        padding-left: 48px;
-        &__header{
-            text-align: left
-        }
-    }
-    .el-form{
-        &-item{
-            .el-form-item__label{
-                width: 94px;
-                color: #F1F1F2;
-            }
-            .el-input{
-                width: 165px;
-                .el-input__inner{
-                    background: #05679E;
-                    border-color: #18406B;
-                    color: #F1F1F2;
-                }
-            }
-            &__error{
-                left: 50%;
-                transform: translateX(-50%)
-            }
-        }
-    }
-}
+@import 'inspectionItem.scss';
 </style>
 

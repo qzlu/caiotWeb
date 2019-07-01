@@ -56,7 +56,7 @@
 			<section class="con_item01">
 				<div class="con_a">
 					  <div class="entitle_">
-					   <p>设备类型</p>
+					   <p>设备类型统计</p>
 					  </div>
 				</div>
 				
@@ -377,7 +377,7 @@
   	getDatas(gettime,day){ 
   		console.log(gettime,day)
   		   let _this=this;
-  		   _this.$axios.post(_this.mypro+'Caiot/Alarm',{
+  		   _this.$axios.post('Alarm',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"QueryTotalSituationCount",
 						        "FVersion":"1.0.0",
@@ -520,7 +520,8 @@
 		    },
 		    yAxis: {
 		         type: 'value',
-		         splitLine:{show: false},//去除网格线
+				 splitLine:{show: false},//去除网格线
+				 minInterval: 1,
 		         axisLine:{ //y轴色
 					 lineStyle:{
 					 color:'#fff',
@@ -593,7 +594,8 @@
 				    yAxis : [
 				        {
 				            type : 'value',
-				             splitLine:{show: false},//去除网格线
+							splitLine:{show: false},//去除网格线
+							minInterval: 1,
 				             axisLine:{ //y轴色
 								   lineStyle:{
 								   color:'#d5d5d5',

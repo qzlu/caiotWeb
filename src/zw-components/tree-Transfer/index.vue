@@ -12,6 +12,7 @@
           show-checkbox
           default-expand-all
           :node-key="nodeKey"
+          :check-strictly="checkStrictly"
           ref="tree"
           :default-checked-keys="defaultChecked"
           @check-change="checkChange"
@@ -90,6 +91,10 @@ export default {
     },
     renderContent1:{
         type:Function
+    },
+    checkStrictly:{
+      type:Boolean,
+      default:false
     }
   },
   methods: {

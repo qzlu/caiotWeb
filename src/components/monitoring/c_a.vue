@@ -13,60 +13,62 @@
 	 <source src="http://hls.open.ys7.com/openlive/9afe414a6dfe481aad4a1d154d3dc954.m3u8" type="application/x-mpegURL">
     </video>-->
     <ul>
-      <li v-for="(item, index) in datalist" :class="lisetclass(item.TopValue.length)">
-        <div class="hover_bg" style="margin: 0 5px 0 0;">
-          <router-link :to="{ name: 'detail_info',params:{ id:item.AreaID,SingleType:2}}">
-            <p class="fi_ts">{{item.AreaTitle}}</p>
-          </router-link>
-          <div class="fi_eh">
-            <div v-for="(list, key) in item.DataDetail ">
-              <div>
-                <p class="ght">
-                  <i class="jg">
-                    {{list.SDataTitle}}
-                    <br>
-                  </i>
-                  <i>（{{list.SDataUnit}})</i>
-                </p>
-                <p class="ght_text" v-for="(shcg, k) in list.SDataValue">{{shcg.DValue}}</p>
-                <!--温度-->
+      <li v-for="(item, index) in datalist" :key="index" :class="{'show_warn_class':item.TopValue.length,'no_warn_class':!item.TopValue.length,}">
+        <router-link :to="{ name: 'detail_info',params:{ id:item.AreaID,SingleType:2}}">
+          <div class="hover_bg" style="margin: 0 5px 0 0;">
+           <!--  <router-link :to="{ name: 'detail_info',params:{ id:item.AreaID,SingleType:2}}"> -->
+              <p class="fi_ts">{{item.AreaTitle}}</p>
+            <!-- </router-link> -->
+            <div class="fi_eh">
+              <div v-for="(list, key) in item.DataDetail ">
+                <div>
+                  <p class="ght">
+                    <i class="jg">
+                      {{list.SDataTitle}}
+                      <br>
+                    </i>
+                    <i>（{{list.SDataUnit}})</i>
+                  </p>
+                  <p class="ght_text" v-for="(shcg, k) in list.SDataValue">{{shcg.DValue}}</p>
+                  <!--温度-->
+                </div>
+              </div>
+            </div>
+            <div class="pi_itm_out">
+              <div class="pi_itm" :id="setdocID + index"></div>
+            </div>
+            <div class="manu_li">
+              <p class="l" v-if="item.VedioAddress">
+                <img
+                  src="/static/image/index/icon_4.png"
+                  @click="opens_video(item.VedioAddress)"
+                  style=" vertical-align: 0px; cursor: pointer;"
+                >
+              </p>
+              <p v-for="(lis, key) in item.TopValue" class="l">
+                <i
+                  class="icon iconfont set_imgColor"
+                  :class="[lis.AlarmWebIcon]"
+                  :data="lis.AlarmType"
+                ></i>
+                &nbsp;{{lis.AlarmCount}}&nbsp;
+                <!--<span v-if="key==0"><img src="/static/image/index/content_icon_5.png"> {{lis.AlarmCount}} &nbsp;</span>
+                <span v-if="key==1"><img src="/static/image/index/content_icon_4.png"> {{lis.AlarmCount}} </span>-->
+                <!-- <span><img src="/static/image/index/content_icon_4.png"> {{lis.AlarmIcon}}</span>-->
+              </p>
+            </div>
+            <div class="tl_t_fd">
+              <p style="color: #F1F1F2; font-size: 10px;">{{item.TargetTitle}}</p>
+              <p style="color: #F1F1F2; font-size: 22px;">{{item.TargetValue}}</p>
+            </div>
+
+            <div class="numb_fd">
+              <div v-for="(abc, k) in item.TargetDetail" class="posi">
+                <p :class="'abc' + k">{{abc.STargetValue}}</p>
               </div>
             </div>
           </div>
-          <div class="pi_itm_out">
-            <div class="pi_itm" :id="setid(index)"></div>
-          </div>
-          <div class="manu_li">
-            <p class="l" v-if="item.VedioAddress">
-              <img
-                src="/static/image/index/icon_4.png"
-                @click="opens_video(item.VedioAddress)"
-                style=" vertical-align: 0px; cursor: pointer;"
-              >
-            </p>
-            <p v-for="(lis, key) in item.TopValue" class="l">
-              <i
-                class="icon iconfont set_imgColor"
-                :class="[lis.AlarmWebIcon]"
-                :data="lis.AlarmType"
-              ></i>
-              &nbsp;{{lis.AlarmCount}}&nbsp;
-              <!--<span v-if="key==0"><img src="/static/image/index/content_icon_5.png"> {{lis.AlarmCount}} &nbsp;</span>
-              <span v-if="key==1"><img src="/static/image/index/content_icon_4.png"> {{lis.AlarmCount}} </span>-->
-              <!-- <span><img src="/static/image/index/content_icon_4.png"> {{lis.AlarmIcon}}</span>-->
-            </p>
-          </div>
-          <div class="tl_t_fd">
-            <p style="color: #F1F1F2; font-size: 10px;">{{item.TargetTitle}}</p>
-            <p style="color: #F1F1F2; font-size: 22px;">{{item.TargetValue}}</p>
-          </div>
-
-          <div class="numb_fd">
-            <div v-for="(abc, k) in item.TargetDetail" class="posi">
-              <p :class="setClass(k)">{{abc.STargetValue}}</p>
-            </div>
-          </div>
-        </div>
+        </router-link>
       </li>
     </ul>
   </div>
@@ -142,7 +144,6 @@
   position: absolute;
   top: 19px;
   right: 15px;
-  display: ;
   font-size: 14px;
 }
 .chg_ground ul li .manu_li i {
@@ -184,27 +185,21 @@
 </style>
 <script>
 import videojs from "video.js";
-import "videojs-contrib-hls";
+//import "videojs-contrib-hls";
 var echarts = require("echarts");
-import * as comm from "../../assets/js/pro_common";
+import * as comm from "@/assets/js/pro_common";
 import {project} from '@/request/api';
 export default {
   data() {
     return {
       datalist: [],
       setdocID: "nfs_",
-      video_div: 0
+      video_div: 0,
+      timer:null,//实时刷新定时器
     };
   },
   created() {},
   methods: {
-    lisetclass(x) {
-      if (x) {
-        return "show_warn_class";
-      } else {
-        return "no_warn_class";
-      }
-    },
     opens_video(urls) {
       //播放视频地址
 
@@ -241,28 +236,21 @@ export default {
         document.getElementById("innerVideo").innerHTML = "";
       }
     },
-
-    setClass(x) {
-      return "abc" + x;
-    },
-    setid(x) {
-      return this.setdocID + x;
-    },
     Pro() {
-	  //返回一个Promise对象
-	  return new  Promise((resolve,reject) => {
-		  project({
-			FAction: "GetPrjAreaInfo",
-			ProjectID: localStorage.getItem("projectid")
-		  })
-		  .then(data => {
-            this.datalist = data.FObject;
-            resolve("succ");
-		  })
-		  .catch(error => {
-			  reject(error)
-		  })
-	  })
+	    //返回一个Promise对象
+	    return new  Promise((resolve,reject) => {
+		    project({
+		  	  FAction: "GetPrjAreaInfo"
+		    })
+		    .then(data => {
+              this.datalist = data.FObject;
+              console.log(this.datalist);
+              resolve("succ");
+		    })
+		    .catch(error => {
+		  	  reject(error)
+		    })
+	    })
     },
 
     Pro2() {
@@ -366,25 +354,28 @@ export default {
   mounted: function() {
     let _this = this;
     function settimeouts_data_a() {
-      _this
-        .Pro()
-        .then(function(d) {
-          return _this.Pro2(d);
-        })
-        .catch(function(err) {
-          console.log(err);
-          //  throw new Error(err)
-        });
-      let timeoutId_a = setTimeout(settimeouts_data_a, 4000);
+      _this.Pro()
+      .then(function(d) {
+        return _this.Pro2(d);
+      })
+      .catch(function(err) {
+        console.log(err);
+        //  throw new Error(err)
+      });
+      _this.timer = setTimeout(settimeouts_data_a, 4000);
+     /*  let timeoutId_a = setTimeout(settimeouts_data_a, 4000);
       let router_currt = _this.$route.name;
       if (router_currt != "product") {
         clearTimeout(timeoutId_a);
-      }
+      } */
     }
 
     settimeouts_data_a();
   },
-  computed: {}
+  computed: {},
+  beforeDestroy(){
+    clearTimeout(this.timer)
+  }
 };
 </script>
 

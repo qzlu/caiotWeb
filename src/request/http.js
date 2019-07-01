@@ -8,7 +8,7 @@ else if (process.env.NODE_ENV == 'debug') {
     axios.defaults.baseURL = 'http://47.106.64.130:56090/Caiot/';
 } 
 else if (process.env.NODE_ENV == 'production') {    
-    axios.defaults.baseURL = 'http://47.106.64.130:56090/Caiot/';
+    axios.defaults.baseURL = '/Caiot/';
 }
 
 //设置请求超时时间
@@ -58,15 +58,16 @@ export function get(url, params){
 export function post(url, params) {
     return new Promise((resolve, reject) => {
         let obj = {
-            "FTokenID":localStorage.getItem("Token"),
-            "FVersion":"1.0.0",		
+            FTokenID:localStorage.getItem("Token"),
+            FVersion:"1.0.0",
+            ProjectID:localStorage.getItem('projectid')		
         }
         axios.post(url,Object.assign(obj,params))
         .then(res => {
             resolve(res.data);
         })
         .catch(err =>{
-            messageErr(err.data?err.data.Result:100)
+            messageErr(err.data?err.data.Result:100,err.data?err.data.Message:err)
             reject(err.data?err.data.Message:err)
         })
     });

@@ -159,7 +159,7 @@
 </style>
 <script>
 import videojs from 'video.js'
-import 'videojs-contrib-hls'
+//import 'videojs-contrib-hls'
  var echarts = require('echarts');
  import * as comm from '../../assets/js/pro_common';
  export default {

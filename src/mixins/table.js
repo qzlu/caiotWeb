@@ -3,14 +3,22 @@
  * @param {Number} total 表格数据总条数
  * @param {Number} pageIndex 页码
  */
-// import Vue from 'vue'
+import {zwPagination} from '@/zw-components/index'
 export default{
     data() {
         return{
-            tableData:null,
+            tableData:[],
             total:0,
-            pageIndex:1
+            pageIndex:1,
+            orderProp:'',//排序字段
+            order:'', //升序还是降序
+            selectArr:[], //表格多选
+            filterText:'',
+            FUserType:localStorage.getItem('FUserType')
         }
+    },
+    components:{
+        zwPagination
     },
     methods: {
         tableRowClassName({row, rowIndex}) {
@@ -19,6 +27,16 @@ export default{
             } else if (rowIndex%2 === 0) {
               return 'even-row';
             }
-        }
+        },
+        /**
+         * 删除计划（多选）
+         */
+        deletePlans(){
+            let arr = this.selectArr.map(item => item.ID)
+            this.deletePlan(arr.join(','))
+        },
+        handleSelectionChange(rows){
+            this.selectArr = rows
+        }   
     },
 }

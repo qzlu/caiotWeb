@@ -107,6 +107,10 @@ $img-url: "/static/image/";
       background: #18406b;
       margin-top: 19px;
       color: white;
+      .el-tree-node:focus>.el-tree-node__content {
+          background:rgba(19,79,164,1);
+          opacity:0.5;
+      }
       &-node__content:hover {
         background-color: #18406b;
         opacity: 0.5;

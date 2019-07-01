@@ -214,7 +214,7 @@ input::-webkit-input-placeholder {color: #fff;}
 		  width="677px"
 		  :before-close="handleClose">
 		  <div  class="myHtml">
-		   <el-tree :data="Gtree_data3[0]" :props="defaultProps" node-key="pppp" @node-click="handleNodeClick03"></el-tree>
+		   <el-tree :data="Gtree_data3" :props="defaultProps" node-key="pppp" @node-click="handleNodeClick03"></el-tree>
 		  </div>
 		  <span slot="footer" class="dialog-footer">
 		    <el-button @click="dialogVisible03 = false">取 消</el-button>
@@ -231,7 +231,7 @@ input::-webkit-input-placeholder {color: #fff;}
 		  width="677px"
 		  :before-close="handleClose">
 		  <div  class="myHtml">
-		   <el-tree :data="Gtree_data3[0]" :props="defaultProps" node-key="pppp" @node-click="handleNodeClick04"></el-tree>
+		   <el-tree :data="Gtree_data3" :props="defaultProps" node-key="pppp" @node-click="handleNodeClick04"></el-tree>
 		  </div>
 		  <span slot="footer" class="dialog-footer">
 		    <el-button @click="dialogVisible04 = false">取 消</el-button>
@@ -336,7 +336,7 @@ export default {
           //children: 'children',
           //label: 'label',
           children: 'DeviceTypes',
-          label: 'DeviceTypeName',
+          label: 'DataItemName',
          
         },
          tree_data: [{    //树形菜单数据
@@ -411,7 +411,7 @@ export default {
     	
     input_gettime(){ //用原生把时间给id为timebox的input 付给时间值。
     		document.getElementById("timebox").children[0].value=this.value6;
-    		console.log(document.getElementById("FCreateTime").value)
+    		//console.log(document.getElementById("FCreateTime").value)
     		//console.log(this.value6)
     	},
      handleClose(done) {  /*弹出框事件*/
@@ -437,7 +437,6 @@ export default {
      },
      
      btn_click02(){  //弹出框确定铵钮
-     //	console.log(this.tree_check)
      	this.value_tree02=this.tree_check02.DeviceTypeName //把树形值显示在输入框
      	this.dialogVisible_tree=false;
      
@@ -501,9 +500,9 @@ export default {
      	     //	}else{
      	     		_this.PageIndex=x //如果不是点击查询按钮，就是点击分页页码
      	     //	}
-     	     	 console.log(set_WhereStr)  	
+     	     	 //console.log(set_WhereStr)  	
      	     	/*如果是点击导出按钮*/	
-     	     		 _this.$axios.post(_this.mypro+'Caiot/System',{
+     	     		 _this.$axios.post('System',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"ExportDataByUniversalConfig",
 						        "FVersion":"1.0.0",
@@ -511,15 +510,15 @@ export default {
 						        "WhereStr":set_WhereStr,
 						        "FMenuGUID":_this.FMenuGUID, //菜单id
 							}).then(function(jsons){
-								_this.xls_adress=_this.mypro+jsons.data.FObject
-							  console.log(jsons)
+								_this.xls_adress=jsons.data.FObject
+							  //console.log(jsons)
                                
 							}).catch(function(err){   });	
      	     	//	return false;
 
      	     	/*end of 如果是点击导出按钮*/
 
-	  	      _this.$axios.post(_this.mypro+'Caiot/System',{
+	  	      _this.$axios.post('System',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"QueryPageDataByUniversalConfig",
 						        "FVersion":"1.0.0",
@@ -530,7 +529,7 @@ export default {
 						        "WhereStr":set_WhereStr,
 						        "FMenuGUID":_this.FMenuGUID, //菜单id
 							}).then(function(jsons){
-							     console.log(jsons.data.FObject)
+							    // console.log(jsons.data.FObject)
 							   	 _this.table=jsons.data.FObject.Table     
 							     _this.table_total=jsons.data.FObject.Table[0].FTotalCount    //分页总数 
 							   //	 console.log(jsons.data.FObject.Table[0].FTotalCount)
@@ -629,13 +628,13 @@ export default {
      },
      
     html_tree_data(urls,Name,id){//2树形下拉菜单 
-    	 //console.log(urls)
+    	 console.log('123',urls)
     	 let _this=this;
     	// _this.tree_id=id;
     	 _this.tree_id02.push(id) //多个树形
     	 //_this.tree_index++;
     	 let arrs=urls.split("/"); 
-    	 _this.$axios.post(_this.mypro+"Caiot/"+arrs[0],{
+    	 _this.$axios.post(arrs[0],{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":arrs[1],
 						        "FVersion":"1.0.0",
@@ -647,12 +646,12 @@ export default {
 							 /*增加（全部）选择项*/
 							 let o={
 									"DeviceTypeID":50000,
-									"DeviceTypeName":"全部",
-									"DeviceTypes":"",
+									"DataItemName":"全部",
+									"DeviceTypes":[],
 									"$treeNodeId":"0"
 								}
 							 var a = jsons.data.FObject.slice(0);    
-                                a.unshift(o);
+																// a.unshift(o);
 							  _this.Gtree_data2.push(a)
 							 // console.log(_this.tree_id02)
 							 // console.log(_this.Gtree_data2)
@@ -672,7 +671,7 @@ export default {
     	 	 </p>`;
   
     	      let arrs=urls.split("/");  	    	
-	  	      _this.$axios.post(_this.mypro+"Caiot/"+arrs[0],{
+	  	      _this.$axios.post(arrs[0],{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":arrs[1],
 						        "FVersion":"1.0.0",
@@ -805,7 +804,6 @@ export default {
 	  let st=0;
 	    setTimeout(function(){
 	    	let chi=document.getElementById(x+"-ul").children; //取得父级UL的id
-	    	
           
 		  for(let i of chi){  //付值给弹出框相对应的输入框等。。。
 		    	//console.log(i.id)
@@ -833,9 +831,9 @@ export default {
 		    	  	
 		    	  }else if(i.getAttribute("edi_type")==3){ //键值下拉菜单
 		    	  	let vh=i.getAttribute("gid")
-		    	  	    //console.log(oo+"---->>")
+									//console.log(oo+"---->>")
 		    	  	    if(vh){
-		    	  	    	document.getElementById(oo).value=vh;
+		    	  	    	document.getElementById(oo+'#1').value=vh;
 		    	  	    }
 		    	  		
 		    	  	
@@ -882,7 +880,7 @@ export default {
     	 	 </p>`;
   
     	      let arrs=urls.split("/");  	    	
-	  	      _this.$axios.post(_this.mypro+"Caiot/"+arrs[0],{
+	  	      _this.$axios.post(arrs[0],{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":arrs[1],
 						        "FVersion":"1.0.0",
@@ -927,8 +925,9 @@ export default {
     	 _this.tree_name.push(name)//给树形菜单标题
     	 _this.tree_id03.push(id+"_00") //多个树形
     	 //_this.tree_index++;
-    	 let arrs=urls.split("/"); 
-    	 _this.$axios.post(_this.mypro+"Caiot/"+arrs[0],{
+			 let arrs=urls.split("/"); 
+			 console.log(arrs);
+    	 _this.$axios.post(arrs[0],{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":arrs[1],
 						        "FVersion":"1.0.0",
@@ -940,16 +939,14 @@ export default {
 								 /*增加（全部）选择项*/
 							 let o={
 									"DeviceTypeID":0,
-									"DeviceTypeName":"全部",
-									"DeviceTypes":"",
+									"DataItemName":"全部",
+									"DeviceTypes":[],
 									"$treeNodeId":"0"
 								}
 							 var a = jsons.data.FObject.slice(0);    
-                                a.unshift(o);
-							  _this.Gtree_data3.push(a)
-							 
-							 //console.log(_this.Gtree_data3)
-					      	  
+                o.DeviceTypes.push(...a)
+							  _this.Gtree_data3.push(o)
+					      console.log(_this.Gtree_data3)	  
 							}).catch(function(err){
 							
 							});
@@ -1013,7 +1010,7 @@ export default {
     }
    		
 
- _this.$axios.post(_this.mypro+"Caiot/System",{
+ _this.$axios.post("System",{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"AddDeleteUpdatePageDataByUniversalConfig",
 						        "FVersion":"1.0.0",
@@ -1074,7 +1071,7 @@ export default {
           type: 'warning'
         }).then(() => {
         	//console.log("successsuccesssuccesssuccess")
-           	 _this.$axios.post(_this.mypro+"Caiot/System",{
+           	 _this.$axios.post("System",{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"AddDeleteUpdatePageDataByUniversalConfig",
 						        "FVersion":"1.0.0",

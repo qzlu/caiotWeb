@@ -26,7 +26,7 @@
 	 			<span v-for="(lis, key) in item.TopValue" >
 	 				<span>
 	 					<!--<input v-model="colortype"  v-model.number="lis.AlarmType" value="lis.AlarmType">-->
-	 					<i class="icon iconfont" :class="[lis.AlarmWebIcon]"  :data="lis.AlarmType"></i>&nbsp;&nbsp;{{lis.AlarmCount}}&nbsp;&nbsp;&nbsp;</span>
+	 					<i :class="['icon','iconfont',lis.AlarmWebIcon]"  :data="lis.AlarmType"></i>&nbsp;&nbsp;{{lis.AlarmCount}}&nbsp;&nbsp;&nbsp;</span>
 	 			</span>
 	 			
 	 			
@@ -38,7 +38,7 @@
 	 				<p><!--温度-->{{item.DataDetail[0].SDataTitle}}<br><!--(℃)--><i style="font-size: 10px;">&nbsp;&nbsp;({{item.DataDetail[0].SDataUnit}})</i>&nbsp;&nbsp;&nbsp;</p>
 	 			   <p class="n">{{item.DataDetail[0].SDataValue[0].DValue}}</p>
 	 			</div>
-	 			<div style="height: 50px;">
+	 			<div style="height: 50px;" v-if="item.DataDetail[1]">
 	 			<p><!--湿度-->{{item.DataDetail[1].SDataTitle}}<br>
 	 			<!--(%)--><i style="font-size: 10px;">&nbsp;&nbsp;({{item.DataDetail[1].SDataUnit}})</i>&nbsp;&nbsp;&nbsp;</p>
 	 			<p class="n">{{item.DataDetail[1].SDataValue[0].DValue}}</p></div>
@@ -83,38 +83,41 @@
 
 	 		<div class="deo_list">
 	 			<ul>
-	 			  <li  v-for="(suList,key) in gitem.item" >
-	 			  	<div :id="suList.DeviceID">
-	 			  	<div class="inner_bg_sh">
-	 			  	<div class="a1">
-	 			  		<div class="jg">
-	 			  			<!--后端要求，PossionID为默认的第一个（三相线电压）id，带过去,还要把整个点击的当前数组带过去getalldata-->
-	 			  			<router-link :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}">
-	 			  			<p class="t">{{suList.DeviceName}}<!--1#变压器--></p>
-	 			  			</router-link>
-	 			  		</div>
-	 			  		<!--三相线电压数据-->
-	 			  		<div v-for="(c,key) in suList.DataDetail" :class="setclass(c.SDataID)" >
-						   
-			 		  		<p class="gre" ><span v-for="(df,key) in c.SDataValue" :data="df.DStatus">{{df.DValue}}<i v-if="c.SDataValue.length>key+1">/</i></span></p>
+	 			  <li  v-for="(suList,key) in gitem.item" :class="{alarm:suList.IsAlarm}">
+						<i :class="{r:true, 'el-icon-star-off':!suList.IsFocus,'el-icon-star-on':suList.IsFocus}" @click.stop="addOrDeleteUFocusMonitor(suList)"></i>
+						<router-link  :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}">
+	 			  		<div :id="suList.DeviceID" class="clearfix">
+	 			  		<div class="inner_bg_sh">
+	 			  		<div class="a1">
+	 			  			<div class="jg">
+	 			  				<!--后端要求，PossionID为默认的第一个（三相线电压）id，带过去,还要把整个点击的当前数组带过去getalldata-->
+	 			  				<!-- <router-link :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}"> -->
+	 			  				<p class="t" :title="suList.DeviceName">{{suList.DeviceName}}<!--1#变压器--></p>
+	 			  				<!-- </router-link> -->
+	 			  			</div>
+	 			  			<!--三相线电压数据-->
+	 			  			<div v-for="(c,key) in suList.DataDetail" :class="setclass(c.SDataID)" >
+								 
+			 		  			<p class="gre" ><span v-for="(df,key) in c.SDataValue" :data="df.DStatus">{{df.DValue}}<i v-if="c.SDataValue.length>key+1">/</i></span></p>
 
-			 		  		<p class="grd">{{c.SDataTitle}} <span v-if="c.SDataUnit">({{c.SDataUnit}})</span><!--三相线电压(V)--></p>
-	 			  		</div>
-	 			  		<!--end of 三相线电压数据-->
+			 		  			<p class="grd">{{c.SDataTitle}} <span v-if="c.SDataUnit">({{c.SDataUnit}})</span><!--三相线电压(V)--></p>
+	 			  			</div>
+	 			  			<!--end of 三相线电压数据-->
 
-	 			  	</div>
-
-	 			  	<div class="a2">
-	 			  		<div>
-	 			  		<p><i class="icon iconfont reset_green" :class="suList.WebIconName" :data="suList.DeviceStatus" style="font-size: 50px;"></i><!--<img src="/static/image/indexdetail/content_icon_3.png" />--></p>
-	 			  		<p class="tx"><!--合闸--><i :data="suList.DeviceStatus">{{suList.DeviceStatusTitle}}</i></p>
 	 			  		</div>
 
-	 			  	</div>
+	 			  		<div class="a2">
+	 			  			<div>
+	 			  			<p><i class="icon iconfont reset_green" :class="suList.WebIconName" :data="suList.DeviceStatus" style="font-size: 50px;"></i><!--<img src="/static/image/indexdetail/content_icon_3.png" />--></p>
+	 			  			<p class="tx"><!--合闸--><i :data="suList.DeviceStatus">{{suList.DeviceStatusTitle}}</i></p>
+	 			  			</div>
+
+	 			  		</div>
 
 
-	 			  	</div>
-	 			  	</div>
+	 			  		</div>
+	 			  		</div>
+						</router-link>
 	 			  </li>	
 
 	 			</ul>
@@ -153,15 +156,27 @@
         background: #fff;
     }
 
-
-
-
+[class*="el-icon-star-"]{
+	font-size:24px;
+	cursor: pointer;
+	position: relative;
+	top:20px;
+	right:20px;
+	z-index: 100;
+}  
+.el-icon-star-off{
+	color:#525E7E
+}
+.el-icon-star-on{
+	color:#2a91fc
+}
 </style>
 <script>
 import videojs from 'video.js'
-import 'videojs-contrib-hls'
+// import 'videojs-contrib-hls'
  var echarts = require('echarts');
  import * as comm from '../../assets/js/pro_common';
+import {project, Monitor} from '@/request/api';
  export default {
       data() {
         return {
@@ -199,7 +214,6 @@ import 'videojs-contrib-hls'
 		 opens_video(urls){//播放视频地址
 				
 				if(urls){ 
-					console.log(urls)
 					var obj="<video id='my-video'  class='video-js vjs-big-play-centered' controls preload='auto' poster='/static/image/index/video_start.jpg'>"
 					 +"<source src='adress_src' type='application/x-mpegURL'></video>"
 					obj=obj.replace("adress_src",urls)
@@ -244,7 +258,7 @@ import 'videojs-contrib-hls'
 				   //返回一个Promise对象
 				    //console.log(localStorage.getItem("projectid")+" "+_this.$route.params.SingleType+" "+_this.$route.params.id)
 				   return new Promise(function (resolve, reject) {
-				           _this.$axios.post(_this.mypro+'Caiot/Project',{
+				           _this.$axios.post('Project',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"GetPrjSingleInfo",
 						        "FVersion":"1.0.0",
@@ -266,7 +280,6 @@ import 'videojs-contrib-hls'
 								} 
 								
 							}).catch(function(err){
-							
 							});
 				    
 				   })
@@ -279,7 +292,7 @@ import 'videojs-contrib-hls'
 				    return new Promise(function (resolve, reject) {
 				    	_this.Pie_list(_this.setdocID,0)//生成pie图
 				    	_this.big_typeList()
-				        _this.set_bar()//生成柱图
+				      _this.set_bar()//生成柱图
 						resolve("succ")
 						  
 						
@@ -318,9 +331,7 @@ import 'videojs-contrib-hls'
 				      this.abc_datalist04=[];
 				      //arrs02.push()
 				    //  _this.abc_datalist04=arrs02	
-				   _this.abc_datalist04=arrs02
-					
-					
+					 _this.abc_datalist04=arrs02
 					//console.log("--->>>>")
 					/*end of 重新组装可以直接v-for读取的数据*/
 					
@@ -397,10 +408,8 @@ import 'videojs-contrib-hls'
 				
 		/*分类概况 bar图*/	
 		
-   set_bar(){  //柱形图
-   	 // console.log(this.abc_datalist02)
-       let o= comm.chart_utis(this.abc_datalist02)//调用组装成数据
-       	
+	 set_bar(){  //柱形图
+		let o= comm.chart_utis(this.abc_datalist02)//调用组装成数据
 		var dom = document.getElementById("container_list");
 		var myChart = echarts.init(dom);
 		var app = {};
@@ -455,19 +464,23 @@ import 'videojs-contrib-hls'
 		     series:o.series_arr,
 		     color:o.color_change
 		   
-		};;
+		};
 		if (option && typeof option === "object") {
 		    myChart.setOption(option, true);
-		}
-		
-					
-					
-				    
-			
-		
-		
-			//console.log()
-			  
+		} 
+		},
+		/**
+		 * 162.标记或取消重点监测设备
+		 */
+		addOrDeleteUFocusMonitor(item){
+			Monitor({
+				FAction:'AddOrDeleteUFocusMonitor',
+				DeviceID:item.DeviceID
+			})
+			.then(data => {
+				item.IsFocus = !item.IsFocus
+			})
+			.catch(err => {})
 		}																
 				
 	},
@@ -477,7 +490,7 @@ import 'videojs-contrib-hls'
 		         
 		         function settimeouts_detail_info(){
 					_this.Pro()
-					.then(function(d){			
+					.then(function(d){
 					 return _this.Pro2(d)
 					})
 					.then(function(){
@@ -641,7 +654,7 @@ a {
 .det_itemList .deo_list{ min-width: 365px; height: 195px; margin: 2px 0 0 5px;}
 .det_itemList .deo_list ul li{ width: 362px; padding: 0 8px 0 5px; height: 194px; float: left;  background: url(/static/image/indexdetail/fvc4e.png) 89px 0 no-repeat;}
 
-/*.det_itemList .deo_list ul li.err{background: url(/static/image/indexdetail/content_bg_2.png) 0px 0 no-repeat;}*/
+.det_itemList .deo_list ul li.alarm{background: url(/static/image/indexdetail/content_bg_2.png) 0px 0 no-repeat;}
 .det_itemList .deo_list ul li.err .inner_bg_sh{ width:100%;  height: 194px ;background: url(/static/image/indexdetail/content_bg_2.png) 0px 0 no-repeat;}
 .det_itemList .deo_list ul li .a1{ position: relative; width: 138px; height: 175px; float: left;  padding: 10px 0 0 10px;text-align: left;}
 
@@ -654,8 +667,8 @@ a {
 .det_itemList .deo_list ul li .a1 .pui_7{ position: absolute; top: 138px; right: -144px;width: 140px; }
 
 
-.det_itemList .deo_list ul li .a1 .jg{position:relative; height: 35px;}
-.det_itemList .deo_list ul li .a1 .jg .t{ position: absolute; top: 0px; left: 0px; height: 35px; width: 205px; overflow: hidden; font-size: 18px; color: #525E7E;}
+.det_itemList .deo_list ul li .a1 .jg{position:relative; height: 35px;width: 320px;}
+.det_itemList .deo_list ul li .a1 .jg .t{ position: absolute; top: 0px; left: 0px; height: 35px; width: 210px; overflow: hidden; font-size: 18px; color: #525E7E;white-space: nowrap;text-overflow:ellipsis}
 .det_itemList .deo_list ul li .a1 .gre{ color: #03CD82; font-size: 17px;padding: 1px 0; }
 .det_itemList .deo_list ul li .a1 .grd{  font-size: 13px; color: #737373;}
 .det_itemList .deo_list ul li .a1 .line{ height: 1px;}
@@ -673,7 +686,6 @@ a {
 .det_itemList .deo_list ul li .lrn .line{ height: 18px;}
 
   
-  
-  
+
 
 </style>

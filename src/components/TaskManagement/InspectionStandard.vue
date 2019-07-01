@@ -9,6 +9,10 @@
                         :props="defaultProps"
                         @node-click='handleClick'
                     >
+                        <span slot-scope="{ node, data }">
+                            <i class='icon iconfont' :class="data.IconName"></i>
+                            <span style="font-size:18px">{{data.DeviceTypeName}}</span>
+                        </span>
                     </el-tree>
                 </el-scrollbar>
             </div>
@@ -147,7 +151,6 @@ export default {
                 FAction:'QuerySystemDeviceTypeToTree'
             })
             .then(data => {
-                console.log(data);
                 this.deviceData = data.FObject
             })
             .catch(error => {
@@ -163,7 +166,6 @@ export default {
                 DeviceTypeID:id
             })
             .then(data => {
-                console.log(data);
                 this.allItem = data.FObject
             })
             .catch(error => {
@@ -194,12 +196,12 @@ export default {
          * 点击设备时
          */
         handleClick(data){
-            if(String(data.DeviceTypeID).length<3){
-                this.device = null
-            }else{
+            if(data.TreeLevel == 2){
                 this.device = data
                 this.queryDeviceAllItem(data.DeviceTypeID)
                 this.querySInspectionDeviceTypeDataItem(data.DeviceTypeID)
+            }else{
+                this.device = null
             }
         },
         /**
@@ -266,10 +268,9 @@ export default {
                 FAction:this.type?'UpdateSInspectionDeviceTypeCheckItem':'AddSInspectionDeviceTypeCheckItem',
                 ID:this.type?this.itemID:'',
                 DeviceTypeID:this.type?'':this.device.DeviceTypeID,
-                FName:this.inspectionItem
+                FName:this.inspectionItem.replace(/,/,'，')
             })
             .then(data => {
-                console.log(data);
                 this.show1 = false
                 this.querySInspectionDeviceTypeDataItem(this.device.DeviceTypeID)
             })
@@ -336,7 +337,12 @@ $img-url:'/static/image/';
                 }
                 &-node__content{
                     height: 66px;
+                    line-height: 66px;
                     padding-left: 100px!important;
+                    .iconfont{
+                        vertical-align: middle;
+                        font-size: 24px
+                    }
                 }
                 &-node__content:hover {
                     background:linear-gradient(90deg,rgba(4,28,63,1),rgba(6,46,113,1),rgba(13,58,132,1),rgba(2,35,82,1));
