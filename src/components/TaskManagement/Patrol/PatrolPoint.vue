@@ -5,6 +5,11 @@
                 <el-form-item label="巡更点名称"  prop='PointName' :rules="[{ required: true, message: '请输入巡更点名称'}]">
                     <el-input v-model="addPointData.PointName"></el-input>
                 </el-form-item>
+                <el-form-item label="关联蓝牙" prop="BluetoothConfigID">
+                    <el-select v-model="addPointData.BluetoothConfigID">
+                        <el-option v-for="(list,i) in blueTooth" :key="i" :label="list.BluetoothName" :value="list.ID"></el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <div class="submit">
                 <button class="zw-btn zw-btn-primary" @click="addOrUpdatedPoint()">确定</button>
@@ -56,6 +61,7 @@
 import {system,Patrol} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {zwTree} from '@/zw-components/index'
+import '../InspectionItem.scss'
 export default {
     mixins:[table],
     data(){
@@ -70,6 +76,10 @@ export default {
                     label: '巡更点'
                 },
                 {
+                    prop:'BluetoothCode',
+                    label:'蓝牙识别码'
+                },
+                {
                     prop: 'ShortName',
                     label: '所属项目'
                 }
@@ -78,6 +88,7 @@ export default {
             show:false,
             addPointData:{ //新增或编辑巡更点数据
                 PointName:'',
+                BluetoothConfigID:''
             },
             areaList:[], //区域列表
             energyTypeList:[], //能源类型分类
@@ -86,7 +97,8 @@ export default {
             showImportDialog:false,
             allDefaultPoint:[],//设备导入的所有巡更检点
             defaultProps:{children:'list',disabled:'disabled'},
-            defaultChecked:[]//已经导入的
+            defaultChecked:[],//已经导入的，
+            blueTooth:[],//蓝牙列表
         }
     },
     components:{
@@ -102,6 +114,7 @@ export default {
     },
     created(){
         this.queryData()
+        this.queryBluetooth()
     },
     mounted(){
 
@@ -128,6 +141,7 @@ export default {
                 PageSize:10
             })
             .then(data => {
+                console.log(data)
                 this.total = data.FObject.Table[0].Count
                 this.tableData = data.FObject.Table1
                 /**
@@ -155,6 +169,23 @@ export default {
             this.queryData(this.filterText,val)
         },
         /**
+         * 查询所有蓝牙
+         */
+        queryBluetooth(){
+            system({
+                FAction:'QueryPageUBluetoothConfig',
+                SearchKey:'',
+                PageIndex:this.pageIndex,
+                PageSize:10000
+            })
+            .then((data) => {
+                this.blueTooth = data.FObject.Table1 ? data.FObject.Table1 : []
+            })
+            .catch((err) => {
+                
+            });
+        },
+        /**
          * 新增或编辑巡更点
          */
         async addOrUpdatedPoint(){
@@ -169,7 +200,8 @@ export default {
                 FAction:this.type?'UpdateUPatrolPoint':'AddUPatrolPoint',
                 FName:this.addPointData.PointName,
                 FDescription:'',
-                ID:this.addPointData.ID
+                ID:this.addPointData.ID,
+                BluetoothConfigID:this.addPointData.BluetoothConfigID
             })
             .then(data => {
                 this.show = false
@@ -194,6 +226,7 @@ export default {
             this.type = 0
             this.show = true,
             this.addPointData.PointName = null
+            this.addPointData.BluetoothConfigID = null
         },
         /**
          * update 修改巡更点
@@ -204,6 +237,7 @@ export default {
             this.type = 1
             this.addPointData.PointName = item.PatrolPointName
             this.addPointData.ID = item.ID
+            this.addPointData.BluetoothConfigID = item.BluetoothConfigID
         },
         /**
          * deleteItem 删除巡更点
@@ -273,12 +307,4 @@ export default {
 }
 </script>
 <style lang="scss">
-// 样式同巡检点（InspectionItem）
-@import '../inspectionItem.scss';
-.zw-dialog.patrol-point{
-    .el-dialog{
-        height: 260px;
-        background-size: 100% 100%;
-    }
-}
 </style>

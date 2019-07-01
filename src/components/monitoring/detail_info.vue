@@ -38,7 +38,7 @@
 	 				<p><!--温度-->{{item.DataDetail[0].SDataTitle}}<br><!--(℃)--><i style="font-size: 10px;">&nbsp;&nbsp;({{item.DataDetail[0].SDataUnit}})</i>&nbsp;&nbsp;&nbsp;</p>
 	 			   <p class="n">{{item.DataDetail[0].SDataValue[0].DValue}}</p>
 	 			</div>
-	 			<div style="height: 50px;">
+	 			<div style="height: 50px;" v-if="item.DataDetail[1]">
 	 			<p><!--湿度-->{{item.DataDetail[1].SDataTitle}}<br>
 	 			<!--(%)--><i style="font-size: 10px;">&nbsp;&nbsp;({{item.DataDetail[1].SDataUnit}})</i>&nbsp;&nbsp;&nbsp;</p>
 	 			<p class="n">{{item.DataDetail[1].SDataValue[0].DValue}}</p></div>
@@ -85,7 +85,7 @@
 	 			<ul>
 	 			  <li  v-for="(suList,key) in gitem.item" :class="{alarm:suList.IsAlarm}">
 						<i :class="{r:true, 'el-icon-star-off':!suList.IsFocus,'el-icon-star-on':suList.IsFocus}" @click.stop="addOrDeleteUFocusMonitor(suList)"></i>
-						<router-link :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}">
+						<router-link  :to="{ name: 'detail_info_list',params:{ id:suList.DeviceID,PossionID:suList.DataDetail[0].SDataID,getalldata:suList}}">
 	 			  		<div :id="suList.DeviceID" class="clearfix">
 	 			  		<div class="inner_bg_sh">
 	 			  		<div class="a1">
@@ -258,7 +258,7 @@ import {project, Monitor} from '@/request/api';
 				   //返回一个Promise对象
 				    //console.log(localStorage.getItem("projectid")+" "+_this.$route.params.SingleType+" "+_this.$route.params.id)
 				   return new Promise(function (resolve, reject) {
-				           _this.$axios.post(_this.mypro+'Caiot/Project',{
+				           _this.$axios.post('Project',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"GetPrjSingleInfo",
 						        "FVersion":"1.0.0",
@@ -280,7 +280,6 @@ import {project, Monitor} from '@/request/api';
 								} 
 								
 							}).catch(function(err){
-							
 							});
 				    
 				   })
@@ -293,7 +292,7 @@ import {project, Monitor} from '@/request/api';
 				    return new Promise(function (resolve, reject) {
 				    	_this.Pie_list(_this.setdocID,0)//生成pie图
 				    	_this.big_typeList()
-				        _this.set_bar()//生成柱图
+				      _this.set_bar()//生成柱图
 						resolve("succ")
 						  
 						
@@ -332,7 +331,7 @@ import {project, Monitor} from '@/request/api';
 				      this.abc_datalist04=[];
 				      //arrs02.push()
 				    //  _this.abc_datalist04=arrs02	
-				   _this.abc_datalist04=arrs02
+					 _this.abc_datalist04=arrs02
 					//console.log("--->>>>")
 					/*end of 重新组装可以直接v-for读取的数据*/
 					
@@ -409,10 +408,8 @@ import {project, Monitor} from '@/request/api';
 				
 		/*分类概况 bar图*/	
 		
-   set_bar(){  //柱形图
-   	 // console.log(this.abc_datalist02)
-       let o= comm.chart_utis(this.abc_datalist02)//调用组装成数据
-       	
+	 set_bar(){  //柱形图
+		let o= comm.chart_utis(this.abc_datalist02)//调用组装成数据
 		var dom = document.getElementById("container_list");
 		var myChart = echarts.init(dom);
 		var app = {};
@@ -493,7 +490,7 @@ import {project, Monitor} from '@/request/api';
 		         
 		         function settimeouts_detail_info(){
 					_this.Pro()
-					.then(function(d){			
+					.then(function(d){
 					 return _this.Pro2(d)
 					})
 					.then(function(){

@@ -77,7 +77,7 @@ export default {
   	 getdata(){
   	 	let _this=this;
   	 	 return new Promise(function (resolve, reject) {
-  	 	  _this.$axios.post(_this.mypro+'Caiot/Report',{
+  	 	  _this.$axios.post('Report',{
             "FTokenID":localStorage.getItem("Token"),
             "FAction":"QueryDeviceCountReportByProject",
             "FVersion":"1.0.0",

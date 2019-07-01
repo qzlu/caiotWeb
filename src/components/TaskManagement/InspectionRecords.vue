@@ -572,7 +572,6 @@ import * as comm from "../../assets/js/pro_common";
 import {Inspection,FileUpLoad,project} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {pieChart} from '@/zw-components/index'
-import { clean } from 'semver';
 export default {
   mixins:[table],
   data() {

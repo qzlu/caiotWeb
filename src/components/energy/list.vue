@@ -391,7 +391,7 @@ export default {
     getDatas(gettime, day) {
       let _this = this;
       _this.$axios
-        .post(_this.mypro + "Caiot/Project", {
+        .post("Project", {
           FTokenID: localStorage.getItem("Token"),
           FAction: "GetPrjEnergy",
           FVersion: "1.0.0",

@@ -2,7 +2,7 @@
     <div class="user-main report">
         <!-- 新增或编辑用户弹框 -->
         <div class="config-dialog">
-            <el-dialog  :title="title" :visible.sync="show" width="676" class="zw-dialog">
+            <el-dialog  :title="title" :visible.sync="show" :close-on-click-modal='false' width="676" class="zw-dialog">
                 <el-form :model='addFormData' ref='form' inline>
 <!--                     <el-form-item label="用户名称" prop="FUserNickname" :rules="[{ required: true, message: '请输入用户名称'}]">
                         <el-input v-model="addFormData.FUserNickname"></el-input>
@@ -25,13 +25,14 @@
                         <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option>
                       </el-select>
                     </el-form-item>
-                    <el-form-item label="管理角色" prop="FUserType" :rules="[{ required: true, message: '请选择'}]">
+                    <el-form-item label="管理身份" prop="FUserType" :rules="[{ required: true, message: '请选择'}]">
                       <el-select v-model="addFormData.FUserType"   placeholder="请选择角色">
                         <!-- <el-option v-for="role in roleList" :key="role.FGUID" :label="role.FName" :value="role.FGUID"></el-option> -->
-                        <el-option key="1" label="运营管理" :value="1"></el-option>
+<!--                         <el-option key="1" label="运营管理" :value="1"></el-option>
                         <el-option key="2" label="集团管理" :value="2"></el-option>
                         <el-option key="3" label="项目管理" :value="3"></el-option>
-                        <el-option key="4" label="项目现场运维" :value="4"></el-option>
+                        <el-option key="4" label="项目现场运维" :value="4"></el-option> -->
+                        <el-option v-for="(item,i) in userType" :key="i" :value="item.id" :label="item.name"></el-option>
                       </el-select>
                     </el-form-item>
                 </el-form>
@@ -69,6 +70,7 @@
                </el-table-column>
                <el-table-column
                  prop=""
+                 width="200"
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="user-operation">
@@ -86,6 +88,7 @@
 <script>
 import {system} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
+const userType = ['',{id:1,name:'运营管理'},{id:2, name:'集团管理'},{id:3,name:'项目管理'},{id:4,name:'项目现场运维'}]
 export default {
     mixins:[table],
     data(){
@@ -134,6 +137,15 @@ export default {
                     label: '所属项目',
                     width:400
                 },
+                {
+                    prop: 'FCreateUser',
+                    label: '创建人',
+                },
+                {
+                    prop: 'FCreateTime',
+                    label: '创建时间',
+                    width:'160'
+                },
 /*                 {
                     prop: 'FPassword',
                     label: '密码'
@@ -168,6 +180,7 @@ export default {
                 FIMG:'',
                 FRoleGUID:null
             },
+            userType:userType.slice(localStorage.getItem('FUserType')),
             title:'新增', //新增或修改用户弹框标题
             show:false, //控制新增弹框是否显示
             type:0,  // 0 :新增用户 1：修改用户
@@ -205,6 +218,7 @@ export default {
                 ProjectID:localStorage.getItem("projectid")
             })
             .then(data => {
+                console.log(data)
                 this.total = data.FObject.Table[0].Count
                 this.tableData = data.FObject.Table1
                 this.tableData.forEach(item => {

@@ -6,7 +6,7 @@
             <li :class="{active:tabIndex === 4}" @click="tabIndex = 4">待接单</li>
             <li :class="{active:tabIndex === 2}" @click="tabIndex = 2">待完成</li>
             <li :class="{active:tabIndex === 3}" @click="tabIndex = 3">已完成</li>
-            <li :class="{active:tabIndex === 6}" @click="tabIndex = 6">已逾期</li>
+            <li :class="{active:tabIndex === 6}" @click="tabIndex = 6">其他</li>
             <li class="select">
                 <span>工单类型</span> 
                 <div class="select-box" @click="showSelectOption = !showSelectOption">{{selectType.name}}<i :class="{'el-icon-caret-bottom':!showSelectOption,'el-icon-caret-top':showSelectOption}"></i></div>
@@ -678,8 +678,12 @@ export default {
             workInfo:null,
             areaArr:[],
             showOrder:false,//显示派单弹框
-            users:[],
             workObj:{}
+        }
+    },
+    computed:{
+        users(){
+            return this.$store.state.orderUser //负责人
         }
     },
     components:{
@@ -689,8 +693,8 @@ export default {
 
     },
     created(){
-        this.queryAllOrders()
         this.queryUser()
+        this.$store.dispatch('queryOrderTUsers')
     },
     mounted(){
 

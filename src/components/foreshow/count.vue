@@ -377,7 +377,7 @@
   	getDatas(gettime,day){ 
   		console.log(gettime,day)
   		   let _this=this;
-  		   _this.$axios.post(_this.mypro+'Caiot/Alarm',{
+  		   _this.$axios.post('Alarm',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"QueryTotalSituationCount",
 						        "FVersion":"1.0.0",

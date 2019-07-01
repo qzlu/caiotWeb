@@ -137,7 +137,7 @@
         <ul>
           <li
             v-for="(item,key) in plans"
-            :key="item.ID"
+            :key="key"
             :class="{currt_ing:active==key}"
             @click="active=key;queryPlan(item.ID)"
           >
@@ -362,10 +362,9 @@ export default {
      */
     exportFile(){
         Patrol({
-            FAction:'QueryExportUMeterReadingPlanRecord',
+            FAction:'QueryExportUPatrolPlanRecord',
             ID:this.planID,
-            FDateTime:this.time.getFullYear() + '-' + comm.formatNumber(this.time.getMonth()+1),
-            FName:''
+            FDateTime:this.time.toLocaleDateString(),
         })
         .then(data => {
             window.location = "http://www.szqianren.com/" + data.FObject;

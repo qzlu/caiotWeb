@@ -150,7 +150,7 @@ export default {
     	let _this=this;
     	 return new Promise(function (resolve, reject) {  	
     	   // console.log(gettime)    	     	
-				    _this.$axios.post(_this.mypro+'Caiot/Project',{
+				    _this.$axios.post('Project',{
 						        "FTokenID":"43324155-7af5-475b-ad7d-50321483f945",
 						        "FAction":"GetHisAlarmData",
 						        "FVersion":"1.0.0",

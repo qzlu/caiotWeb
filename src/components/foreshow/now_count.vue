@@ -106,7 +106,7 @@ import {Alarm} from '@/request/api.js';
 					FAction:"CreatCaiotRealTimeAlarmByProject"
 				})
 				.then(data => {
-					this.xls_adress=this.mypro+data.FObject
+					this.xls_adress=data.FObject
 				})
 			},
      openFullScreen() { //loading弹出框

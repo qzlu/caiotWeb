@@ -889,6 +889,24 @@ let routers_item=[
 								title: '千仞云平台',
 								requireAuth: true,
 							 },
+						},
+						{
+							path:'Bluetooth', //系统管理- 蓝牙信息
+							name:'Bluetooth',
+							component: () => import('@/components/SystemManagement/bluetooth.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
+						},
+						{
+							path:'SignInfo', //系统管理- 签到信息
+							name:'SignInfo',
+							component: () => import('@/components/SystemManagement/signInfo.vue'),
+							meta: {
+								title: '千仞云平台',
+								requireAuth: true,
+							 },
 						}
 					]
 				

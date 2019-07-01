@@ -39,6 +39,10 @@
                     <el-input v-model="addInfo.Port">
                     </el-input>
                 </el-form-item>
+                <el-form-item label="第三方ID" prop="OtherSourceID">
+                    <el-input v-model="addInfo.OtherSourceID">
+                    </el-input>
+                </el-form-item>
                 <el-form-item label="是否为识别ID" prop="IsDISId" >
                     <el-switch v-model="addInfo.IsDISId"></el-switch>
                 </el-form-item>
@@ -280,13 +284,14 @@ export default {
             Object.keys(this.addInfo).forEach(key => {
                 this.addInfo[key] = row[key]
             })
+            this.addInfo.IsDISId = Boolean(this.addInfo.IsDISId)
         },
         /**
          * 275.新增/修改仪表信息
          */
         addUpdateUMeter(){
             this.show = false
-            this.addInfo.IsDISId = parseInt(this.addInfo.IsDISId)
+            this.addInfo.IsDISId = Number(this.addInfo.IsDISId)
             system({
                 FAction:'AddUpdateUMeter',
                 FType:this.type,

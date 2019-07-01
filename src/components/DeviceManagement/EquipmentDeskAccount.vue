@@ -221,26 +221,27 @@ export default {
                 {
                     prop: 'DeviceLedgerName',
                     label: '设备名称',
-                    width:180
+
                 },
                 {
                     prop: 'DeviceCode',
-                    label: '设备编码'
+                    label: '设备编码',
+                    width:160
                 },
                 {
                     prop: 'Manufacturer',
                     label: '生产厂家',
-                    width:160
+                    width:120
                 },
                 {
                     prop: 'SpecificationsCode',
                     label: '出厂型号',
-                    width:200
+                    width:120
                 },
                 {
                     prop: 'ManufacturingNumber',
                     label: '出厂编号',
-                    width:90
+                    width:120
                 },
                 {
                     prop: 'ManufacturingTime',
@@ -362,6 +363,7 @@ export default {
                 PageSize:10
             })
             .then(data => {
+                console.log(data);
                 this.total = data.FObject.Table[0].FTotalCount
                 this.tableData = data.FObject.Table1
                 this.tableData.forEach(element => {

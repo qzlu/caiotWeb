@@ -60,13 +60,17 @@
                   placeholder="选择年">
                 </el-date-picker>
             </li>
+<!--             <li class="l">
+                <span class="label">路线名称</span>
+                <el-input class="search-input" v-model="filterObj.PatrolLineName"></el-input>
+            </li> -->
             <li class="r">
                 <el-input class="search-input" v-model="filterText" placeholder="搜索计划关键字">
                      <i class="el-icon-search" slot="suffix"></i>
                 </el-input>
-                <el-button type="primary" @click="showFilterBox = !showFilterBox">
+              <!--   <el-button type="primary" @click="showFilterBox = !showFilterBox">
                   高级搜索<i class=" el-icon--right" :class="{'el-icon-arrow-down':!showFilterBox,'el-icon-arrow-up':showFilterBox}"></i>
-                </el-button>
+                </el-button> -->
                 <transition>
                     <ul class="search-box"  v-if="showFilterBox">
                         <li>
@@ -108,6 +112,22 @@
                         </li>
                     </ul>
                 </transition>
+            </li>
+            <li  class="r">
+                <span class="label">负责人</span>
+                <el-select v-model="filterObj.PatrolUserGUID"  placeholder="请选择" @change="queryData()">
+                    <el-option value="" label="全部"></el-option>
+                    <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
+                </el-select>
+            </li>
+            <li class="r select-month-time">
+                <span class="label">月份</span>
+                <el-date-picker
+                  v-model="month"
+                  type="month"
+                  @change='queryData()'
+                  placeholder="选择月">
+                </el-date-picker>
             </li>
         </ul>
         <div class="zw-table plan-table">
@@ -164,6 +184,7 @@ import {system,Patrol,Inspection} from '@/request/api.js'//api接口（接口统
 import table from '@/mixins/table' //表格混入数据
 import {zwTree} from '@/zw-components/index'
 import * as comm from "@/assets/js/pro_common";
+import '../InspectionPlan.scss'
 export default {
     mixins:[table],
     data(){
@@ -176,7 +197,8 @@ export default {
                 },
                 {
                     prop: 'PatrolPlanName',
-                    label: '计划名称'
+                    label: '计划名称',
+                    width:'300'
                 },
                 {
                     prop: 'PatrolPlanTypeText',
@@ -198,7 +220,8 @@ export default {
                 {
                     prop: 'PatrolDatetime',
                     label: '计划巡更时间',
-                    sortble:'custom'
+                    sortble:'custom',
+                    width:'220'
                 }
             ],
             timeList:[{
@@ -235,12 +258,12 @@ export default {
             },
             time:'',
             planTime:'',
+            month:new Date(),
             showFilterBox:false,
-            queryType:0,//查询方式，0为普通查询，1为高级搜索
+            queryType:1,//查询方式，0为普通查询，1为高级搜索
             type:0,//0为新增 1为编辑计划
             show:false, //控制新增或编辑弹框
             title:'新增巡更计划',
-            users:[], //所有用户
             roadDatas:[],//所有路线
             showPointTree:false,
             PatrolCycleName:'临时巡更',
@@ -300,6 +323,11 @@ export default {
             },
         }
     },
+    computed:{
+        users(){
+            return this.$store.state.orderUser //负责人
+        }
+    },
     watch:{
         filterText(val){
             this.filterObj.PatrolPlanName = val
@@ -309,8 +337,8 @@ export default {
     },
     created(){
         this.queryData()
-        this.queryUser()
         this.queryRoad()
+        this.$store.dispatch('queryOrderTUsers')
     },
     mounted(){
 
@@ -331,7 +359,9 @@ export default {
             if(this.queryType ===1){
                 this.showFilterBox = false
             }
-            Patrol({
+            this.filterObj.StartDateTime = new Date(this.month.getFullYear() + '-' + (this.month.getMonth()+1)).toLocaleDateString() + ' 00:00'
+            this.filterObj.EndDateTime = new Date(new Date(this.month.getFullYear() + '-' + (this.month.getMonth()+2)).getTime() - 24*60*60*1000).toLocaleDateString() + ' 23:59'
+            Patrol({ 
                 FAction:'QueryPageUPatrolPlan',
                 FType:this.queryType?'Advanced':'Normal',
                 PageIndex:this.pageIndex,
@@ -387,21 +417,6 @@ export default {
             })
             .catch(error => {
 
-            })
-        },
-        /**
-         * 查询所有用户
-         */
-        queryUser(){
-            system({
-                FAction:'QueryTUsers',
-                FName:''
-            })
-            .then(data => {
-                this.users = data.FObject
-            })
-            .catch(error => {
-                console.log(error);
             })
         },
         /**
@@ -640,5 +655,4 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '../InspectionPlan.scss'
 </style>

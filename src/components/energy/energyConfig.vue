@@ -2,11 +2,6 @@
     <div class="report inspection-item">
         <el-dialog :title="title" :visible.sync="show" width="426" class="zw-dialog energy-config">
             <el-form :model="addConfig" ref="form">
-                <el-form-item label="设备名称"  prop='Expression'   :rules="[{ required: true, message: '请选择'}]">
-                  <el-select v-model="addConfig.Expression" multiple collapse-tags  value-key="DeviceID" filterable  placeholder="请选择">
-                    <el-option v-for="device in deviceList" :key="device.DeviceID" :label="device.DeviceName" :value="device.DeviceID"></el-option>
-                  </el-select>
-                </el-form-item>
                 <el-form-item label="能源类型" prop="EnergyType" filterable :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addConfig.EnergyType" filterable  placeholder="请选择">
                     <el-option v-for="item in energyTypeList" :key="item.ID" :label="item.EnergyTypeName" :value="item.ID"></el-option>
@@ -28,6 +23,11 @@
                 </el-form-item>
                 <el-form-item label="统计名称" prop="CountName" :rules="[{ required: true, message: '请输入'}]">
                     <el-input type="text" v-model="addConfig.CountName"></el-input>
+                </el-form-item>
+                <el-form-item label="计算公式"  prop='Expression'   :rules="[{ required: true, message: '请选择'}]">
+                  <el-select v-model="addConfig.Expression" multiple collapse-tags  value-key="DeviceID" filterable  placeholder="请选择">
+                    <el-option v-for="device in deviceList" :key="device.DeviceID" :label="device.DeviceName" :value="device.DeviceID"></el-option>
+                  </el-select>
                 </el-form-item>
             </el-form>
             <div class="submit">

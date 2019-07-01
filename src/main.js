@@ -31,7 +31,7 @@ import 'video.js/dist/video-js.css'
 
 
 Vue.prototype.Baseurl="https://www.gcy168.com";
-Vue.prototype.mypro="http://47.106.64.130:56090/";
+Vue.prototype.mypro="";
 
 Vue.config.productionTip = false
 Vue.directive('loadmore', {  bind(el, binding) {    

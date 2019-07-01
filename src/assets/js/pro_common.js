@@ -1,5 +1,12 @@
  import { Message } from 'element-ui';
  import router from '../../router'
+ const colors = {
+	1:"#1bd1a1",
+	2:"#73777a",
+	3:"#0091fe",
+	4:"#fef500",
+	5:"#9c1428"
+}  
  export function CurentTime(){
 			        var now = new Date();
 			        /*显示星期*/
@@ -102,84 +109,28 @@ export function getFormatTime(val){
 	formatNumber(time.getHours()) + ':' + formatNumber(time.getMinutes()) + ':' + formatNumber(time.getSeconds())
 }
 export function chart_utis(o){
-	
-	
-	let DeviceType=[]; //一级分类
-	let list=[]//运行、停止、等所有数据
-	let ch_name=[],ch_value=[],ch_color=[];//一级分类子分类
-	for(let Type of o){
-		DeviceType.push(Type.DeviceType);
-		let chname=[],chvalue=[];
-		for(let ch of Type.DataValue){
-			list.push(ch.STargetTitle)//运行、停止、等所有数据，方便去除重复值  
-			ch_color.push(ch.SColor); //所有色彩数据，方便去除重复值  
-			
-			chname.push(ch.STargetTitle);
-			chvalue.push(ch.STargetValue);
-			  
+	let name = []
+	o.forEach(item => {
+		name.push(...item.DataValue)
+	})
+	let color_change = [...new Set(name.map(item => item.SColor))].map(item => colors[item])
+	let arr =[...new Set(name.map(item => item.STargetTitle))]
+	let DeviceType = o.map(item => item.DeviceType)
+	let series_arr = arr.map(item => {
+		return{
+			name:item,
+			type:'bar',
+			stack:'总量',
+			barWidth: 45,
+			data:[]
 		}
-		ch_name.push(chname)
-		ch_value.push(chvalue)
-		
-	}
-	//console.log(DeviceType)
-	/*去掉色彩重复分类*/
-			let colorset=new Set(ch_color)
-			let cc=[...colorset],color_change=[];
-			for(let c_color of cc){
-				color_change.push(resetColor(c_color))
-			}
-	      
-	     //console.log(color_change)
-	
-	
-	let new_name01=new Set(list);
-	let new_name02=[...new_name01]//得到去除重复值  ["运行", "停止", "离线"]
-	/*
-	 var arr=["运行", "离线", "停止"];
-	 var arr2=[["运行", "停止"],["运行"],["运行", "离线"],["运行", "停止", "离线"],["运行","停止"],["离线"]];
-	 var arr3=[[4,3],[4],[101,10],[1,1,1],[6,5],[3]]
-	 */
-	
-	var arr=new_name02,
-	    arr2=ch_name,
-	    arr3=ch_value;
-
-/*补位运算*/
-	for(let e=0;e<arr.length;e++ ){ 
-		for(let i=0;i<arr2.length;i++){
-			if(arr2[i].indexOf(arr[e])==-1){
-				arr3[i].splice(e,0,0)
-				
-			}
-		}	
-	}
-	
-	
-	let arr_ok=[];  //组装成数组
-	for(var h=0;h<arr.length;h++){
-		let arr_one=[];
-		for(let y=0;y<arr3.length;y++){
-		   arr_one.push(arr3[y][h])
-		}
-		arr_ok.push(arr_one)
-	}
-	 
-	
-	let series_arr=[];
-	for(let yy=0;yy<arr.length;yy++){
-		 	let obj_01={type: 'bar',stack: '总量',barWidth: 45,label: {normal: { show: false,position: 'inside'}}}	 	    
-		 	    obj_01.name=arr[yy];
-		 	    obj_01.data=arr_ok[yy];
-		 	    series_arr.push(obj_01)
-		 }
-	
-	/*console.log(DeviceType)
-	console.log(arr)
-	console.log(series_arr)
-	console.log(color_change)
-   */	
-   
+	})
+	series_arr.forEach(item => {
+		o.forEach(obj => {
+			let data = obj.DataValue.find(re => re.STargetTitle === item.name)
+			data ? item.data.push(data.STargetValue):item.data.push(0)
+		})
+	})
 	return {DeviceType,arr,series_arr,color_change}
 	
 }

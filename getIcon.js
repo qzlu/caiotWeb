@@ -6,7 +6,6 @@ let $ = cheerio.load(html)
 let chapters = $('.content.font-class li.dib')
 let arr = []
 chapters.each(function(item,index) {
-    console.log(this)
     let chapter = $(this)
     let icon = {name:chapter.children('.code-name').text().replace(/\./ig,'').trim()}
     arr.push(icon)

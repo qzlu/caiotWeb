@@ -4,26 +4,44 @@
 				<section  class="png_ygts">
 				<ul class="gpn_siItem">
 						<li v-for="(item, index) in datalist" :key="index" :class="{'show_warn_class':item.TopValue.length,'no_warn_class':!item.TopValue.length}">
-						<router-link :to="{ name: 'detail_info',params:{ id:item.DeviceItemID,SingleType:1}}">
-						<p class="u_tle">{{item.DeviceItemTitle}}</p>
-						
-						<div class="u_cen">
-							 <div class="icon_lig">
-							 	<p v-for="(lis, key) in item.TopValue" class="r">
-							 		<i class="icon iconfont set_imgColor" :class="[lis.AlarmWebIcon]"  :data="lis.AlarmType"></i>&nbsp;{{lis.AlarmCount}}&nbsp;</span>
-								 
-								</p>
+							<router-link v-if="item.DeviceItemID != 4" :to="{ name: 'detail_info',params:{ id:item.DeviceItemID,SingleType:1}}">
+								<p class="u_tle">{{item.DeviceItemTitle}}</p>
+								<div class="u_cen">
+									 <div class="icon_lig">
+									 	<p v-for="(lis, key) in item.TopValue" class="r">
+									 		<i class="icon iconfont set_imgColor" :class="[lis.AlarmWebIcon]"  :data="lis.AlarmType"></i>&nbsp;{{lis.AlarmCount}}&nbsp;</span>
+
+										</p>
+										</div>
+
+										<div class="tl_t"><p style="color: #F1F1F2; font-size: 10px;">{{item.TargetTitle}}</p><p style="color: #F1F1F2; font-size: 22px;">{{item.TargetValue}}</p></div>
+										<div class="numb_t">
+											<p v-for="(abc, key) in item.TargetDetail">{{abc.STargetValue}}</p>
+										</div>							
+									 <div class="u_acr">
+										 	<pie-chart :data='item.data' :color='item.color' :setting="{center:['35%', '51%']}"></pie-chart>
+										</div>
 								</div>
-								
-								<div class="tl_t"><p style="color: #F1F1F2; font-size: 10px;">{{item.TargetTitle}}</p><p style="color: #F1F1F2; font-size: 22px;">{{item.TargetValue}}</p></div>
-								<div class="numb_t">
-									<p v-for="(abc, key) in item.TargetDetail">{{abc.STargetValue}}</p>
-								</div>							
-							 <div class="u_acr">
-								 	<pie-chart :data='item.data' :color='item.color' :setting="{center:['35%', '51%']}"></pie-chart>
+							</router-link>
+							<a v-else href="https://www.daantc.com:8443/cas/autoLogin?token=eyJhbGciOiJIUzI1NiJ9.eyJsb2dpblVzZXIiOiJqaWFuZ2dvbmcxIiwibG9naW5Qc3N3b3JkIjoiamc1MTg4In0.Qi2ETx3m-wgBIJmdsDa8Our_MrKWBSMRpmZ5w8Dk3dg&se&service=https://www.daantc.com:8444/elevator-monitor/shiro-cas" target="_blank" rel="noopener noreferrer">
+								<p class="u_tle">{{item.DeviceItemTitle}}</p>
+								<div class="u_cen">
+									 <div class="icon_lig">
+									 	<p v-for="(lis, key) in item.TopValue" class="r">
+									 		<i class="icon iconfont set_imgColor" :class="[lis.AlarmWebIcon]"  :data="lis.AlarmType"></i>&nbsp;{{lis.AlarmCount}}&nbsp;</span>
+
+										</p>
+										</div>
+
+										<div class="tl_t"><p style="color: #F1F1F2; font-size: 10px;">{{item.TargetTitle}}</p><p style="color: #F1F1F2; font-size: 22px;">{{item.TargetValue}}</p></div>
+										<div class="numb_t">
+											<p v-for="(abc, key) in item.TargetDetail">{{abc.STargetValue}}</p>
+										</div>							
+									 <div class="u_acr">
+										 	<pie-chart :data='item.data' :color='item.color' :setting="{center:['35%', '51%']}"></pie-chart>
+										</div>
 								</div>
-						</div>
-						</router-link>
+							</a>
 						</li>
 				</ul>
 				
@@ -36,7 +54,6 @@
  
 </style>
 <script>
-	var echarts = require('echarts');
 	import * as comm from '@/assets/js/pro_common';
 	import {project} from '@/request/api';
 	import {pieChart} from '@/zw-components/index'

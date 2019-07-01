@@ -502,7 +502,7 @@ export default {
      	     //	}
      	     	 //console.log(set_WhereStr)  	
      	     	/*如果是点击导出按钮*/	
-     	     		 _this.$axios.post(_this.mypro+'Caiot/System',{
+     	     		 _this.$axios.post('System',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"ExportDataByUniversalConfig",
 						        "FVersion":"1.0.0",
@@ -510,7 +510,7 @@ export default {
 						        "WhereStr":set_WhereStr,
 						        "FMenuGUID":_this.FMenuGUID, //菜单id
 							}).then(function(jsons){
-								_this.xls_adress=_this.mypro+jsons.data.FObject
+								_this.xls_adress=jsons.data.FObject
 							  //console.log(jsons)
                                
 							}).catch(function(err){   });	
@@ -518,7 +518,7 @@ export default {
 
      	     	/*end of 如果是点击导出按钮*/
 
-	  	      _this.$axios.post(_this.mypro+'Caiot/System',{
+	  	      _this.$axios.post('System',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"QueryPageDataByUniversalConfig",
 						        "FVersion":"1.0.0",
@@ -634,7 +634,7 @@ export default {
     	 _this.tree_id02.push(id) //多个树形
     	 //_this.tree_index++;
     	 let arrs=urls.split("/"); 
-    	 _this.$axios.post(_this.mypro+"Caiot/"+arrs[0],{
+    	 _this.$axios.post(arrs[0],{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":arrs[1],
 						        "FVersion":"1.0.0",
@@ -671,7 +671,7 @@ export default {
     	 	 </p>`;
   
     	      let arrs=urls.split("/");  	    	
-	  	      _this.$axios.post(_this.mypro+"Caiot/"+arrs[0],{
+	  	      _this.$axios.post(arrs[0],{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":arrs[1],
 						        "FVersion":"1.0.0",
@@ -880,7 +880,7 @@ export default {
     	 	 </p>`;
   
     	      let arrs=urls.split("/");  	    	
-	  	      _this.$axios.post(_this.mypro+"Caiot/"+arrs[0],{
+	  	      _this.$axios.post(arrs[0],{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":arrs[1],
 						        "FVersion":"1.0.0",
@@ -927,7 +927,7 @@ export default {
     	 //_this.tree_index++;
 			 let arrs=urls.split("/"); 
 			 console.log(arrs);
-    	 _this.$axios.post(_this.mypro+"Caiot/"+arrs[0],{
+    	 _this.$axios.post(arrs[0],{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":arrs[1],
 						        "FVersion":"1.0.0",
@@ -1010,7 +1010,7 @@ export default {
     }
    		
 
- _this.$axios.post(_this.mypro+"Caiot/System",{
+ _this.$axios.post("System",{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"AddDeleteUpdatePageDataByUniversalConfig",
 						        "FVersion":"1.0.0",
@@ -1071,7 +1071,7 @@ export default {
           type: 'warning'
         }).then(() => {
         	//console.log("successsuccesssuccesssuccess")
-           	 _this.$axios.post(_this.mypro+"Caiot/System",{
+           	 _this.$axios.post("System",{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"AddDeleteUpdatePageDataByUniversalConfig",
 						        "FVersion":"1.0.0",

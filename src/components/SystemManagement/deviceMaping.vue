@@ -1,5 +1,5 @@
 <template>
-    <div class="report inspection-item">
+    <div class="report device-maping inspection-item">
         <el-dialog :title="type?'编辑':'新增'" :visible.sync="show" width="750px" class="zw-dialog">
             <el-form :model="addInfo" inline ref="form">
                 <el-form-item label="项目名称"  prop='ProjectID'  :rules="[{ required: true, message: '请选择'}]">
@@ -16,6 +16,16 @@
                 <el-form-item label="数据标识" prop="DataItemID" :rules="[{ required: true, message: '请选择'}]">
                   <el-select v-model="addInfo.DataItemID"  value-key="" filterable  placeholder="请选择" >
                     <el-option v-for="list in dataItemList" :key="list.DataItemID" :label="list.DataItemName" :value="list.DataItemID"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="仪表" prop="meter">
+                  <el-select v-model="meter"  value-key="MeterID" filterable  placeholder="请选择"  @change="selectMeter">
+                    <el-option v-for="list in meterList" :key="list.MeterID" :label="list.MeterName" :value="list"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="仪表数据标识" prop="meter">
+                  <el-select v-model="meterDataItemID"  value-key="" filterable  placeholder="请选择" >
+                    <el-option v-for="list in meterItemList" :key="list.DataItemID" :label="list.DataItemName" :value="list.DataItemID"></el-option>
                   </el-select>
                 </el-form-item>
                 <el-form-item label="计算公式" prop="Expression" >
@@ -72,6 +82,7 @@
 <script>
 import table from '@/mixins/table' //表格混入数据
 import {project,system,Device } from '@/request/api.js';
+import '@/components/TaskManagement/InspectionItem.scss'
 export default {
     mixins:[table],
     data(){
@@ -106,21 +117,25 @@ export default {
                 DeviceID:null,
                 DataItemID:null,
                 Expression:null,
-                IDStr:null
+                IDStr:null,
             },
             addInfo:{ //新增或修改区域映射
                 ProjectID:null,
                 DeviceID:null,
                 DataItemID:null,
                 Expression:null,
-                IDStr:null
+                IDStr:null,
             },
             title:'新增',
             show:false,
             areaList:[],
             deviceList:[],
             dataItemList:[],
-            selectDevice:{}
+            selectDevice:{},
+            meterList:[],
+            meterItemList:[],
+            meter:{},
+            meterDataItemID:null
         }
     },
     computed:{
@@ -131,11 +146,15 @@ export default {
     watch:{
         filterText(val){
             this.queryData()
+        },
+        meterDataItemID(){
+            this.addInfo.Expression =this.meterDataItemID && `[${this.meter.MeterID}_${this.meterDataItemID}]`
         }
     },
     created(){
         this.queryData()
         this.queryUDevice()
+        this.queryUMeter()
     },
     methods:{
         /**
@@ -217,6 +236,44 @@ export default {
             })
         },
         /**
+         * 查询仪表
+         */
+        queryUMeter(){
+            system({
+                FAction:'QueryUMeter',
+                SearchKey:'',
+                PageIndex:1,
+                PageSize:10000
+            })
+            .then((data) => {
+                console.log(data)
+                this.meterList = data.FObject.Table1 ? data.FObject.Table1 : []
+            }).catch((err) => {
+                
+            });
+        },
+        selectMeter(item){
+            this.meter = item
+            this.meterItemList = []
+            this.meterDataItemID = null
+            this.queryProtocolDetailByItem(item.MeterModelID)
+        },
+        /**
+         * 查询仪表数据项
+         */
+        queryProtocolDetailByItem(id){
+            system({
+                FAction:'QueryProtocolDetailByItem',
+                ID:id
+            })
+            .then((data) => {
+                console.log(data)
+                this.meterItemList = data.FObject
+            }).catch((err) => {
+                
+            });
+        },
+        /**
          * 点击新增
          */
         beforeAdd(){
@@ -224,6 +281,8 @@ export default {
             this.type = 0
             this.addInfo = Object.assign({},this.defaultAddInfo)
             this.selectDevice = {}
+            this.meter = {}
+            this.meterDataItemID = null
         },
         /**
          * 修改设备映射
@@ -232,12 +291,15 @@ export default {
             this.show = true
             this.type = 1
             this.selectDevice = {}
+            console.log(row)
             await this.queryUDevice(row.ProjectID)
             await this.querySDataItemsByDeviceTypeID(row.DeviceTypeID)
             Object.keys(this.addInfo).forEach(key => {
                 this.addInfo[key] = row[key]
             })
             this.$set(this.selectDevice,'DeviceID',row.DeviceID)
+            this.meter = {}
+            this.meterDataItemID = null
         },
         /**
          * 285.新增/修改设备映射
@@ -259,6 +321,7 @@ export default {
                 console.log(err);
             })
         },
+
         /**
          * 286.删除设备映射
          */
@@ -303,7 +366,11 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '@/components/TaskManagement/InspectionItem.scss';
-
-
+.device-maping.inspection-item{
+    .el-form-item{
+        .el-form-item__label{
+            width: 120px;
+        }
+    }
+}
 </style>

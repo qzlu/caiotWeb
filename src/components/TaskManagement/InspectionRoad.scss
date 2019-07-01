@@ -9,7 +9,7 @@ $img-url:'/static/image/';
     }
     .el-dialog{
         width: 460px;
-        height: 380px;
+        /* height: 380px; */
         background: url(#{$img-url}task/inspection.png);
         background-size: 100% 100%;
         padding-left: 48px;

@@ -92,6 +92,14 @@ $img-url:'/static/image/';
                 }
             }
         }
+        .select-month-time{
+            .el-date-editor--month{
+                width: 120px;
+               .el-input__inner{
+                   width: 100%;
+               }
+            }
+        }
         .search-box{
             width: 1436px;
             height: 163px;

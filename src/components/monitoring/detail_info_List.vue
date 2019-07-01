@@ -364,7 +364,7 @@ export default {
 			//返回一个Promise对象
       return new Promise(function(resolve, reject) {
         _this.$axios
-          .post(_this.mypro + "Caiot/Project", {
+          .post("Project", {
             FTokenID: localStorage.getItem("Token"),
             FAction: "GetDeviceDataItemChartData",
             FVersion: "1.0.0",

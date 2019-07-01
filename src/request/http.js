@@ -8,7 +8,7 @@ else if (process.env.NODE_ENV == 'debug') {
     axios.defaults.baseURL = 'http://47.106.64.130:56090/Caiot/';
 } 
 else if (process.env.NODE_ENV == 'production') {    
-    axios.defaults.baseURL = 'http://47.106.64.130:56090/Caiot/';
+    axios.defaults.baseURL = '/Caiot/';
 }
 
 //设置请求超时时间

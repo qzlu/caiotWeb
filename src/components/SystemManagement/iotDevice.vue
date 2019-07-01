@@ -114,6 +114,11 @@ export default {
                     prop: 'AreaName',
                     label: '区域名称',
                 },
+                {
+                    prop:'SystemParamName',
+                    label:'系统类型',
+                    width:120
+                }
 /*                 {
                     prop: 'ProjectName',
                     label: '系统名称',

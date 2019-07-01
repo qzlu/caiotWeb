@@ -64,9 +64,9 @@
                 <el-input class="search-input" v-model="filterText" placeholder="搜索计划关键字">
                      <i class="el-icon-search" slot="suffix"></i>
                 </el-input>
-                <el-button type="primary" @click="showFilterBox = !showFilterBox">
+              <!--   <el-button type="primary" @click="showFilterBox = !showFilterBox">
                   高级搜索<i class=" el-icon--right" :class="{'el-icon-arrow-down':!showFilterBox,'el-icon-arrow-up':showFilterBox}"></i>
-                </el-button>
+                </el-button> -->
                 <transition>
                     <ul class="search-box"  v-if="showFilterBox">
                         <li>
@@ -110,6 +110,22 @@
                         </li>
                     </ul>
                 </transition>
+            </li>
+            <li  class="r">
+                <span class="label">负责人</span>
+                <el-select v-model="filterObj.InspectionUserGUID"  placeholder="请选择" @change="queryData()">
+                    <el-option value="" label="全部"></el-option>
+                    <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
+                </el-select>
+            </li>
+            <li class="r select-month-time">
+                <span class="label">月份</span>
+                <el-date-picker
+                  v-model="month"
+                  type="month"
+                  @change='queryData()'
+                  placeholder="选择月">
+                </el-date-picker>
             </li>
         </ul>
         <div class="zw-table plan-table">
@@ -226,6 +242,7 @@ export default {
                 value:3
             }],
             year:'',
+            month:new Date(),
             filterText:'',
             defaultFilterObj:{
                 InspectionPlanName:'',
@@ -246,11 +263,10 @@ export default {
             time:'',
             planTime:new Date(),
             showFilterBox:false,
-            queryType:0,//查询方式，0为普通查询，1为高级搜索
+            queryType:1,//查询方式，0为普通查询，1为高级搜索
             type:0,//0为新增 1为编辑计划
             show:false, //控制新增或编辑弹框
             title:'新增巡检计划',
-            users:[], //所有用户
             roadDatas:[],//所有路线
             showPointTree:false,
             inspectionCycleName:'临时巡检',
@@ -311,6 +327,11 @@ export default {
     components:{
         zwTree
     },
+    computed:{
+        users(){
+            return this.$store.state.orderUser //负责人
+        }
+    },
     watch:{
         filterText(val){
             this.filterObj.InspectionPlanName = val
@@ -320,8 +341,8 @@ export default {
     },
     created(){
         this.queryData()
-        this.queryUser()
         this.queryRoad()
+        this.$store.dispatch('queryOrderTUsers')
     },
     mounted(){
 
@@ -342,6 +363,8 @@ export default {
             if(this.queryType ===1){
                 this.showFilterBox = false
             }
+            this.filterObj.StartDateTime = new Date(this.month.getFullYear() + '-' + (this.month.getMonth()+1)).toLocaleDateString() + ' 00:00'
+            this.filterObj.EndDateTime = new Date(new Date(this.month.getFullYear() + '-' + (this.month.getMonth()+2)).getTime() - 24*60*60*1000).toLocaleDateString() + ' 23:59'
             Inspection({
                 FAction:'QueryPageUInspectionPlan',
                 FType:this.queryType?'Advanced':'Normal',
@@ -408,21 +431,6 @@ export default {
             })
             .catch(error => {
 
-            })
-        },
-        /**
-         * 查询所有用户
-         */
-        queryUser(){
-            system({
-                FAction:'QueryTUsers',
-                FName:''
-            })
-            .then(data => {
-                this.users = data.FObject
-            })
-            .catch(error => {
-                console.log(error);
             })
         },
         /**

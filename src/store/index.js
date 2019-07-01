@@ -6,6 +6,7 @@ const store = new Vuex.Store({
     state: { 
       projectList:[], //所有项目
       areaList:[], //所有区域
+      orderUser:[]
     },
     mutations: {
         /**
@@ -33,10 +34,26 @@ const store = new Vuex.Store({
                 state.areaList  = data.FObject
             })
             .catch(err => {})
+        },
+        /**
+         * 356.查询工单转单账户列表
+         */
+        queryOrderTUsers(state){
+            system({
+                FAction:'QueryOrderTUsers',
+                FType:1
+            })
+            .then((data) => {
+                state.orderUser = data.FObject
+            }).catch((err) => {
+                
+            });
         }
     },
     actions:{
-
+        queryOrderTUsers({commit}){
+            commit('queryOrderTUsers')
+        }
     }
 })
 export default store

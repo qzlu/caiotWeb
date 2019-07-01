@@ -133,7 +133,7 @@
 				this.curr=ref_router
 				
 				/*动态用户一级菜单Banner */
-				 	 _this.$axios.post(_this.mypro+'Caiot/System',{
+				 	 _this.$axios.post('System',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"QueryUsersMenu",
 						        "FVersion":"1.0.0",
@@ -153,7 +153,7 @@
 			
 				/*取得当前用户所有项目*/
 				
-				 _this.$axios.post(_this.mypro+'Caiot/Project',{
+				 _this.$axios.post('/Project',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"GetProject",
 						        "FVersion":"1.0.0",
@@ -254,7 +254,7 @@
 				   //返回一个Promise对象
 				   return new Promise(function (resolve, reject) {
 				  
-				       _this.$axios.post(_this.mypro+'Caiot/Project',{
+				       _this.$axios.post('Project',{
 						        "FTokenID":localStorage.getItem("Token"),
 						        "FAction":"GetAlarmRealData",
 						        "FVersion":"1.0.0",

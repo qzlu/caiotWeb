@@ -244,6 +244,7 @@ export default {
 		    })
 		    .then(data => {
               this.datalist = data.FObject;
+              console.log(this.datalist);
               resolve("succ");
 		    })
 		    .catch(error => {

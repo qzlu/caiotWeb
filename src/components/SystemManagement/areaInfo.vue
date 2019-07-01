@@ -21,6 +21,11 @@
                     <el-input v-model="areaInfo.Location">
                     </el-input>
                 </el-form-item>
+                <el-form-item label="关联蓝牙" prop="BluetoothConfigID">
+                    <el-select v-model="areaInfo.BluetoothConfigID">
+                        <el-option v-for="(list,i) in blueTooth" :key="i" :label="list.BluetoothName" :value="list.ID"></el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <div class="submit">
                 <button class="zw-btn zw-btn-primary" @click="addUpdateUArea()">确定</button>
@@ -103,6 +108,10 @@ export default {
                     prop: 'Location',
                     label: '区域位置',
                 },
+                {
+                    prop:"BluetoothName",
+                    label:'蓝牙名称'
+                }
             ],
             projectName:localStorage.getItem('projectname'),
             defaultAreaInfo:{//新增项目参数默认数据
@@ -110,18 +119,21 @@ export default {
                 AreaName:null,
                 Location:null,
                 AreaTypeID:null,
-                FType:0
+                FType:0,
+                BluetoothConfigID:null
             },
             areaInfo:{ //新增或修改项目参数
                 AreaID:null,
                 AreaName:null,
                 Location:null,
                 AreaTypeID:null,
-                FType:0
+                FType:0,
+                BluetoothConfigID:null
             },
             title:'新增',
             show:false,
-            areaTypeList:[]
+            areaTypeList:[],
+            blueTooth:[],//蓝牙列表
         }
     },
     computed:{
@@ -137,6 +149,7 @@ export default {
     created(){
         this.queryData()
         this.queryUArea()
+        this.queryBluetooth()
     },
     methods:{
         /**
@@ -150,6 +163,7 @@ export default {
                 PageSize:10
             })
             .then((data) => {
+                console.log(data)
                 this.total = data.FObject.Table ? data.FObject.Table[0].FTotalCount : 0
                 this.tableData = data.FObject.Table1 ? data.FObject.Table1 : []
                 /**
@@ -182,6 +196,23 @@ export default {
                 this.areaTypeList = data.FObject
             })
             .catch(err =>{})
+        },
+        /**
+         * 查询所有蓝牙
+         */
+        queryBluetooth(){
+            system({
+                FAction:'QueryPageUBluetoothConfig',
+                SearchKey:'',
+                PageIndex:this.pageIndex,
+                PageSize:10000
+            })
+            .then((data) => {
+                this.blueTooth = data.FObject.Table1 ? data.FObject.Table1 : []
+            })
+            .catch((err) => {
+                
+            });
         },
         /**
          * 点击新增
