@@ -1,10 +1,11 @@
 const client = require('scp2')
  // 部署上线
  client.scp('./dist', {
-    host: '47.106.64.130',
+    host: '172.172.172.37',
+    prot:21,
     username: 'administrator',
-    password: 'Szqr2018',
-    path: 'D:\WebSite\CaiotForm\mytest'
+    password: '123456',
+    path: 'D:\WebSite\Caiot\test'
   }, function (err) {
     if (err) {
       console.log(err)

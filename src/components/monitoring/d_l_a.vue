@@ -54,11 +54,11 @@ export default {
   props:{
     data:Array,
     props:{
-      default:{
+      default:() =>{return{
         title:'HappenContext',
         time:'HappenTime',
         icon:'WebIconName'
-      }
+      }}
     }
   },
   created() {

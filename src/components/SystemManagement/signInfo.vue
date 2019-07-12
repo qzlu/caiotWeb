@@ -13,6 +13,11 @@
                     <el-option v-for="(list,i) in signType" :key="i" :label="list" :value="i+1"></el-option>
                   </el-select>
                 </el-form-item>
+                <el-form-item label="派单方式" prop="DispatchMethod" :rules="[{ required: true, message: '请选择'}]">
+                    <el-select v-model="addInfo.DispatchMethod">
+                        <el-option v-for="(item,i) in dispatchType.slice(1)" :key="i" :label="item" :value="i+1"></el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <div class="submit">
                 <button class="zw-btn zw-btn-primary" @click="addUpdate()">确定</button>
@@ -85,21 +90,29 @@ export default {
                 {
                     prop: 'SignTypeName',
                     label: '签到方式',
+                },
+                {
+                    prop:'DispatchMethod',
+                    label:'派单方式',
+                    formatter:(row) => this.dispatchType[row.DispatchMethod]
                 }
             ],
+            dispatchType:['','手动派单','自动派单','抢单模式'],
             type:0,
             projectName:localStorage.getItem('projectname'),
             defaultAddInfo:{//新增或修改签到信息参数默认数据
                 ID:0,
                 SignTypeID:null,
                 ObjectType:null,
-                ObjectName:null
+                ObjectName:null,
+                DispatchMethod:null,
             },
             addInfo:{ //新增或修改签到信息
                 ID:0,
                 SignTypeID:null,
                 ObjectType:null,
-                ObjectName:null
+                ObjectName:null,
+                DispatchMethod:null
             },
             title:'新增',
             show:false,
@@ -129,6 +142,7 @@ export default {
                 PageSize:10
             })
             .then((data) => {
+                console.log(data)
                 this.total = data.FObject.Table ? data.FObject.Table[0].FTotalCount : 0
                 this.tableData = data.FObject.Table1 ? data.FObject.Table1 : []
                 /**

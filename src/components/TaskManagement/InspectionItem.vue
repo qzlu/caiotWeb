@@ -63,6 +63,7 @@
                  v-for="item in tableLabel"
                  :key="item.prop"
                  :prop="item.prop"
+                 :width="item.width"
                  :label="item.label"
                 >
                </el-table-column>
@@ -92,7 +93,8 @@ export default {
             tableLabel:[
                 {
                     prop: 'RowNum',
-                    label: '序号'
+                    label: '序号',
+                    width: '80'
                 },
                 {
                     prop: 'InspectionPointName',
@@ -325,7 +327,7 @@ export default {
             this.type = 1
             for(let key in this.addPoint){
                 if(key != 'ProjectID'){
-                    this.addPoint[key] = item [key]?item [key]:''
+                    this.addPoint[key] = item [key] || ''
                 }
             }
         },

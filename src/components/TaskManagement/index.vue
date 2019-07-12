@@ -67,7 +67,7 @@
 				
 				/*显示天气*/
 
-      this.$axios.post(this.mypro+'Caiot/Project',{
+      this.$axios.post('Project',{
         "FTokenID":localStorage.getItem("Token"),
         "FAction":"GetPrjWeatherData",
         "FVersion":"1.0.0",

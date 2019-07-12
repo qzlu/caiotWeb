@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <audio class="success" id="music" loop="loop" src="/static/mp3/new_warn.mp3"></audio>
-
     <div class="homme_center">
       <div class="header_item">
         <div class="list_a">
@@ -9,7 +8,7 @@
           <section class="notice_items" :class="addclass" id="tuhn_pin">
             <p style="margin-top: 2px;">
               <span>
-                <img src="/static/image/index/nav_red_a.png" class="up_di">
+                <img src="/static/image/index/nav_red_a.png" class="up_di" />
               </span>
               <span id="gh_warn_gh"></span>
               <img
@@ -18,14 +17,14 @@
                 @click="play_warn_hg('stop')"
                 class="prngy r ingb_gh_a"
                 style="margin: 5px 10px 0 0;"
-              >
+              />
               <img
                 src="/static/image/index/wrb02.png"
                 :class="{'active01':is_li==0}"
                 @click="play_warn_hg('play')"
                 class="prngy r ingb_gh_b"
                 style="margin: 2px 10px 0 0;"
-              >
+              />
               <span
                 style="font-size: 14px; float: right; margin: 0px 10px 0 0;"
               >{{datalist.length}}条告警</span> &nbsp;&nbsp;
@@ -33,7 +32,7 @@
             <div class="er_message" id="tuhn_tnh">
               <div class="errMessage_list">
                 <div class="cc rowup" id="pin_wanr">
-                  <div class="item" v-for="(items,key) in datalist">
+                  <div class="item" v-for="(items,key) in datalist" :key="key">
                     <router-link :to="{name:'now_count'}">
                       <div style="color:white">
                         <p class="l">{{items.AlarmText}}</p>
@@ -47,40 +46,44 @@
           </section>
           <!--  notice-->
           <!--一级菜单-->
-          <nav_item></nav_item>
+          <nav-item></nav-item>
           <!--end of 一级菜单-->
         </div>
         <div class="list_b">
           <div class="in"></div>
           <div class="name_select">
             <p>
-              <span>{{curr_selectdata}}</span>
-              <span style="padding: 11px 5px 0 0; float: right;">
-                <img src="/static/image/index/nav_user_button_nor.png" class="sh01">
+              <span>{{curr_selectdata && curr_selectdata.ShortName}}</span>
+              <span v-if="selecdata.length>1" style="padding: 11px 5px 0 0; float: right;">
+                <img src="/static/image/index/nav_user_button_nor.png" class="sh01" />
               </span>
             </p>
-            <div class="list_sel">
-                  <p v-for="(item,key) in selecdata" @click="ccName(item)">{{item.ShortName}}</p>
+            <div class="list_sel" v-if="selecdata.length>1">
+              <p v-for="(item,key) in selecdata" :key="key" @click="ccName(item)">{{item.ShortName}}</p>
             </div>
           </div>
         </div>
-        <div class="list_c">
+        <div class="list_c" v-if="inIframe != 1">
           <div class="inl">
             <p class="u">
-              <img src="/static/image/index/nav_user_icon_1.png ">
+              <img src="/static/image/index/nav_user_icon_1.png " />
             </p>
             <div class="ise">
               <div class="name_select admincc">
                 <p>
                   <span>{{curr_selectdata02}}</span>
                   <span style="padding: 11px 5px 0 0; float: right;">
-                    <img src="/static/image/index/nav_user_button_nor.png" class="sh01">
+                    <img src="/static/image/index/nav_user_button_nor.png" class="sh01" />
                   </span>
                 </p>
                 <div class="list_sel" style="top: 62px;">
                   <!-- <p v-for="(item,key) in seledata02" @click="ccName_item(item)">{{item}}</p> -->
-                  <p @click="beforeUpdatedPassword()"><i class="iconfont icon-Lock" style="font-size:24px;margin-right:10px"></i>修改密码</p>
-                  <p @click="all_out()"><i class="iconfont icon-Exit" style="font-size:24px;margin-right:10px"></i>退出系统</p>
+                  <p @click="beforeUpdatedPassword()">
+                    <i class="iconfont icon-Lock" style="font-size:24px;margin-right:10px"></i>修改密码
+                  </p>
+                  <p @click="all_out()">
+                    <i class="iconfont icon-Exit" style="font-size:24px;margin-right:10px"></i>退出系统
+                  </p>
                 </div>
               </div>
             </div>
@@ -91,21 +94,29 @@
     </div>
     <el-dialog title="修改密码" :visible.sync="show" class="change-password zw-dialog">
       <el-form :model="changePassWord" ref="form">
-          <el-form-item label="账号"  prop='InspectionPointName'>
-              <el-input :value="seledata02[0]" readonly=""></el-input>
-          </el-form-item>
-          <el-form-item label="旧密码" prop="FPassword" :rules="[{ required: true, message: '请输入旧密码'}]">
-              <el-input v-model="changePassWord.FPassword" type="password"></el-input>
-          </el-form-item>
-          <el-form-item label="新密码" prop="FNewPassword" :rules="[{ required: true, message: '请输入新密码'}]">
-              <el-input v-model="changePassWord.FNewPassword" type="password"></el-input>
-          </el-form-item>
-          <el-form-item label="确认密码" prop="repeatPassword" :rules="[{ required: true, message: '请确认密码'}]">
-              <el-input v-model="changePassWord.repeatPassword" type="password"></el-input>
-          </el-form-item>
+        <el-form-item label="账号" prop="InspectionPointName">
+          <el-input :value="seledata02[0]" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="旧密码" prop="FPassword" :rules="[{ required: true, message: '请输入旧密码'}]">
+          <el-input v-model="changePassWord.FPassword" type="password"></el-input>
+        </el-form-item>
+        <el-form-item
+          label="新密码"
+          prop="FNewPassword"
+          :rules="[{ required: true, message: '请输入新密码'}]"
+        >
+          <el-input v-model="changePassWord.FNewPassword" type="password"></el-input>
+        </el-form-item>
+        <el-form-item
+          label="确认密码"
+          prop="repeatPassword"
+          :rules="[{ required: true, message: '请确认密码'}]"
+        >
+          <el-input v-model="changePassWord.repeatPassword" type="password"></el-input>
+        </el-form-item>
       </el-form>
       <div class="submit">
-          <button class="zw-btn zw-btn-primary" @click="updatedPassword()">确定</button>
+        <button class="zw-btn zw-btn-primary" @click="updatedPassword()">确定</button>
       </div>
     </el-dialog>
   </div>
@@ -114,32 +125,63 @@
 </style>
 <script>
 import * as comm from "../../assets/js/pro_common";
-import nav_item from "./nav.vue"; //中间图片
+import navItem from "./nav.vue"; //中间图片
 import { project, system } from "@/request/api";
 var sta = 0; //控制报警声，第一次响，关闭后，数据更新，再也不会自动报警。
 export default {
   data() {
     return {
       is_li: 0, //控制报警声音参数
-      selecdata: [], //["新都会","云平台","新都会","云平台","新都会","云平台"],
+      /* selecdata: [], //["新都会","云平台","新都会","云平台","新都会","云平台"], */
       curr_selectdata: "", //"新都会",
       seledata02: [localStorage.getItem("iuserName")], //["admin","user","新都会","云平台","新都会","云平台"],
       curr_selectdata02: localStorage.getItem("iuserName"),
       datalist: "", //告警数据列表
       addclass: "",
-      show:false,
-      changePassWord:{
-        FPassword:null,
-        FNewPassword:null,
-        repeatPassword:null
+      show: false,
+      inIframe: localStorage.getItem("inIframe"), //是否是iframe调用
+      changePassWord: {
+        FPassword: null,
+        FNewPassword: null,
+        repeatPassword: null
       }
     };
   },
-
-  created() {
-	/*取得当前用户所有项目*/
-	this.getProjects()
+  computed: {
+    selecdata() {
+      let projectID = localStorage.getItem("projectid");
+      if (projectID > 0 && this.inIframe == 1) {
+        let projectList = this.$store.state.projectList.filter(
+          item => item.ProjectID == projectID
+        );
+        this.curr_selectdata = projectList[0];
+        return projectList;
+      } else {
+        this.curr_selectdata = this.$store.state.projectList.find(
+          item => item.ProjectID == projectID
+        );
+        return this.$store.state.projectList;
+      }
+    }
   },
+  beforeCreate() {
+    if (this.$route.query.token) {
+      let token = localStorage.getItem("Token");
+      let projectID = localStorage.getItem("projectid");
+      if (token == "undefined" || token == null) {
+        localStorage.setItem("Token", this.$route.query.token);
+        localStorage.setItem("inIframe", 1);
+      }
+      if (
+        projectID == "undefined" ||
+        projectID == null ||
+        projectID != this.$route.query.projectID
+      ) {
+        localStorage.setItem("projectid", this.$route.query.projectID);
+      }
+    }
+  },
+  created() {},
   methods: {
     all_out() {
       //退出按钮
@@ -187,8 +229,7 @@ export default {
       //设置用户切换的项目id,刷新，跳转回首页
       localStorage.setItem("projectid", obj.ProjectID);
       localStorage.setItem("projectname", obj.ShortName);
-      this.curr_selectdata = obj.ShortName;
-
+      this.curr_selectdata = obj;
       location.reload();
       // this.$router.push({ path: "/" });
     },
@@ -199,18 +240,18 @@ export default {
     Pro(gettime) {
       //console.log(gettime)
       //红色警告消息列表
-	  //返回一个Promise对象
-	  return new Promise((resove,reject) => {
-		  project({
-            FAction: "GetAlarmRealData",
-            ProjectID: localStorage.getItem("projectid"),
-            FDateTime: gettime
-		  })
-		  .then(data => {
+      //返回一个Promise对象
+      return new Promise((resove, reject) => {
+        project({
+          FAction: "GetAlarmRealData",
+          ProjectID: localStorage.getItem("projectid"),
+          FDateTime: gettime
+        })
+          .then(data => {
             this.datalist = data.FObject;
             if (this.is_li == 0) {
               //开始只响一次，第二次刷新数据也不会响
-              if (data.FObject&&data.FObject.length>0) {
+              if (data.FObject && data.FObject.length > 0) {
                 this.play_warn_hg("play");
               }
             }
@@ -218,89 +259,64 @@ export default {
               this.datalist = data.FObject;
               resolve("succ");
             }
-		  })
-		  .catch(error => {
-
-		  })
-	  })
+          })
+          .catch(error => {});
+      });
     },
 
     Pro2() {
       let _this = this;
       //返回一个Promise对象
       return new Promise(function(resolve, reject) {});
-	},
-    /**
-     * getProjects 获取所有项目
-     *
-     */
-    getProjects() {
-      project({
-        FAction: "GetProject"
-	    })
-	    .then(data => {
-		    this.selecdata = data.FObject;
-        let defalutProject = this.selecdata.find(item => {
-          return item.FIsDefault;
-        });
-        if(!localStorage.getItem('projectid')){
-          localStorage.setItem("projectid", defalutProject.ProjectID);
-          localStorage.setItem("projectname", defalutProject.ShortName);
-          this.curr_selectdata = defalutProject.ShortName;
-        }else{
-          this.curr_selectdata = localStorage.getItem('projectname');
-        }
+    },
+    beforeUpdatedPassword() {
+      this.show = true;
+      Object.keys(this.changePassWord).forEach(item => {
+        this.changePassWord[item] = null;
       });
     },
-    beforeUpdatedPassword(){
-      this.show = true
-      Object.keys(this.changePassWord).forEach(item => {
-        this.changePassWord[item] = null
-      })
-    },
-    async updatedPassword(){
+    async updatedPassword() {
       await new Promise(resolve => {
-          this.$refs.form.validate((valid) => {
-            if (valid) {
-                resolve()
-            } 
-          });
-      })
-      if(this.changePassWord.FNewPassword !== this.changePassWord.repeatPassword){
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            resolve();
+          }
+        });
+      });
+      if (
+        this.changePassWord.FNewPassword !== this.changePassWord.repeatPassword
+      ) {
         this.$message({
-          type:"warning",
-          message:'重复密码不一致',
-          druration:1000
-        })
-        return
+          type: "warning",
+          message: "重复密码不一致",
+          druration: 1000
+        });
+        return;
       }
       system({
-        FAction:'UpdateTUsersPassword',
-        FPassword:this.changePassWord.FPassword,
-        FNewPassword:this.changePassWord.FNewPassword,
-        FType:3
+        FAction: "UpdateTUsersPassword",
+        FPassword: this.changePassWord.FPassword,
+        FNewPassword: this.changePassWord.FNewPassword,
+        FType: 3
       })
-      .then(data => {
-        this.show = false
-        this.$message({
-          type:"success",
-          message:'密码修改成功,3秒后退出登录',
-          druration:1000
+        .then(data => {
+          this.show = false;
+          this.$message({
+            type: "success",
+            message: "密码修改成功,3秒后退出登录",
+            druration: 1000
+          });
+          setTimeout(() => {
+            this.all_out();
+          }, 3000);
         })
-        setTimeout(() => {
-          this.all_out()
-        },3000)
-      })
-      .catch(err => {
-
-      })
+        .catch(err => {});
     }
   },
   mounted: function() {
     var curr_time = this.getNowFormatDate();
     let _this = this;
     function settimeouts_warn() {
-      // console.log(_this.$route.name)
       var html_tem = document.getElementById("pin_wanr");
       var chen = html_tem.children;
       if (chen) var len = chen.length;
@@ -311,15 +327,8 @@ export default {
           _this.addclass = "notice_green";
         }, 100);
       }
-
-      var user = localStorage.getItem("iuserName"); //用户清空缓存，跳到登录页
-      var token = localStorage.getItem("Token");
-      //	console.log(user+"--"+token)
-      if (!user || !token) {
-        localStorage.setItem("refresh", 1); //用户退出时，刷新登录页面，避免项目定时器ajax继续执行
-        _this.$router.push({ path: "/" });
-      }
-    _this.Pro(curr_time)
+      _this
+        .Pro(curr_time)
         .then(function(d) {
           return _this.Pro2(d);
         })
@@ -330,47 +339,45 @@ export default {
     }
 
     settimeouts_warn();
-    this.$store.commit('getProject')
+    this.$store.commit("getProject");
   },
-  components: { nav_item },
-  computed: {},
+  components: { navItem }
 };
 </script>
 <style lang="scss">
-$img-url:'/static/image/';
+$img-url: "/static/image/";
 .change-password {
-  .el-dialog{
+  .el-dialog {
     width: 426px;
     // height: 367px;
     background: url(#{$img-url}task/inspection.png);
     background-size: 100% 100%;
-    padding-left: 48px!important;
-    &__header{
-        text-align: left
+    padding-left: 48px !important;
+    &__header {
+      text-align: left;
     }
-    .el-form{
-        &-item{
-            .el-form-item__label{
-                width: 94px;
-                color: #F1F1F2;
-            }
-            .el-input{
-                width: 165px;
-                .el-input__inner{
-                    background: #05679E;
-                    border-color: #18406B;
-                    color: #F1F1F2;
-                }
-            }
-            &__error{
-                left: 50%;
-                transform: translateX(-50%)
-            }
+    .el-form {
+      &-item {
+        .el-form-item__label {
+          width: 94px;
+          color: #f1f1f2;
         }
+        .el-input {
+          width: 165px;
+          .el-input__inner {
+            background: #05679e;
+            border-color: #18406b;
+            color: #f1f1f2;
+          }
+        }
+        &__error {
+          left: 50%;
+          transform: translateX(-50%);
+        }
+      }
     }
   }
 }
-
 </style>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
@@ -626,5 +633,4 @@ li {
 a {
   color: #42b983;
 }
-
 </style>

@@ -39,6 +39,7 @@
                  v-for="item in tableLabel"
                  :key="item.prop"
                  :prop="item.prop"
+                 :width="item.width"
                  :label="item.label"
                 >
                </el-table-column>
@@ -69,7 +70,8 @@ export default {
             tableLabel:[
                 {
                     prop: 'RowNum',
-                    label: '序号'
+                    label: '序号',
+                    width: '80'
                 },
                 {
                     prop: 'PatrolPointName',

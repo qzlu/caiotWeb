@@ -1,6 +1,7 @@
 <template>
     <div class="report standard">
         <div class="l device-type">
+            <h3 v-if="standardType == 1"><button class="zw-btn import" @click="importInsepection">导入标准</button></h3>
             <h3>设备类型</h3>
             <div class="device-container">
                 <el-scrollbar>
@@ -20,16 +21,17 @@
         <div class="main">
             <div class="main-item-header">
                 <span><img src="/static/image/task/speed.png"/>抄表项</span>
-                <button class="zw-btn import" @click="importItem">导入数据参数</button>
+                <button class="zw-btn" @click="importItem">编辑</button>
             </div>
             <!-- 导入数据参数弹框 -->
-            <el-dialog title="导入数据参数" class="zw-dialog" :visible.sync='show'>
+            <el-dialog title="编辑" class="zw-dialog" :visible.sync='show'>
                 <div class="container">
                     <p><span>设备类型</span>{{device?device.DeviceTypeName:''}}</p>
                     <div class="item-content">
                         <h4>抄表内容</h4>
                         <div class="">
-                            <el-checkbox-group v-model="checkedItems" >
+                            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                            <el-checkbox-group v-model="checkedItems" @change="handleCheckChange">
                                 <el-checkbox v-for="item in allItem" :label="item.DataItemID" :key="item.DataItemID">{{item.DataItemName}}</el-checkbox>
                             </el-checkbox-group>
                         </div>
@@ -77,7 +79,7 @@
                     <div style="text-align:center"><button class="zw-btn zw-btn-primary" @click="addItems">确定</button></div>
                 </div>
             </el-dialog>
-            <div class="main-item">
+            <div class="main-item standard">
                 <el-table
                     :data='tableData1'
                     height="371"
@@ -87,10 +89,12 @@
                 >
                     <el-table-column
                       prop="DataItemName"
+                      align="left"
                       label="检查内容">
                     </el-table-column>
                     <el-table-column
                       prop=""
+                      align="left"
                       label="操作">
                       <template slot-scope="scoped">
                           <div class="role-operation">
@@ -117,14 +121,17 @@ export default {
                 children:'DeviceTypes'
             },
             tableData1:[],
-            device:null,
+            device:{},
             allItem:[],
             show:false,
             checkedItems:[],
             show1:false,
             title:'新增',
             inspectionItem:'',
-            type:0 //0为新增 1编辑
+            type:0, //0为新增 1编辑
+            isIndeterminate:false,
+            checkAll: false,
+            standardType:1 //1为任务管理下的巡检标准 ， 2//标准配置下的巡检标准
         }
     },
     components:{
@@ -137,6 +144,7 @@ export default {
 
     },
     created(){
+        this.standardType = this.$route.name == 'InspectionDeviceTypeDataItem'? 2 : 1
         this.queryDeviceType()
     },
     mounted(){
@@ -148,7 +156,8 @@ export default {
          */
         queryDeviceType(){
             system({
-                FAction:'QuerySystemDeviceTypeToTree'
+                FAction:'QuerySystemDeviceTypeToTree',
+                ProjectID:this.standardType == 1?localStorage.getItem('projectid'):0
             })
             .then(data => {
                 this.deviceData = data.FObject
@@ -177,7 +186,7 @@ export default {
          */
         querySInspectionDeviceTypeDataItem(id){
             Inspection({
-                FAction:'QuerySInspectionDeviceTypeDataItem',
+                FAction:this.standardType==1?'QuerySInspectionDeviceTypeDataItem':'QueryUBasisInspectionDeviceTypeDataItem',
                 DeviceTypeID:id
             })
             .then(data => {
@@ -222,7 +231,7 @@ export default {
                 return
             }
             Inspection({
-                FAction:'AddSInspectionDeviceTypeDataItem',
+                FAction:this.standardType == 1 ? 'AddSInspectionDeviceTypeDataItem':'AddUBasisInspectionDeviceTypeDataItem',
                 DeviceTypeID:this.device.DeviceTypeID,
                 DataItemIDs:this.checkedItems.join(',')
             })
@@ -233,6 +242,15 @@ export default {
             .catch(error => {
                 console.log(error);
             })
+        },
+        handleCheckAllChange(val){
+            this.checkedItems = val ? this.allItem.map(item => item.DataItemID) : []
+            this.isIndeterminate = false
+        },
+        handleCheckChange(val){
+            let len = val.length
+            this.checkAll = len === this.allItem.length;
+            this.isIndeterminate = len > 0 && len <this.allItem.length
         },
         /**
          * 点击新增
@@ -264,10 +282,11 @@ export default {
          * 新增或编辑检查项
          */
         addItems(){
+            let action = this.standardType == 1?(this.type?'UpdateSInspectionDeviceTypeCheckItem':'AddSInspectionDeviceTypeCheckItem'):'AddOrUpdateUBasisInspectionDeviceTypeCheckItem'
             Inspection({
-                FAction:this.type?'UpdateSInspectionDeviceTypeCheckItem':'AddSInspectionDeviceTypeCheckItem',
-                ID:this.type?this.itemID:'',
-                DeviceTypeID:this.type?'':this.device.DeviceTypeID,
+                FAction:action,
+                ID:this.type?this.itemID:0,
+                DeviceTypeID:this.device.DeviceTypeID,
                 FName:this.inspectionItem.replace(/,/,'，')
             })
             .then(data => {
@@ -277,6 +296,36 @@ export default {
             .catch(error => {
 
             })
+        },
+        /**
+         * 导入巡检标准
+         */
+        async importInsepection(){
+            await new Promise(resolve => {
+                this.$DeleteMessage([`确定要导入巡检标准`,'导入巡检标准'])
+                .then(() => {
+                    resolve()
+                })
+                .catch(() => {
+                })
+            })
+            Inspection({
+                FAction: 'ImportUInspectionDeviceTypeCheckItem'
+            })
+            .then((result) => {
+                if(this.device.DeviceTypeID){
+                    this.querySInspectionDeviceTypeDataItem(this.device.DeviceTypeID)
+                }
+                this.$message({
+                    message: '导入成功',
+                    type: 'success'
+                })
+            }).catch((err) => {
+                this.$message({
+                    message: '导入失败',
+                    type: 'error'
+                })
+            });
         },
         async deleteItem(row){
             await new Promise(resolve => {
@@ -288,7 +337,7 @@ export default {
                 })
             })
             Inspection({
-                FAction:'DeleteSInspectionDeviceTypeDataItemByID',
+                FAction:this.standardType == 1? 'DeleteSInspectionDeviceTypeDataItemByID':'DeleteUBasisInspectionDeviceTypeDataItemByID',
                 ID:row.ID
             })
             .then(data => {
@@ -312,6 +361,14 @@ export default {
 $img-url:'/static/image/';
 .standard.report{
     padding: 30px 20px 27px 20px;
+    .import{
+        width: 148px;
+        padding-left: 30px;
+        background: url(#{$img-url}task/import.png)
+    }
+    .import:hover,.import:active{
+        background: url(#{$img-url}task/import-1.png)
+    }
     .device-type{
         width:333px;
         height:850px;
@@ -327,7 +384,7 @@ $img-url:'/static/image/';
         .device-container{
             margin-top: 36px;
             .el-tree{
-                height: 746px;
+                height: 650px;
                 background: none;
                 color: #18A1EC;
                 .el-tree-node:focus {
@@ -378,17 +435,15 @@ $img-url:'/static/image/';
                 }
                 margin-right: 30px;
             }
-            .import{
-                width: 148px;
-                padding-left: 30px;
-                background: url(#{$img-url}task/import.png)
-            }
-            .import:hover,.import:active{
-                background: url(#{$img-url}task/import-1.png)
-            }
         }
-        &-item{
+        &-item.standard{
             padding: 0 30px;
+            .el-table{
+                color: red;
+                th{
+                    text-align: left!important;
+                }
+            }
         }
     }
     .el-dialog{

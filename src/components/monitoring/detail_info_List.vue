@@ -310,6 +310,7 @@ export default {
         this.datalist02.DeviceTypeID == 801 ||
         this.datalist02.DeviceTypeID == 800
       ) {
+        console.log(info)
         this.videoUrl = info && info.ExtendAddress;
         if (!this.videoUrl) return;
         this.video_div = true;
@@ -325,6 +326,7 @@ export default {
         PossionID: x //_this.$route.params.PossionID默认第一个（三相电压id）
 			})
 			.then(data => {
+        console.log(data)
         this.linedata = this.formatChartData(data.FObject);
         //this.line_data_reset();
 			})

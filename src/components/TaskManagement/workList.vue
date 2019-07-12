@@ -4,9 +4,9 @@
             <li :class="{active:tabIndex === 1}" @click="tabIndex = 1">全部</li>
             <li :class="{active:tabIndex === 5}" @click="tabIndex = 5">待派单</li>
             <li :class="{active:tabIndex === 4}" @click="tabIndex = 4">待接单</li>
-            <li :class="{active:tabIndex === 2}" @click="tabIndex = 2">待完成</li>
+            <li :class="{active:tabIndex === 2}" @click="tabIndex = 2">待处理</li>
             <li :class="{active:tabIndex === 3}" @click="tabIndex = 3">已完成</li>
-            <li :class="{active:tabIndex === 6}" @click="tabIndex = 6">其他</li>
+            <!-- <li :class="{active:tabIndex === 6}" @click="tabIndex = 6">其他</li> -->
             <li class="select">
                 <span>工单类型</span> 
                 <div class="select-box" @click="showSelectOption = !showSelectOption">{{selectType.name}}<i :class="{'el-icon-caret-bottom':!showSelectOption,'el-icon-caret-top':showSelectOption}"></i></div>
@@ -223,6 +223,10 @@
                     <el-select v-model="workObj.OrderUserGUID"   placeholder="请选择">
                         <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
                     </el-select>
+                </li>
+                <li>
+                    <span>计划工时（小时）</span>
+                    <el-input v-model="workObj.PlanFinishTime"></el-input>
                 </li>
             </ul>
             <div style="margin-top:50px;text-align:center">
@@ -548,30 +552,40 @@ export default {
                 {
                     prop: 'RowNum',
                     label: '序号',
+                    width:'80'
                 },
                 {
                     prop: 'OrderTypeName',
                     label: '工单类型',
                 },
                 {
+                    prop: 'OrderContent',
+                    label: '工单名称',
+                    width:'160'
+                },
+                {
                     prop: 'OrderStateName',
                     label: '工单状态',
                 },
                 {
-                    prop: 'OrderContent',
-                    label: '工单名称',
-                },
-                {
                     prop: 'OrderCreateDateTime',
                     label: '创建时间',
+                    width:'160'
                 },
                 {
                     prop: 'RunningOrderDateTime',
                     label: '计划/处理时间',
+                    width:'160'
+                },
+                {
+                    prop:'ReceivingOrderDateTime',
+                    label: '接单时间',
+                    width:'160'
                 },
                 {
                     prop: 'EndOrderDateTime',
                     label: '完成时间',
+                    width:'160'
                 },
                 {
                     prop: 'FContacts',
@@ -582,6 +596,7 @@ export default {
                 {
                     prop: 'RowNum',
                     label: '序号',
+                    width:'80'
                 },
                 {
                     prop: 'OrderTypeName',
@@ -594,14 +609,22 @@ export default {
                 {
                     prop: 'OrderCreateDateTime',
                     label: '创建时间',
+                    width:'160'
                 },
                 {
                     prop: 'RunningOrderDateTime',
-                    label: '计划时间',
+                    label: '计划/处理时间',
+                    width:'160'
+                },
+                {
+                    prop:'ReceivingOrderDateTime',
+                    label: '接单时间',
+                    width:'160'
                 },
                 {
                     prop: 'EndOrderDateTime',
                     label: '完成时间',
+                    width:'160'
                 },
                 {
                     prop: 'FContacts',
@@ -693,7 +716,7 @@ export default {
 
     },
     created(){
-        this.queryUser()
+        this.queryAllOrders()
         this.$store.dispatch('queryOrderTUsers')
     },
     mounted(){
@@ -760,21 +783,6 @@ export default {
             })
         },
         /**
-         * 查询所有用户
-         */
-        queryUser(){
-            system({
-                FAction:'QueryTUsers',
-                FName:''
-            })
-            .then(data => {
-                this.users = data.FObject
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        },
-        /**
          * 点击派单
          */
         beforeChangeUser(row){
@@ -788,7 +796,8 @@ export default {
             Orders({
                 FAction:'UpdateUOrdersSendOrderUser',
                 ID:this.workObj.ID,
-                FGUID:this.workObj.OrderUserGUID
+                FGUID:this.workObj.OrderUserGUID,
+                FDateTime:this.workObj.PlanFinishTime
             })
             .then(data => {
                 this.$message({
@@ -1209,12 +1218,19 @@ export default {
         }
         .order-dialog{
             .el-dialog{
-                width: 430px;
+                width: 480px;
                 background: url(#{$img-url}task/inspection.png);
                 background-size: 100% 100%;
                 padding-left: 50px;
                 ul{
                     padding-left: 20px;
+                }
+                li{
+                    >span{
+                        display: inline-block;
+                        width: 130px;
+                        text-align: right;
+                    }
                 }
                 li+li{
                     margin-top: 20px;

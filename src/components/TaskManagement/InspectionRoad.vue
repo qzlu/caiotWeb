@@ -17,7 +17,7 @@
                     <li>
                         <span class="label">频次</span>
                         <div class="date-select"  v-if="addRoadData.InspectionCycle === 1">
-                            <ul class="l clearfix time-content">
+                            <ul class="time-content">
                                 <li  style="margin-top:0" v-for="(time, i) in timeArr" :key="i">{{time}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr',i)"></i></li>
                             </ul>
                             <el-popover
@@ -146,6 +146,14 @@
                             </el-popover>
                         </div>
                     </li>
+                    <li>
+                        <span class="label">计划提醒时间(小时)</span>
+                        <el-input type="number" v-model="addRoadData.FNoticeTime"></el-input>
+                    </li>
+                    <li>
+                        <span class="label">计划工时(小时)</span>
+                        <el-input type="number" v-model="addRoadData.FPlanUseTimes"></el-input>
+                    </li>
                 </ul>
             </div>
             <div style="text-align:center;height:42px;margin-top:37px;">
@@ -211,6 +219,7 @@
                  :key="item.prop"
                  :prop="item.prop"
                  :label="item.label"
+                 :width="item.width"
                  show-overflow-tooltip
                 >
                </el-table-column>
@@ -230,6 +239,10 @@
                             <span v-for="time in scoped.row.InspectionTime">{{time[0]}}号{{time[1]}}　</span>
                         </div>
                     </template>
+               </el-table-column>
+               <el-table-column prop="FNoticeTime" label="计划提醒时间" :formatter="(row)=>'提前'+(row.FNoticeTime||0)+'小时'" show-overflow-tooltip>
+               </el-table-column>
+               <el-table-column prop="FPlanUseTimes" label="计划工时" :formatter="(row)=> (row.FPlanUseTimes||0)+'小时'"  show-overflow-tooltip>
                </el-table-column>
                <el-table-column
                  prop=""
@@ -300,6 +313,7 @@ import {system,Inspection} from '@/request/api.js'//api接口（接口统一管�
 import table from '@/mixins/table' //表格混入数据
 import {treeTransfer} from '@/zw-components/index'
 import * as comm from "../../assets/js/pro_common";
+import './InspectionRoad.scss'
 export default {
     mixins:[table],
     data(){
@@ -307,7 +321,8 @@ export default {
             tableLabel:[
                 {
                     prop: 'RowNum',
-                    label: '序号'
+                    label: '序号',
+                    width: '80'
                 },
                 {
                     prop: 'InspectionLineName',
@@ -365,7 +380,9 @@ export default {
                 InspectionPointIDStr:'',
                 InspectionTimeStr:'',
                 AreaIDStr:'',
-                InspectionCycle:1
+                InspectionCycle:1,
+                FNoticeTime:'',
+                FPlanUseTimes:''
             },
             pointData:[],//所有巡检点
             defaultProps:{
@@ -552,6 +569,7 @@ export default {
                     .then(data => {
                         this.queryData()
                         this.$message({
+                          showClose: true,
                           type: 'success',
                           message: type?'修改成功！':'新增成功'
                         });
@@ -559,6 +577,7 @@ export default {
                     })
                     .catch(error => {
                         this.$message({
+                          showClose: true,
                           type: 'error',
                           message: error
                         });
@@ -572,6 +591,7 @@ export default {
         addRoad(){
             if(this.addRoadData.InspectionLineName.length ===0 ){
                 this.$message({
+                    showClose: true,
                     type:'warning',
                     message:'请填写巡检路线名称'
                 })
@@ -583,6 +603,7 @@ export default {
                 })
                 if(arr.length ===0){
                     this.$message({
+                        showClose: true,
                         type:'warning',
                         message:'请填写频次'
                     })
@@ -607,6 +628,7 @@ export default {
                 })
                 if(arr.length ===0){
                     this.$message({
+                        showClose: true,
                         type:'warning',
                         message:'请填写频次'
                     })
@@ -633,6 +655,8 @@ export default {
             this.addRoadData.InspectionLineName = ''
             this.addRoadData.InspectionCycle = 1
             this.addRoadData.ID = ''
+            this.addRoadData.FNoticeTime = ''
+            this.addRoadData.FPlanUseTimes = ''
             this.timeArr = []
             this.timeArr1 = []
             this.timeArr2 = []
@@ -648,6 +672,8 @@ export default {
             this.addRoadData.InspectionLineName = item.InspectionLineName
             this.addRoadData.InspectionCycle = item.InspectionCycleID
             this.addRoadData.ID = item.ID
+            this.addRoadData.FNoticeTime = item.FNoticeTime
+            this.addRoadData.FPlanUseTimes = item.FPlanUseTimes
             //显示弹框时，默认填入时间
             if(show){
                 if(item.InspectionCycleID == 1){
@@ -684,6 +710,7 @@ export default {
             })
             .then(data => {
                 this.$message({
+                  showClose: true,
                   type: 'success',
                   message: '删除成功！'
                 });
@@ -795,6 +822,7 @@ export default {
             })
             if(arr.length === 0){
                 this.$message({
+                    showClose: true,
                     type:'warning',
                     message:'请选择巡检点'
                 })
@@ -865,6 +893,7 @@ export default {
             })
             .catch(error => {
                 this.$message({
+                  showClose: true,
                   type: 'error',
                   message: '导出失败!请重试'
                 });
@@ -876,6 +905,7 @@ export default {
         selectTime(){
             if(this.hh == null||this.mm == null){
                 this.$message({
+                    showClose: true,
                     type:'warning',
                     message:'请选择时间'
                 })
@@ -883,7 +913,7 @@ export default {
             }
             let  hh = this.hh <10?'0'+this.hh:this.hh
             let  mm = this.mm <10?'0'+this.mm:this.mm
-            this.timeArr.push(hh+':'+mm)
+            !this.timeArr.includes(hh+':'+mm)&&this.timeArr.push(hh+':'+mm)
             this.showPopover = false
         },
         /**
@@ -892,6 +922,7 @@ export default {
         selectWeek(){
             if(this.week==null||this.h1 == null||this.m1 == null){
                 this.$message({
+                    showClose: true,
                     type:'warning',
                     message:'请选择时间'
                 })
@@ -899,7 +930,8 @@ export default {
             }
             let  hh = this.h1 <10?'0'+this.h1:this.h1
             let  mm = this.m1 <10?'0'+this.m1:this.m1
-            this.timeArr1.push([this.week,hh+':'+mm])
+            let isExit = this.timeArr1.find(item => item.join(',') == [this.week,hh+':'+mm].join(','))
+            !isExit && this.timeArr1.push([this.week,hh+':'+mm])
             this.showPopover = false
         },
         /**
@@ -908,6 +940,7 @@ export default {
         selectMonth(){
             if(this.month==null||this.h2 == null||this.m2 == null){
                 this.$message({
+                    showClose: true,
                     type:'warning',
                     message:'请选择时间'
                 })
@@ -915,7 +948,8 @@ export default {
             }
             let  hh = this.h2 <10?'0'+this.h2:this.h2
             let  mm = this.m2 <10?'0'+this.m2:this.m2
-            this.timeArr2.push([this.month,hh+':'+mm])
+            let isExit = this.timeArr2.find(item => item.join(',') == [this.month,hh+':'+mm].join(','))
+            !isExit && this.timeArr2.push([this.month,hh+':'+mm])
             this.showPopover = false
         },
         /**
@@ -935,6 +969,6 @@ export default {
 }
 </script>
 <style lang="scss">
-@import './InspectionRoad.scss'
+
 </style>
 

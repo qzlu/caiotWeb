@@ -8,7 +8,7 @@ $img-url:'/static/image/';
         }
     }
     .el-dialog{
-        width: 460px;
+        width: 480px;
         /* height: 380px; */
         background: url(#{$img-url}task/inspection.png);
         background-size: 100% 100%;
@@ -17,6 +17,7 @@ $img-url:'/static/image/';
             text-align: left
         }
         li{
+            position: relative;
             margin-top: 15px;
             .zw-btn{
                 height: 40px;
@@ -25,15 +26,20 @@ $img-url:'/static/image/';
             }
         }
         .label{
-            width: 85px;
+            width: 130px;
             display: inline-block;
-            text-align: right
+            text-align: right;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%)
+        }
+        .label+div{
+            margin-left: 140px;
         }
         .el-input{
             width: 165px;
             height: 39px;
             line-height: 39px;
-            margin-left: 10px;
             &__inner{
                 background:rgba(24,64,107,1);
                 border:1px solid rgba(5,103,158,1);
@@ -213,9 +219,10 @@ $img-url:'/static/image/';
 // 时间选择popover
 .date-select{
     display: inline-block;
+    position: relative;
     width:204px;
-    height: 39px;
-    line-height: 39px;
+    /* height: 39px; */
+    /* line-height: 39px; */
     margin-left: 10px;
     background:rgba(24,64,107,1);
     border:1px solid rgba(5,103,158,1);
@@ -223,19 +230,23 @@ $img-url:'/static/image/';
     padding-left: 4px;
     padding-right: 20px;
     >span{
-        position: relative;
+        position: absolute;
         left: 208px;
+        top: 50%;
+        transform: translateY(-50%)
     }
     .time-content{
-        position: absolute;
+        /* position: absolute; */
         width: 204px;
-        height: 39px;
-        white-space: nowrap;
+        min-height: 39px;
+        /* height: 39px; */
+/*         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
+        text-overflow: ellipsis; */
         li{
             position: relative;
             margin-right: 20px;
+            line-height: 39px;
             display: inline-block;
             .el-icon-circle-close-outline{
                 width: 14px;

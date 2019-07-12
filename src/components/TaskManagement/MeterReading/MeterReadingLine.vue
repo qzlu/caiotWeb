@@ -146,6 +146,14 @@
                                 </el-popover>
                             </div>
                         </li>
+                        <li>
+                            <span class="label">计划提醒时间(小时)</span>
+                            <el-input type="number" v-model="addRoadData.FNoticeTime"></el-input>
+                        </li>
+                        <li>
+                            <span class="label">计划工时(小时)</span>
+                            <el-input type="number" v-model="addRoadData.FPlanUseTimes"></el-input>
+                        </li>
                     </ul>
                 </div>
                 <div style="text-align:center;height:42px;margin-top:37px;">
@@ -237,6 +245,10 @@
                         </div>
                     </template>
                </el-table-column>
+               <el-table-column prop="FNoticeTime" label="计划提醒时间" :formatter="(row)=>'提前'+(row.FNoticeTime||0)+'小时'" show-overflow-tooltip>
+               </el-table-column>
+               <el-table-column prop="FPlanUseTimes" label="计划工时" :formatter="(row)=> (row.FPlanUseTimes||0) + '小时'"  show-overflow-tooltip>
+               </el-table-column>
                <el-table-column
                  prop=""
                  label="操作">
@@ -306,6 +318,7 @@ import {system,MeterReading,Inspection} from '@/request/api.js'//api接口（接
 import table from '@/mixins/table' //表格混入数据
 import {treeTransfer} from '@/zw-components/index'
 import * as comm from "@/assets/js/pro_common";
+import '../InspectionRoad.scss'
 export default {
     mixins:[table],
     data(){
@@ -371,7 +384,9 @@ export default {
                 MeterReadingPointStr:'',
                 MeterReadingTimeStr:'',
                 AreaIDStr:'',
-                MeterReadingCycle:1
+                MeterReadingCycle:1,
+                FNoticeTime:'',
+                FPlanUseTimes:''
             },
             pointData:[],//所有巡检点
             defaultProps:{
@@ -545,7 +560,6 @@ export default {
          * type 0:为新增 1：为修改
          */
         addOrUpdatedRoad(type) {
-            console.log(type);
             let actionsArr = ['AddUMeterReadingLine','UpdateUMeterReadingLine','UpdateUMeterReadingLinePoint']
             return new Promise((resolve,reject) => {
                     MeterReading({
@@ -621,6 +635,7 @@ export default {
             if(this.type){
                 this.addRoadData.MeterReadingPointStr = -1,
                 this.addRoadData.AreaIDStr = -1
+                console.log(this.type)
                 return this.addOrUpdatedRoad(this.type)
             }else{
                 console.log(this.addRoadData);
@@ -638,6 +653,8 @@ export default {
             this.addRoadData.MeterReadingLineName = ''
             this.addRoadData.MeterReadingCycle = 1
             this.addRoadData.ID = ''
+            this.addRoadData.FNoticeTime = ''
+            this.addRoadData.FPlanUseTimes = ''
             this.timeArr = []
             this.timeArr1 = []
             this.timeArr2 = []
@@ -653,6 +670,8 @@ export default {
             this.addRoadData.MeterReadingLineName = item.MeterReadingLineName
             this.addRoadData.MeterReadingCycle = item.MeterReadingCycle
             this.addRoadData.ID = item.ID
+            this.addRoadData.FNoticeTime = item.FNoticeTime
+            this.addRoadData.FPlanUseTimes = item.FPlanUseTimes
             //显示弹框时，默认填入时间
             if(show){
                 if(item.MeterReadingCycle == 1){
@@ -702,7 +721,6 @@ export default {
          * 点击每一行（修改路线）
          */
         changeRoad(row){
-            this.type = 2
             this.roadObj = row
             this.defaultChecked = []
             Inspection({
@@ -890,7 +908,7 @@ export default {
             }
             let  hh = this.hh <10?'0'+this.hh:this.hh
             let  mm = this.mm <10?'0'+this.mm:this.mm
-            this.timeArr.push(hh+':'+mm)
+            !this.timeArr.includes(hh+':'+mm) && this.timeArr.push(hh+':'+mm)
             this.showPopover = false
         },
         /**
@@ -906,7 +924,8 @@ export default {
             }
             let  hh = this.h1 <10?'0'+this.h1:this.h1
             let  mm = this.m1 <10?'0'+this.m1:this.m1
-            this.timeArr1.push([this.week,hh+':'+mm])
+            let isExit = this.timeArr1.find(item => item.join(',') == [this.week,hh+':'+mm].join(','))
+            !isExit && this.timeArr1.push([this.week,hh+':'+mm])
             this.showPopover = false
         },
         /**
@@ -922,7 +941,8 @@ export default {
             }
             let  hh = this.h2 <10?'0'+this.h2:this.h2
             let  mm = this.m2 <10?'0'+this.m2:this.m2
-            this.timeArr2.push([this.month,hh+':'+mm])
+            let isExit = this.timeArr2.find(item => item.join(',') == [this.month,hh+':'+mm].join(','))
+            !isExit && this.timeArr2.push([this.month,hh+':'+mm])
             this.showPopover = false
         },
         /**
@@ -942,5 +962,5 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '../InspectionRoad.scss'
+
 </style>

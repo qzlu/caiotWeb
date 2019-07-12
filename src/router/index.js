@@ -566,6 +566,11 @@ let routers_item=[
 						}
 					},
 					{
+						path:'QueryPatrolPlanRecord',
+						name:'QueryPatrolPlanRecord',
+						component:() => import('@/components/TaskManagement/Patrol/QueryPatrolPlanRecord.vue') //巡更查询
+					},
+					{
 						path: 'MatterRecord',
 						name:'MatterRecord',
 						component: () => import('@/components/TaskManagement/MatterRecord.vue'), //报事
@@ -907,6 +912,16 @@ let routers_item=[
 								title: '千仞云平台',
 								requireAuth: true,
 							 },
+						},
+						{
+							path: 'InspectionDeviceTypeDataItem', //标准配置（巡检标准）
+							name: 'InspectionDeviceTypeDataItem',
+							component: () => import('@/components/TaskManagement/InspectionStandard.vue')
+						},
+						{
+							path: 'BasisMaintenanceStandards', //标准配置（保养标准）
+							name: 'BasisMaintenanceStandards',
+							component: () => import('@/components/TaskManagement/Maintenance/MaintenanceStandard.vue')
 						}
 					]
 				

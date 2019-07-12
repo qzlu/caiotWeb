@@ -1,7 +1,6 @@
 <template>
     <div class="report standard-maintenance">
         <div class="l device-type">
-            <h3 v-if="standardType == 1"><button class="zw-btn import" @click="importMaintenance">导入标准</button></h3>
             <h3>设备类型</h3>
             <div class="device-container">
                 <el-scrollbar>
@@ -349,7 +348,7 @@ export default {
                 children:'DeviceTypes'
             },
             tableData1:[],
-            device:{},
+            device:null,
             allItem:[],
             show:false,
             checkedItems:[],
@@ -399,8 +398,7 @@ export default {
             levelTextArr:['','一级保养','二级保养','三级保养'],
             cycleText:['','日常','月度','年度'],
             contentArr:[''],
-            maintenanceItem:null,
-            standardType:1 //1为任务管理下的保养标准 ， 2//标准配置下的保养标准
+            maintenanceItem:null
 
 
         }
@@ -415,8 +413,6 @@ export default {
 
     },
     created(){
-        this.standardType = this.$route.name == 'BasisMaintenanceStandards'? 2 : 1
-        console.log(this.$route.name,this.standardType)
         this.queryDeviceType()
     },
     mounted(){
@@ -428,8 +424,7 @@ export default {
          */
         queryDeviceType(){
             system({
-                FAction:'QuerySystemDeviceTypeToTree',
-                ProjectID:this.standardType == 1?localStorage.getItem('projectid'):0
+                FAction:'QuerySystemDeviceTypeToTree'
             })
             .then(data => {
                 this.deviceData = data.FObject
@@ -443,7 +438,7 @@ export default {
          */
         queryUMaintenanceStandardsByDeviceTypeID(id){
             Maintenance({
-                FAction:this.standardType == 1 ? 'QueryUMaintenanceStandardsByDeviceTypeID':'QueryUBasisMaintenanceStandardsByDeviceTypeID',
+                FAction:'QueryUMaintenanceStandardsByDeviceTypeID',
                 DeviceTypeID:id
             })
             .then(data => {
@@ -475,7 +470,7 @@ export default {
         queryUMaintenanceContent(row){
             this.maintenanceItem = row
             Maintenance({
-                FAction:this.standardType == 1 ? 'QueryUMaintenanceContent' : 'QueryUBasisMaintenanceContent',
+                FAction:'QueryUMaintenanceContent',
                 ID:row.ID
             })
             .then(data => {
@@ -489,10 +484,8 @@ export default {
          * 新增或编辑巡检标准
          */
         addOrUpdatedStandards(){
-            let action = this.standardType == 1? (this.type?'UpdateUMaintenanceStandards':'AddUMaintenanceStandards'):'AddOrUpdateUBasisMaintenanceStandards'
-            this.addStandard.DeviceTypeID = this.device.DeviceTypeID
             Maintenance({
-                FAction:action,
+                FAction:this.type?'UpdateUMaintenanceStandards':'AddUMaintenanceStandards',
                 DeviceTypeID:this.device.DeviceTypeID,
                 mUMaintenanceStandards:this.addStandard
             })
@@ -590,7 +583,7 @@ export default {
             this.addStandard.DeviceTypeID = this.device.DeviceTypeID
             console.log(row)
             this.addStandard.FNoticeTime = row.FNoticeTime
-            this.addStandard.FPlanUseTimes = row.FPlanUseTimes 
+            this.addStandard.FPlanUseTimes = row.FPlanUseTimes
             if(row.MaintenanceCycle == 1){
                 this.timeArr = row.MaintenanceDateTime.split('、').map(item => {
                     return item.split('-')[2].slice(0,5)
@@ -607,38 +600,6 @@ export default {
                 })
             }
             this.show1 =true
-        },
-        /**
-         * 导入保养标准
-         */
-        async importMaintenance(){
-            await new Promise(resolve => {
-                this.$DeleteMessage([`确定要导入保养标准`,'导入保养标准'])
-                .then(() => {
-                    resolve()
-                })
-                .catch(() => {
-                })
-            })
-            Maintenance({
-                FAction: 'ImportUMaintenanceStandards'
-            })
-            .then((result) => {
-                if(this.device.DeviceTypeID){
-                    this.queryUMaintenanceStandardsByDeviceTypeID(this.device.DeviceTypeID)
-                }
-                console.log(12)
-                this.$message({
-                    message: '导入成功',
-                    type: 'success'
-                })
-            }).catch((err) => {
-                console.log(err)
-                this.$message({
-                    message: '导入失败',
-                    type: 'error'
-                })
-            });
         },
         /**
          * 新增或编辑保养标准内容
@@ -666,7 +627,7 @@ export default {
          */
         updatedContent(){
             Maintenance({
-                FAction:this.standardType==1?'UpdateMaintenanceContent':'UpdateUBasisMaintenanceContent',
+                FAction:'UpdateMaintenanceContent',
                 ID:this.maintenanceItem.ID,
                 ContentStr:this.addStandard.ContentStr
             })
@@ -695,7 +656,7 @@ export default {
                 })
             })
             Maintenance({
-                FAction:this.standardType == 1 ? 'DeleteUMaintenanceStandardsByID' : 'DeleteUBasisMaintenanceStandardsByID',
+                FAction:'DeleteUMaintenanceStandardsByID',
                 ID:row.ID
             })
             .then(data => {
@@ -725,7 +686,7 @@ export default {
                 })
             })
             Maintenance({
-                FAction:this.standardType == 1 ? 'DeleteUMaintenanceContentByID' : 'DeleteUBasisMaintenanceStandardsByID',
+                FAction:'DeleteUMaintenanceContentByID',
                 ID:row.ID
             })
             .then(data => {
@@ -804,14 +765,6 @@ export default {
 $img-url:'/static/image/';
 .standard-maintenance.report{
     padding: 30px 20px 27px 20px;
-    .import{
-        width: 148px;
-        padding-left: 30px;
-        background: url(#{$img-url}task/import.png)
-    }
-    .import:hover,.import:active{
-        background: url(#{$img-url}task/import-1.png)
-    }
     .device-type{
         width:333px;
         height:850px;
@@ -877,6 +830,14 @@ $img-url:'/static/image/';
                     margin-right: 10px;
                 }
                 margin-right: 30px;
+            }
+            .import{
+                width: 148px;
+                padding-left: 30px;
+                background: url(#{$img-url}task/import.png)
+            }
+            .import:hover,.import:active{
+                background: url(#{$img-url}task/import-1.png)
             }
         }
         &-item{
