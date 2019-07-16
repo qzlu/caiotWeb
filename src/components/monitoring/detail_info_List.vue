@@ -63,7 +63,7 @@
                           v-for="(df,key) in c.SDataValue"
                           :data="df.DStatus"
                           @click="click_show_line(c.SDataID)"
-                        >{{df.DValue}}/</i>
+                        >{{(datalist02.DeviceTypeID==1003&&c.SDataID==1) ? (df.DValue>0?'上行':(df.FValue == 0 ? '停止': '下行')) : df.DValue}}{{key!==c.SDataValue.length-1?'/':''}}</i>
                       </p>
                       <p class="grd">
                         {{c.SDataTitle}} ({{c.SDataUnit}})

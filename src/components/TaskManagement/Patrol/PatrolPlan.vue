@@ -328,6 +328,9 @@ export default {
             return this.$store.state.orderUser //负责人
         }
     },
+    components:{
+        zwTree
+    },
     watch:{
         filterText(val){
             this.filterObj.PatrolPlanName = val
@@ -605,7 +608,9 @@ export default {
             this.type = 0
             this.PatrolCycleName = '临时巡更'
             this.planTime = ''
-            this.road = null
+            this.road = null,
+            this.showPointTree = false
+            this.pointData = []
             this.addPlanData = Object.assign({},this.defaultAddPlanData)
         },
         /**
@@ -621,6 +626,8 @@ export default {
             this.addPlanData.PatrolLineID = row.PatrolLineID
             this.planTime = new Date(row.PatrolDatetime)
             this.addPlanData.PatrolDatetime = row.PatrolDatetime
+            this.showPointTree = false
+            this.pointData = []
             this.$set(this.addPlanData,'PatrolLineName',row.PatrolLineName)
             this.$set(this.addPlanData,'ID',row.ID)
             this.queryPoints(row.PatrolLineID)

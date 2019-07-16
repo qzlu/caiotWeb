@@ -2,7 +2,7 @@
   <div class="home">
     <audio class="success" id="music" loop="loop" src="/static/mp3/new_warn.mp3"></audio>
     <div class="homme_center">
-      <div class="header_item">
+      <div class="header_item" v-if="inIframe != 1">
         <div class="list_a">
           <!--  notice-->
           <section class="notice_items" :class="addclass" id="tuhn_pin">
@@ -166,9 +166,9 @@ export default {
   },
   beforeCreate() {
     if (this.$route.query.token) {
-      let token = localStorage.getItem("Token");
+      let token = this.$route.query.token;
       let projectID = localStorage.getItem("projectid");
-      if (token == "undefined" || token == null) {
+      if (token) {
         localStorage.setItem("Token", this.$route.query.token);
         localStorage.setItem("inIframe", 1);
       }
