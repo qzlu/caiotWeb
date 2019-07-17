@@ -15,7 +15,7 @@
             大事记
         </h3>
         <div class="event-list">
-            <event-list :data='eventData' :showTitle='false'></event-list>
+            <event-list :data='eventData' :showTitle='false'></event-list> 
         </div>
     </div>
 </template>
@@ -68,11 +68,11 @@ export default {
                 },
                 {
                     label: '是否在门区',
-                    prop: ''
+                    prop: 'DeviceName'
                 },
                 {
                     label: '使用单位',
-                    prop: ''
+                    prop: 'DeviceName'
                 },
             ],
             liftInfo:{}
