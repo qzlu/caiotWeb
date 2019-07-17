@@ -1,7 +1,7 @@
 <template>
   <div class="dl_a">
     <div class="pr_top">
-      <p class="pr_title">
+      <p class="pr_title" v-if="showTitle">
         <img src="/static/image/indexdetail/content_icon_2.png"> 大事记
       </p>
 
@@ -53,11 +53,14 @@ export default {
   },
   props:{
     data:Array,
+    showTitle:{
+      default:true
+    },
     props:{
       default:() =>{return{
         title:'HappenContext',
         time:'HappenTime',
-        icon:'WebIconName'
+        icon:'WebIconName',
       }}
     }
   },

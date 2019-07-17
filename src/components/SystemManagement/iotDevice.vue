@@ -12,10 +12,10 @@
                     <el-input v-model="addInfo.DeviceCode">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="设备ID" prop="DeviceID" :rules="[{ required: true, message: '请输入'}]">
+<!--                 <el-form-item label="设备ID" prop="DeviceID" :rules="[{ required: true, message: '请输入'}]">
                     <el-input  v-model="addInfo.DeviceID">
                     </el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="设备名称" prop="DeviceName" :rules="[{ required: true, message: '请输入'}]">
                     <el-input v-model="addInfo.DeviceName">
                     </el-input>
@@ -128,7 +128,7 @@ export default {
             projectName:localStorage.getItem('projectname'),
             defaultAddInfo:{//新增项目参数默认数据
                 ProjectID:parseInt(localStorage.getItem('projectid')),
-                DeviceID:null,
+                DeviceID:0,
                 DeviceName:null,
                 DeviceShortName:null,
                 DeviceTypeID:null,
@@ -142,7 +142,7 @@ export default {
             },
             addInfo:{ //新增或修改项目参数
                 ProjectID:null,
-                DeviceID:null,
+                DeviceID:0,
                 DeviceName:null,
                 DeviceShortName:null,
                 DeviceTypeID:null,

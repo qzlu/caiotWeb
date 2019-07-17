@@ -32,12 +32,14 @@
         </div>
       </section>
     </div>
-    <div v-else-if="datalist02.DeviceTypeID==100005">
+    <div v-else-if="datalist02.DeviceTypeID==1003">
       <div class="iframe-container">
         <p class="btn_back" @click="routerback()">
           <img src="static/image/index/back_btn.png">返回
         </p>
-        <iframe src=" https://www.daantc.com:8443/cas/autoLogin?token=eyJhbGciOiJIUzI1NiJ9.eyJsb2dpblVzZXIiOiJqaWFuZ2dvbmcxIiwibG9naW5Qc3N3b3JkIjoiamc1MTg4In0.Qi2ETx3m-wgBIJmdsDa8Our_MrKWBSMRpmZ5w8Dk3dg&se&service=https://www.daantc.com:8444/elevator-monitor/shiro-cas" frameborder="0"></iframe>
+        <div style="height:920px;">
+          <lift-detaile :eventData="dl_datalist"></lift-detaile>
+        </div>
       </div>
     </div>
     <div v-else>
@@ -186,6 +188,7 @@ import table_data from "./d_l_b.vue"; //列表组件
 var echarts = require("echarts");
 import {project} from '@/request/api';
 import {lineChart} from '@/zw-components/index';
+import liftDetaile from './liftDetaile.vue' //电梯页面
 export default {
   data() {
     return {
@@ -478,7 +481,7 @@ export default {
       }
     }
   },
-  components: { "my-imgdata": img_data, table_data ,lineChart},
+  components: { "my-imgdata": img_data, table_data ,lineChart,liftDetaile},
   mounted: function() {
     let _this = this;
     function settimeouts_detil_info_list() {
