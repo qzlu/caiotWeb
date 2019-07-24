@@ -137,5 +137,32 @@
 			</div>
 		</div>
 	</div>
+	<script>
+		var entry = {
+		  a: {
+		    b: {
+		      c: {
+		        dd: 'abcdd'
+		      }
+		    },
+		    d: {
+		      xx: 'adxx'
+		    },
+		    e: 'ae'
+		  }
+		}
+		function formatterObj(obj,name='',result= {}){
+			for(let key in obj){
+				let parentname =name?name+'.'+key:name+key
+				if(typeof obj[key] === 'object'){
+					formatterObj(obj[key],parentname,result)
+				}else{
+					result[parentname] = obj[key]
+				}
+			}
+			return result
+		}
+		console.log(formatterObj(entry))
+	</script>
 </body>
 </html>
