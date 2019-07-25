@@ -165,20 +165,13 @@ export default {
     }
   },
   beforeCreate() {
-    if (this.$route.query.token) {
-      let token = this.$route.query.token;
-      let projectID = localStorage.getItem("projectid");
-      if (token) {
-        localStorage.setItem("Token", this.$route.query.token);
-        localStorage.setItem("inIframe", 1);
-      }
-      if (
-        projectID == "undefined" ||
-        projectID == null ||
-        projectID != this.$route.query.projectID
-      ) {
-        localStorage.setItem("projectid", this.$route.query.projectID);
-      }
+    let {token, projectID}= this.$route.query
+    if(token){
+        localStorage.setItem('FToken',token)
+        localStorage.setItem('inIframe',1)
+    }
+    if(projectID){
+        localStorage.setItem('projectid',projectID)
     }
   },
   created() {},
@@ -199,6 +192,7 @@ export default {
       var year = date.getFullYear();
       var month = date.getMonth() + 1;
       var strDate = date.getDate();
+      
       if (month >= 1 && month <= 9) {
         month = "0" + month;
       }

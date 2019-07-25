@@ -4,7 +4,7 @@
 				<section  class="png_ygts">
 				<ul class="gpn_siItem">
 						<li v-for="(item, index) in datalist" :key="index" :class="{'show_warn_class':item.TopValue.length,'no_warn_class':!item.TopValue.length}">
-							<router-link v-if="item.DeviceItemID != 4" :to="{ name: 'detail_info',params:{ id:item.DeviceItemID,SingleType:1}}">
+							<router-link  :to="{ name: 'detail_info',params:{ id:item.DeviceItemID,SingleType:1}}">
 								<p class="u_tle">{{item.DeviceItemTitle}}</p>
 								<div class="u_cen">
 									 <div class="icon_lig">
@@ -23,7 +23,7 @@
 										</div>
 								</div>
 							</router-link>
-							<a v-else href="https://www.daantc.com:8443/cas/autoLogin?token=eyJhbGciOiJIUzI1NiJ9.eyJsb2dpblVzZXIiOiJqaWFuZ2dvbmcxIiwibG9naW5Qc3N3b3JkIjoiamc1MTg4In0.Qi2ETx3m-wgBIJmdsDa8Our_MrKWBSMRpmZ5w8Dk3dg&se&service=https://www.daantc.com:8444/elevator-monitor/shiro-cas" target="_blank" rel="noopener noreferrer">
+<!-- 							<a v-else href="https://www.daantc.com:8443/cas/autoLogin?token=eyJhbGciOiJIUzI1NiJ9.eyJsb2dpblVzZXIiOiJqaWFuZ2dvbmcxIiwibG9naW5Qc3N3b3JkIjoiamc1MTg4In0.Qi2ETx3m-wgBIJmdsDa8Our_MrKWBSMRpmZ5w8Dk3dg&se&service=https://www.daantc.com:8444/elevator-monitor/shiro-cas" target="_blank" rel="noopener noreferrer">
 								<p class="u_tle">{{item.DeviceItemTitle}}</p>
 								<div class="u_cen">
 									 <div class="icon_lig">
@@ -41,7 +41,7 @@
 										 	<pie-chart :data='item.data' :color='item.color' :setting="{center:['35%', '51%']}"></pie-chart>
 										</div>
 								</div>
-							</a>
+							</a> -->
 						</li>
 				</ul>
 				
