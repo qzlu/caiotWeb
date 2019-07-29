@@ -167,7 +167,7 @@ export default {
   beforeCreate() {
     let {token, projectID}= this.$route.query
     if(token){
-        localStorage.setItem('FToken',token)
+        localStorage.setItem('Token',token)
         localStorage.setItem('inIframe',1)
     }
     if(projectID){
@@ -310,7 +310,7 @@ export default {
   mounted: function() {
     var curr_time = this.getNowFormatDate();
     let _this = this;
-    function settimeouts_warn() {
+    function  settimeouts_warn() {
       var html_tem = document.getElementById("pin_wanr");
       var chen = html_tem.children;
       if (chen) var len = chen.length;

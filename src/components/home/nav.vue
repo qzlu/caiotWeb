@@ -169,6 +169,9 @@ li {
   margin: 0 10px;
 }
 a {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
   color: #fff;
 }
 

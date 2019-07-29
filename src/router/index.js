@@ -118,6 +118,16 @@ let routers_item = [
 						name: 'Comprehensive', //综合态势
 						component: () => import('@/components/ProjectOverview/comprehensive.vue')
 					},
+					{
+						path: 'systemBrowse',
+						name: 'SystemBrowse', //系统态势
+						component: () => import('@/components/ProjectOverview/systemBrowse.vue')
+					},
+					{
+						path: 'areaBrowse',
+						name: 'AreaBrowse', //区域态势
+						component: () => import('@/components/ProjectOverview/areaBrowse.vue')
+					}
 				]
 			},
 			{

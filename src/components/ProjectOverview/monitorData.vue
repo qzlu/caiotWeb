@@ -1,0 +1,218 @@
+<template>
+    <div class="monitor-data">
+        <div class="monitor-data-item">
+            <h5><i class="iconfont icon-SZXFY-Earlywarning"></i> 实时告警 <i class="iconfont icon-Up"></i></h5>
+            <table class="table-header">
+              <tr>
+                <th v-for="(item,i) in alarmLabels" :key="i" :width='item.width' :style="{'text-align':item.align}">{{item.label}}</th>
+              </tr>
+            </table>
+            <div class="table-body" v-if="alarmData.length>0">
+                <el-scrollbar>
+                    <table>
+                      <tr v-for="(obj,i) in alarmData" :key="i" @click="rowClick(obj)">
+                        <td v-for="(item,j) in alarmLabels" :key="j" :width='item["width"]' :style="{'text-align':item.align,'color':item.color}" :title="item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]">{{item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]}}</td>
+                      </tr>
+                    </table>
+                </el-scrollbar>
+            </div>
+        </div>
+        <div class="monitor-data-item">
+            <h5><i class="iconfont icon-Workingodd"></i> 实时工单 <i class="iconfont icon-Up"></i></h5>
+            <table class="table-header">
+              <tr>
+                <th v-for="(item,i) in orderLabels" :key="i" :width='item.width' :style="{'text-align':item.align}">{{item.label}}</th>
+              </tr>
+            </table>
+            <div class="table-body" v-if="orderData.length>0">
+                <el-scrollbar>
+                    <table>
+                      <tr v-for="(obj,i) in orderData" :key="i" @click="rowClick(obj)">
+                        <td v-for="(item,j) in orderLabels" :key="j" :width='item["width"]' :style="{'text-align':item.align,'color':item.color}" :title="item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]">{{item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]}}</td>
+                      </tr>
+                    </table>
+                </el-scrollbar>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+const OrderState = ['','待完成', '已完成', '待结单', '待派单', '已逾期']
+import {project,Orders} from '@/request/api.js'
+export default {
+    data(){
+        return{
+            alarmLabels:[
+                {
+                    prop: 'AlarmTime',
+                    label: '告警时间',
+                    width: '25%'
+                },
+                {
+                    prop: 'AlarmText',
+                    label: '告警内容',
+                    width: '25%'
+                },
+                {
+                    prop: 'AlarmData',
+                    label: '当前值',
+                    width: '25%'
+                },
+                {
+                    prop: 'OrderState',
+                    label: '工单状态',
+                    width: '25%',
+                    formatter:val => OrderState[val]
+                },
+            ],
+            orderLabels:[
+                {
+                    prop: 'OrderTypeName',
+                    label: '工单类型',
+                    width: '25%'
+                },
+                {
+                    prop: 'OrderCreateDateTime',
+                    label: '计划时间',
+                    width: '25%'
+                },
+                {
+                    prop: 'OrderContent',
+                    label: '工单内容',
+                    width: '25%'
+                },
+                {
+                    prop: 'OrderState',
+                    label: '工单状态',
+                    width: '25%',
+                    formatter:val => OrderState[val]
+                },
+            ],
+            alarmData:[],//实时告警数据
+            orderData:[], //实时工单数据
+            timer:null,
+        }
+    },
+    created(){
+        this.queryData()
+    },
+    beforeDestroy(){
+        clearTimeout(this.timer)
+        this.timer = null
+    },
+    methods:{
+        queryData(){
+            this.getAlarmRealData()
+            this.queryPageUOrdersByDate()
+            this.timer = setTimeout(this.queryData,5000)
+        },
+        /**
+         * 7.获取项目实时未恢复告警
+         */
+        getAlarmRealData(){
+            project({
+                FAction: 'GetAlarmRealData'
+            })
+            .then((result) => {
+                this.alarmData = result.FObject||[]
+                this.$emit('alarmChange',this.alarmData.length)
+            }).catch((err) => {
+                
+            });
+        },
+        /**
+         * 实时工单
+         */
+        queryPageUOrdersByDate(){
+            Orders({
+                FAction: 'QueryPageUOrdersByDate',
+                FState: -1,
+                PageIndex:1,
+                PageSize: 1000
+            })
+            .then((result) => {
+                this.orderData = result.FObject
+                this.$emit('orderChange',this.orderData.length)
+            }).catch((err) => {
+                
+            });
+        },
+        rowClick(){
+            this.$router.push({name:'now_count'})
+        }
+    }
+}
+</script>
+<style lang="scss">
+.monitor-data{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    &-item{
+        width: 578px;
+        height: 100%;
+        border-radius: 10px;
+        background: rgba($color: #112D45, $alpha: 0.34);
+        h5{
+            padding-left: 30px;
+            line-height: 38px;
+            color: #18A1EC;
+            font-size: 16px;
+            text-align: left;
+            .iconfont:first-of-type{
+                font-size: 20px;
+                margin-right: 10px;
+            }
+            .icon-Up{
+                margin-left: 10px;
+                display: inline-block;
+                transform: rotate(90deg);
+            }
+        }
+        .table-header{
+            width: 100%;
+            tr{
+                th{
+                    font-size: 16px;
+                }
+            }
+        }
+        tr{
+            height: 38px;
+            line-height: 38px;
+            th{
+                font-size: 14px;
+                text-align: center;
+                color: #F1F1F2
+            }
+        }
+        .table-body{
+            height: 210px;
+            table{
+                width: 100%;
+                tr{
+                    line-height: 38px;
+                    cursor: pointer;
+                    text-align: center;
+                    td{
+                        display: inline-block;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                    }
+                    td.warning{
+                      color: #E0E213
+                    }
+                }
+                tr:nth-of-type(2n+1){
+                    background:rgba(19,79,164,0.5);
+                }
+                tr:nth-of-type(2n){
+                    background:rgba(5,48,119,0.5);
+                }
+              }
+        }
+    }
+}
+</style>

@@ -1,6 +1,10 @@
 <template>
-    <div class="card">
-        <h4>{{title}} <i class="iconfont icon-Up"></i></h4>
+    <div class="card" :style="style">
+        <h4>
+            {{title}} 
+            <i class="iconfont icon-Up" v-if="showMoreIcon" ></i>
+            <slot name="header"></slot>
+        </h4>
         <div class="border">
         </div>
         <div class="icon">
@@ -19,7 +23,21 @@ export default {
     },
     props:{
         title:String,
-    }
+        height:Number,
+        showMoreIcon:{
+            type:Boolean,
+            default:true
+        }
+    },
+    computed:{
+        style(){
+            if(this.height){
+                return {
+                    height:this.height+'px'
+                }
+            }
+        }
+    },
 }
 </script>
 <style lang="scss" scoped>
@@ -30,13 +48,13 @@ export default {
         background-size:100% 100%;
         h4{
             margin-top: 19px;
-            padding-left: 22px;
+            padding: 0 22px;
             font-size:18px;
             font-family:MicrosoftYaHeiUI;
             font-weight:400;
             color:rgba(241,241,242,1);
             text-align: left;
-            .iconfont{
+            .iconfont.icon-Up{
                 display: inline-block;
                 transform: rotate(90deg)
             }

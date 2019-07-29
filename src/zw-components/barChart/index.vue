@@ -51,14 +51,14 @@ export default {
       var option = null;
       option = {
         title: {
-          text: "",
+          text: this.data.title||'',
           textStyle: {
-            color: "#666666",
-            fontSize: 12,
+            color: "#fff",
+            fontSize: 14,
             fontWeight: "normal"
           },
           top: "15",
-          left: "center"
+          left: "left"
         },
         tooltip: {
           trigger: "axis"
@@ -68,13 +68,22 @@ export default {
           color: "#fff"
         },
         legend: {
-          show: false
+          show: true,
+          itemWidth:10,
+          itemHeight:10,
+          x: "right", //x,y 显示位置
+          y: "15",
+          textStyle: {
+            fontWeight: "normal", //标题颜色
+            color: "#fff",
+            fontSize: '12px'
+          }
         },
         grid: {
-          top: "20",
+          top: "60",
           left: "10",
           right: "10",
-          bottom: "10",
+          bottom: "40",
           containLabel: true
         },
         toolbox: {
@@ -98,12 +107,12 @@ export default {
           axisLine: {
             //x轴色
             lineStyle: {
-              color: "#EDEDED",
+              color: "#FFFFFF",
               width: 1
             }
           },
           axisLabel: {
-            color: "#666666",
+            color: "#FFFFFF",
             interval: 0
           },
           axisTick: {
@@ -117,22 +126,24 @@ export default {
         yAxis: [
           {
             type: "value",
-            splitLine: {
-              lineStyle: {
-                color: "#EDEDED"
-              }
-            },
+            splitLine: { show: false }, //去除网格线
+            minInterval:1,
             axisLine: {
+              //y轴色
               lineStyle: {
-                color: "#EDEDED",
+                color: "#FFFFFF",
                 width: 1
               }
             },
+            axisLabel: {
+              color: "#FFFFFF",
+              interval: 0,
+              formatter:val => {
+                return val>10000?val/10000+'w':val
+              },
+            },
             axisTick: {
               show: false
-            },
-            axisLabel: {
-              color: "#666666"
             }
           }
         ],
