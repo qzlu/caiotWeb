@@ -167,7 +167,7 @@ export default {
   beforeCreate() {
     let {token, projectID}= this.$route.query
     if(token){
-        localStorage.setItem('FToken',token)
+        localStorage.setItem('Token',token)
         localStorage.setItem('inIframe',1)
     }
     if(projectID){
