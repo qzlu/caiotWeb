@@ -36,7 +36,7 @@
                     <span :class="{err:item.AlarmCount>0}">{{item.AlarmCount}}</span>/{{item.DeviceCount}}
                 </span>
                 <div class="content">
-                    <div class="statu alarm">
+                    <div :class="['statu',{warning:item.FState == 1,alarm: item.FState == 3,'un-use':item.FState == 2}]">
                         <!-- 正常 -->
                     </div>
                     <ul  class="param clearfix">

@@ -38,14 +38,14 @@
         </div>
         <div class="main">
             <div class="main-top">
-                <div :class="['l', 'operation', 'pre',{'no-click':lastIndex === 4}]" @click="pre()">
+                <div :class="['l', 'operation', 'pre',{'no-click':lastIndex === 4}]" v-if="areaCount.length>5&&lastIndex>4" @click="pre()">
                     <i class="iconfont icon-Leftparentheses"></i>
                 </div>
-                <div :class="['r', 'operation', 'next',{'no-click':lastIndex === areaCount.length-1}]" @click="next()">
+                <div :class="['r', 'operation', 'next',{'no-click':lastIndex >= areaCount.length-1}]" v-if="areaCount.length>5&&lastIndex<areaCount.length-1" @click="next()">
                     <i class="iconfont icon-Rightparentheses"></i>
                 </div>
                 <div class="area-container">
-                    <ul class="area-list l" :style="{left:-(lastIndex-4)*290+'px'}">
+                    <ul class="area-list l" :style="{left:-(lastIndex-4)*310+'px'}">
                         <li :class="['item',{alarm:item.AlarmCount>0,active:item.AreaID == activeArea.AreaID}]" v-for="(item,i) in areaCount" :key="i" @click="selectArea(item)">
                             <p class="area-name">{{item.AreaName}}</p>
                             <div class="area-param">
@@ -151,12 +151,14 @@ export default {
          * 点击区域列表上一个
          */
         pre(){
+            console.log(this.lastIndex)
             this.lastIndex > 4 && this.lastIndex --
         },
         /**
          * 点击区域列表下一个
          */
         next(){
+            console.log(this.lastIndex)
             this.lastIndex < this.areaCount.length-1 && this.lastIndex ++
         },
         /**
@@ -317,27 +319,38 @@ $url:'/static/image';
         &-top{
             width: 100%;
             height: 215px;
+            position: relative;
             .operation{
-                width:47px;
+                width:34px;
                 height:210px;
                 line-height: 210px;
-                background:rgba(12,52,104,1);
+                position: absolute;
+                bottom: 6px;
+                background:rgba(7,61,130,0.42);
+                /* background:rgba(12,52,104,1); */
                 cursor: pointer;
+                z-index: 100;
                 .iconfont{
-                    font-size: 40px;
+                    color: #A9CAF7;
+                    font-size: 34px;
                     font-weight: bolder;
                 }
             }
-            .operation.no-click{
-                background: #35405d;
+            .operation.pre{
+                left: 5px;
+            }
+            .operation.next{
+                right: 4px;
+            }
+/*             .operation.no-click{
                 cursor: not-allowed;
                 .iconfont{
                     color: #6f757d
                 }
-            }
+            } */
             .area-container{
                 height: 230px;
-                margin: 0 62px;
+               /*  margin: 0 62px; */
                 overflow: hidden;
                 position: relative;
                 top: -15px;
@@ -347,7 +360,7 @@ $url:'/static/image';
                     transition:all 0.5s;
                     .item{
                         display: inline-block;
-                        width: 279px;
+                        width: 304px;
                         height: 230px;
                         background: url(#{$url}/index/content_bg_1.png);
                         background-size: 100% 100%;
@@ -360,7 +373,7 @@ $url:'/static/image';
                             font-size:16px;
                         }
                         .area-param{
-                            padding: 0 20px;
+                            padding: 0 40px;
                             height: 200px;
                             display: flex;
                             justify-content: space-between;
@@ -380,8 +393,11 @@ $url:'/static/image';
                             ul.data-item{
                                 li{
                                     height: 60px;
+                                    .item-name{
+                                        text-align: left;
+                                    }
                                     .value{
-                                        font-size: 25px;
+                                        font-size: 22px;
                                         color:rgba(3,205,130,1);
                                     }
                                 }
@@ -397,6 +413,7 @@ $url:'/static/image';
                                             height: 12px;
                                             border-radius: 4px;
                                             vertical-align: middle;
+                                            margin-right: 4px;
                                         }
                                         .run{
                                             background: #00D294;                                       
@@ -429,6 +446,9 @@ $url:'/static/image';
                         background-size: 100% 100%;
                     }
                     .item.active{
+                        background: url(#{$url}/index/area-active.png);
+                        background-size: 100% 100%;
+
                     }
                 }
             }

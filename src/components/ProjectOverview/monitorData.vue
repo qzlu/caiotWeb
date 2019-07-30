@@ -2,6 +2,10 @@
     <div class="monitor-data">
         <div class="monitor-data-item">
             <h5><i class="iconfont icon-SZXFY-Earlywarning"></i> 实时告警 <i class="iconfont icon-Up"></i></h5>
+            <div class="border">
+            </div>
+            <div class="icon">
+            </div>
             <table class="table-header">
               <tr>
                 <th v-for="(item,i) in alarmLabels" :key="i" :width='item.width' :style="{'text-align':item.align}">{{item.label}}</th>
@@ -19,6 +23,10 @@
         </div>
         <div class="monitor-data-item">
             <h5><i class="iconfont icon-Workingodd"></i> 实时工单 <i class="iconfont icon-Up"></i></h5>
+            <div class="border">
+            </div>
+            <div class="icon">
+            </div>
             <table class="table-header">
               <tr>
                 <th v-for="(item,i) in orderLabels" :key="i" :width='item.width' :style="{'text-align':item.align}">{{item.label}}</th>
@@ -27,7 +35,7 @@
             <div class="table-body" v-if="orderData.length>0">
                 <el-scrollbar>
                     <table>
-                      <tr v-for="(obj,i) in orderData" :key="i" @click="rowClick(obj)">
+                      <tr v-for="(obj,i) in orderData" :key="i">
                         <td v-for="(item,j) in orderLabels" :key="j" :width='item["width"]' :style="{'text-align':item.align,'color':item.color}" :title="item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]">{{item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]}}</td>
                       </tr>
                     </table>
@@ -39,6 +47,7 @@
 <script>
 const OrderState = ['','待完成', '已完成', '待结单', '待派单', '已逾期']
 import {project,Orders} from '@/request/api.js'
+import Card from './card.vue'
 export default {
     data(){
         return{
@@ -92,6 +101,9 @@ export default {
             orderData:[], //实时工单数据
             timer:null,
         }
+    },
+    components:{
+        Card
     },
     created(){
         this.queryData()
@@ -150,14 +162,14 @@ export default {
     display: flex;
     justify-content: space-between;
     &-item{
-        width: 578px;
+        width: 584px;
         height: 100%;
         border-radius: 10px;
         background: rgba($color: #112D45, $alpha: 0.34);
         h5{
             padding-left: 30px;
             line-height: 38px;
-            color: #18A1EC;
+            /* color: #18A1EC; */
             font-size: 16px;
             text-align: left;
             .iconfont:first-of-type{
@@ -169,6 +181,29 @@ export default {
                 display: inline-block;
                 transform: rotate(90deg);
             }
+        }
+        .border{
+            height: 1px;
+            margin: 0px 25px 0 13px;
+            background: #07A6FF;
+        }
+        .icon{
+            width: 100px;
+            height: 6px;
+            margin-left:13px;
+            position: relative;
+            background: #07A6FF;
+        }
+        .icon:after{
+            display: block;
+            width: 0px;
+            height: 0px;
+            position: absolute;
+            right: -6px;
+            border: 3px solid transparent;
+            border-top-color: #07A6FF;
+            border-left-color: #07A6FF;
+            content: ""
         }
         .table-header{
             width: 100%;
@@ -188,7 +223,7 @@ export default {
             }
         }
         .table-body{
-            height: 210px;
+            height: 200px;
             table{
                 width: 100%;
                 tr{

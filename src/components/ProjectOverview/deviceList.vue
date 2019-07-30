@@ -14,7 +14,12 @@
                                 <el-col :span="11">
                                     <ul>
                                         <li v-for="(obj,j) in device.DataDetail.slice(0,3)" :key="j">
-                                            <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
+                                            <el-tooltip placement="top" effect="light">
+                                                <div slot="content">
+                                                    <span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span>
+                                                </div>
+                                                <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
+                                            </el-tooltip>
                                             <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
                                         </li>
                                     </ul>
@@ -28,7 +33,12 @@
                                 <el-col :span="10">
                                     <ul>
                                         <li v-for="(obj,j) in device.DataDetail.slice(3)" :key="j">
-                                            <p><span v-for="(value,i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
+                                            <el-tooltip placement="top" effect="light">
+                                                <div slot="content">
+                                                    <span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span>
+                                                </div>
+                                                <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
+                                            </el-tooltip>
                                             <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
                                         </li>
                                     </ul>
@@ -128,16 +138,28 @@ $url:'/static/image';
                     font-size:16px;
                     position: relative;
                     ul{
+                        width: 100%;
                         position: absolute;
                         bottom: 20px;
                         li{
+                            width: 100%;
                             text-align: left;
-                            padding-left: 20px;
+                            padding-left: 10px;
                             margin-top: 10px;
+                            box-sizing: border-box;
+                            p{
+                                width: 100%;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                            }
                         }
                     }
                     .status{
-                        padding-top: 10px; 
+                        padding-top: 10px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center; 
                     }
                     .status.status-1{
                         color: #1bd1a1

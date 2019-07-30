@@ -17,12 +17,12 @@
                 <div class="top5">
                     <h5>
                         <p>设备类型完好率</p>
-                        <p><span class="sort-type" @click="sortType = !sortType ;queryDeviceTypeRanking()"><i :class="['iconfont',sortType?'icon-Godown':'icon-Goup']"></i></span>TOP5</p>
+                        <p><span :class="['sort-type','sort-type-'+sortType]" @click="sortType = !sortType ;queryDeviceTypeRanking()"><i :class="['iconfont',sortType?'icon-Godown':'icon-Goup']"></i></span>TOP5</p>
                     </h5>
                     <ul>
                         <li v-for="(item,i) in intactRate" :key="i">
                             <span class="index">{{i+1}}</span>
-                            <span class="device-type" :title="item.DeviceTypeName">{{item.DeviceTypeName}}</span>
+                            <span class="device-type"  :title="item.DeviceTypeName">{{item.DeviceTypeName}}</span>
                             <div class="bar-out">
                                 <div class="bar-inner" :style="{width:item.Report+'%'}">
                                 </div>
@@ -75,11 +75,19 @@
                     </div>
                 </div>
                 <div class="main-top-center">
-                    <ul class="octagon">
-                        <li v-for="(item,i) in systemList" :class="{'un-use':item.FState==2,'unnormal':item.FState==1}" :key='i'>
-                            <p>{{item.SystemParamName}}</p>
-                            <div class="system-type">
-                                <i :class="['iconfont',item.IconName]"></i>
+                    <!-- 八边形背景 -->
+                    <ul class="shape shape-bg">
+                        <li class="shape-border" v-for="(item,i) in systemList" :key="i" :style="{transform:`translateX(-50%) rotate(${i*45}deg)`}">
+                        </li>
+                    </ul>
+                   <!--  绘制八大系统图标 -->
+                    <ul class="shape shape-system">
+                        <li :class="['shape-border',{'un-use':item.FState==2,'unnormal':item.FState==1}]" v-for="(item,i) in systemList" :key="i" :style="{transform:`translateX(-50%) rotate(${i*45}deg)`}">
+                            <div class="system-container" :style="{transform:`rotate(${-i*45-25}deg)`}">
+                                <p :class="{'system-right':i>0&&i<4,'system-left':i>4,'system-bottom':i===4}">{{item.SystemParamName}}</p>
+                                <div class="system-type">
+                                    <i :class="['iconfont',item.IconName]"></i>
+                                </div>
                             </div>
                         </li>
                         <li :class="['state',{'unnormal':isUnnormal}]">
@@ -89,6 +97,13 @@
                             <p>{{isUnnormal?'异常':'正常'}}</p>
                         </li>
                     </ul>
+                    <ul class="random-number">
+                        <li v-for="(item,i) in randomNumber" :key="i" >
+                            <span class="icon-border"></span>{{item}}
+                        </li>
+                    </ul>
+                    <div class="animate">
+                    </div>
                 </div>
                 <div class="main-top-right main-top-side">
                     <div class="number-container">
@@ -135,7 +150,7 @@
                 <div class="top5">
                     <h5>
                         <p>告警类型排名</p>
-                        <p><span class="sort-type" @click="sortType1 = !sortType1 ;queryAlarmRanking()"><i :class="['iconfont',sortType1?'icon-Godown':'icon-Goup']"></i></span>TOP5</p>
+                        <p><span :class="['sort-type','sort-type-'+sortType1]" @click="sortType1 = !sortType1 ;queryAlarmRanking()"><i :class="['iconfont',sortType1?'icon-Godown':'icon-Goup']"></i></span>TOP5</p>
                     </h5>
                     <ul>
                         <li v-for="(item,i) in alarmIntactRate" :key="i">
@@ -254,6 +269,7 @@ export default {
             systemList:[],//中间八边形
             isUnnormal:false,//是否有异常（系统）中间八边形
             timer:null,
+            randomNumber:[1,2,3,4,5,6,7,8,9,0,4,6,8],
         }
     },
     components:{
@@ -265,6 +281,7 @@ export default {
     },
     created(){
         this.queryData()
+        this.changeNumber()
     },
     beforeDestroy(){
         clearTimeout(this.timer)
@@ -279,6 +296,21 @@ export default {
             this.queryEnergyByMonth()
             this.queryCompleteOrder()
             this.timer = setTimeout(this.queryData,5000)
+        },
+        /**
+         * 获取随机数
+         */
+        getRamdomNumber(){
+            return Math.round(Math.random()*9)
+        },
+        /**
+         * 改变数字
+         * 
+         */
+        changeNumber(){
+            this.randomNumber.shift()
+            this.randomNumber.push(this.getRamdomNumber()) 
+            setTimeout(this.changeNumber,100)
         },
         /**
          * 388.综合态势（系统分类状态）中间八边形图
@@ -542,6 +574,9 @@ export default {
                             font-size: 12px;
                         }
                     }
+                    .sort-type.sort-type-true{
+                        background:#00D294;
+                    }
                 }
             }
             ul{
@@ -659,36 +694,67 @@ export default {
                 }
             }
             .main-top-center{
-                .octagon{
-                    width:397px;
-                    height: 397px;
-                    margin-top: 120px;
-                    background: url(/static/image/index/octagon.png);
-                    position: relative;
-                    li{
-                        /* width: 160px; */
+                position: relative;
+                .shape{
+                    width:366px;
+                    height: 366px;
+                    position: absolute;
+                    left: 0px;
+                    top: 120px;
+                    transform: rotate(24deg);
+                    &-border{
+                        width: 154px;
+                        height: 183px;
                         position: absolute;
-                        text-align: center;
-                        display: flex;
-                        align-items: center;
-                        p{
-                            width: 100px;
-                            font-size:20px;
-                            margin: 10px;
-                            white-space: nowrap;
-                        }
-                        .system-type{
+                        box-sizing: border-box;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        transform-origin: center bottom;
+                        .system-container{
+                            position: absolute;
+                            left: -34px;
+                            top: -34px;
+                            z-index: 9;
                             width:68px;
                             height:68px;
-                            line-height: 68px;
-                            background: #061239;
-                            border:3px solid rgba(3,205,130,1);
-                            border-radius:50%;
-                            .iconfont{
-                                color: rgba(3,205,130,1);
-                                font-size: 36px;
+                            p{
+                                font-size:20px;
+                                position: absolute;
+                                white-space: nowrap;
+                                top:-38px;
+                                left: 50%;
+                                transform: translateX(-50%);
                             }
-                        }  
+                            p.system-right,p.system-left{
+                                top: 50%;
+                                transform: translateY(-50%)
+                            }
+                            p.system-right{
+                                left: 88px;
+                            }
+                            p.system-left{
+                                width:100px;
+                                left: -115px;
+                                text-align: right;
+                            }
+                            p.system-bottom{
+                                top: 82px;
+                            }
+                            .system-type{
+                                width:68px;
+                                height:68px;
+                                line-height: 68px;
+                                display: inline-block;
+                                background: #061239;
+                                border:3px solid rgba(3,205,130,1);
+                                border-radius:50%;
+                                position: relative;
+                                .iconfont{
+                                    color: rgba(3,205,130,1);
+                                    font-size: 36px;
+                                }
+                            }  
+                        }
                     }
                     li.un-use{
                         color: #747474;
@@ -710,72 +776,12 @@ export default {
                            }
                        } 
                     }
-                    @keyframes show {
-                        0%{opacity: 0.2;}
-                        50%{opacity: 1;}
-                        100%{opacity: 0.2;}
-                    }
-                    li:first-of-type{
-                        left: 50%;
-                        top: -80px;
-                        transform: translateX(-50%);
-                        flex-direction: column;
-                    }
-                    li:nth-of-type(2){
-                        left: 300px;
-                        top: 20px;
-                        flex-direction: row-reverse;
-                        p{
-                            text-align: left;
-                        }
-                    }
-                    li:nth-of-type(3){
-                        left: 350px;
-                        top: 150px;
-                        flex-direction: row-reverse;
-                        p{
-                            text-align: left;
-                        }
-                    }
-                    li:nth-of-type(4){
-                        left: 300px;
-                        top: 288px;
-                        flex-direction: row-reverse;
-                        p{
-                            text-align: left;
-                        }
-                    }
-                    li:nth-of-type(5){
-                        left: 120px;
-                        bottom: -80px;
-                        flex-direction: column-reverse;
-                    }
-                    li:nth-of-type(6){
-                        left: -100px;
-                        top: 288px;
-                        p{
-                            text-align: right;
-                        }
-                    }
-                    li:nth-of-type(7){
-                        left: -150px;
-                        top: 150px;
-                        p{
-                            text-align: right;
-                        }
-                    }
-                    li:nth-of-type(8){
-                        left: -100px;
-                        top: 20px;
-                        p{
-                            text-align: right;
-                        }
-                    }
                     li.state{
+                        position:absolute;
                         flex-direction: column;
                         left: 50%;
                         top: 50%;
-                        transform: translate(-50%,-50%);
+                        transform: translate(-50%,-50%) rotate(-24deg);
                         color: #03CD82;
                         p{
                             font-size: 30px;
@@ -785,8 +791,20 @@ export default {
                             font-weight: bold;
                         }
                     }
+                    @keyframes show {
+                        0%{opacity: 0.2;}
+                        50%{opacity: 1;}
+                        100%{opacity: 0.2;}
+                    }
                 }
-                .octagon::after{
+                .shape.shape-bg{
+                    position: relative;
+                    .shape-border{
+                        border-top: 14px solid #015B7C;
+                        background: #09345F
+                    }
+                }
+                .shape.shape-system::after{
                     content: " ";
                     display: block;
                     background-image: linear-gradient(44deg,rgba(0,255,51,0) 50%,#09c);
@@ -795,7 +813,7 @@ export default {
                     position: absolute;
                     top: 0;
                     left: 0;
-                    animation: radar-beam 5s infinite;
+                    animation: radar-beam 3s infinite;
                     animation-timing-function: linear;
                     transform-origin: bottom right;
                     border-radius: 100% 0 0 0;
@@ -803,6 +821,35 @@ export default {
                 @keyframes radar-beam {
                     from{transform: rotate(0deg)}
                     to{transform: rotate(360deg)}
+                }
+                .random-number{
+                    line-height: 20px;
+                    position: absolute;
+                    top: 50%;
+                    right: 80px;
+                    transform: translateY(-50%);
+                    color: #00D294;
+                    font-size: 14px;
+                    .icon-border{
+                        display: inline-block;
+                        width: 10px;
+                        height: 1px;
+                        margin-right: 4px;
+                        vertical-align: middle;
+                        background: #00D294;
+                    }
+                }
+                .animate{
+                    width:366px;
+                    height: 366px;
+                    position: absolute;
+                    top: 120px;
+                    background: url(/static/image/index/octagon-bg.png) center;
+                    animation: test 5s linear infinite;
+                    @keyframes test {
+                        from{transform: rotate(0)}
+                        to{transform: rotate(360deg)}
+                    }
                 }
             }
         }
