@@ -1108,6 +1108,7 @@ export default {
                                 img:hover{
                                     width: 300px;
                                     height: 300px;
+                                    z-index: 1001;
                                 }
                             }
                             .circle{
