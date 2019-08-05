@@ -89,7 +89,7 @@ export default {
         toolbox: {
           feature: {}
         },
-        dataZoom: [
+/*         dataZoom: [
           {
             type: "inside",
             throttle: "50",
@@ -99,7 +99,7 @@ export default {
                 ? 100
                 : Math.floor((5 / this.$props.data.columns.length) * 100)
           }
-        ],
+        ], */
         xAxis: {
           type: "category",
           boundaryGap: true,

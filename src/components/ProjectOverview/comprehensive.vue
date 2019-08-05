@@ -16,7 +16,7 @@
                 </div>
                 <div class="top5">
                     <h5>
-                        <p>设备类型完好率</p>
+                        <p>设备类型完好率排名</p>
                         <p><span :class="['sort-type','sort-type-'+sortType]" @click="sortType = !sortType ;queryDeviceTypeRanking()"><i :class="['iconfont',sortType?'icon-Godown':'icon-Goup']"></i></span>TOP5</p>
                     </h5>
                     <ul>
@@ -62,14 +62,14 @@
                     <div class="button first">
                         <div class="icon">
                             <p><i class="iconfont icon-Equipment"></i></p>
-                            <p>设备数</p>
+                            <p>设备总数</p>
                         </div>
                         <p class="value">{{count.DeviceCount||0}}</p>
                     </div>
                     <div class="button">
                         <div class="icon">
                             <p><i class="iconfont icon-JTJC-Totalenergyconsumption"></i></p>
-                            <p>本月耗电</p>
+                            <p>本月电耗</p>
                         </div>
                         <p class="value">{{energyCount.CurEnergy>10000?`${(energyCount.CurEnergy/10000).toFixed(1)}W`:energyCount.CurEnergy||'--'}}</p>
                     </div>
@@ -192,6 +192,7 @@ import {pieChart, barChart,Number} from '@/zw-components/index.js'
 import {ProjectTrend} from '@/request/api.js'
 import card from './card.vue'
 import monitorData from './monitorData.vue'
+import { clearTimeout } from 'timers';
 export default {
     data(){
         return{
@@ -269,6 +270,7 @@ export default {
             systemList:[],//中间八边形
             isUnnormal:false,//是否有异常（系统）中间八边形
             timer:null,
+            timer1:null,
             randomNumber:[1,2,3,4,5,6,7,8,9,0,4,6,8],
         }
     },
@@ -285,7 +287,9 @@ export default {
     },
     beforeDestroy(){
         clearTimeout(this.timer)
+        clearTimeout(this.timer1)
         this.timer = null
+        this.timer1 = null
     },
     methods:{
         queryData(){
@@ -310,7 +314,7 @@ export default {
         changeNumber(){
             this.randomNumber.shift()
             this.randomNumber.push(this.getRamdomNumber()) 
-            setTimeout(this.changeNumber,100)
+            this.timer1 = setTimeout(this.changeNumber,100)
         },
         /**
          * 388.综合态势（系统分类状态）中间八边形图
@@ -476,20 +480,20 @@ export default {
                 let columns = data.map(item => item.OrderTypeName)
                 let rows = [
                     {
-                        name: '及时率',
-                        type: 'bar',
-                        barWidth: 10,
-                        data:data.map(item => item.Timely)
-                    },
-                    {
                         name: '完成率',
                         type: 'bar',
                         barWidth: 10,
                         data:data.map(item => item.Complete)
+                    },
+                    {
+                        name: '及时率',
+                        type: 'bar',
+                        barWidth: 10,
+                        data:data.map(item => item.Timely)
                     }
                 ]
                 this.orderChartData = {
-                    title:'工单类型（个）',
+                    title:'工单类型（%）',
                     rows,
                     columns,
                     colorsArr:['#2A91FC','#18DE94']

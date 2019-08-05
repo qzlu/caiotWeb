@@ -23,7 +23,7 @@
         </div>
         <div class="main">
             <div class="main-top">
-                <device-list :data="systemDevice" @change="getPrjSingleInfo()"></device-list>
+                <device-list :data="systemDevice" :width="289" @change="getPrjSingleInfo()"></device-list>
             </div>
             <div class="main-footer">
                 <monitorData></monitorData>
@@ -138,7 +138,7 @@ $url:'/static/image';
             box-shadow:  0 0 8px 8px rgba($color: #0E49A8, $alpha: 0.5) inset;
         }
         .header-r{
-            margin-top: -10px;
+            /* margin-top: -10px; */
             color: #2A91FC;
             font-size: 16px;
             .iconfont{

@@ -2,167 +2,76 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>CSS实战 - 波纹扩散效果</title>
-	<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/fonts/fontawesome-webfont.svg">
- 
-	<style type="text/css">
-		body {
-			margin: 0;
-		}
- 
-        .container {  
-            position: absolute;
-            top: 30%;
-            left: 30%;
-            width: 40%;  
-            height: 40%;
-        } 
- 
-        .spliter {
-			width: 100%;
-			height: 20px;
-		}
- 
-		/************以下为具体实现************/
- 
-		.wave {
-			position: relative;
-		    width: 100px;
-		    height: 100px;
-		    text-align: center;
-		    line-height: 100px;
-		    font-size: 28px;
-		}
- 
-		.wave .circle {
-		    position: absolute;
-		    border-radius: 50%;
-		    opacity: 0;
-		}
- 
-		/* 波纹效果 */
-		.wave.ripple .circle {
-		    width: calc(100% - 6px); /* 减去边框的大小 */
-    		height: calc(100% - 6px);/* 减去边框的大小 */
-		    border: 3px solid #fff;
-		}
- 
-		.wave.ripple .circle:first-child {
-			animation: circle-opacity 2s infinite;
-		}
- 
-		.wave.ripple .circle:nth-child(2) {
-			animation: circle-opacity 2s infinite;
-			animation-delay: .3s;
-		}
- 
-		.wave.ripple .circle:nth-child(3) {
-		 	animation: circle-opacity 2s infinite;
-			animation-delay: .6s;
-		}
- 
-		.wave.ripple.danger {
-		    color: red;
-		}
- 
-		.wave.ripple.danger .circle {
-			border-color: red;
-		}
- 
-		.wave.ripple.warning {
-		    color: orange;
-		}
- 
-		.wave.ripple.warning .circle {
-		    border-color: orange;
-		}
- 
-		/* 波动效果 */
-		.wave.solid .circle{
-			width: 100%;
-    		height: 100%;
-		    background: #fff;
-		}
- 
-		.wave.solid .circle:first-child {
-			animation: circle-opacity 2s infinite;
-		}
- 
-		.wave.solid.danger {
-			color: red;
-		}
- 
-		.wave.solid.danger .circle{
-			background: red;
-		}
-		
-		.wave.solid.warning {
-			color: orange;
-		}
- 
-		.wave.solid.warning .circle{
-			background: orange;
-		}
- 
-		@keyframes circle-opacity{
-		    from {
-		        opacity: 1;
-		        transform: scale(0);
-		    }
-		    to {
-		        opacity: 0;
-		        transform: scale(1);
-		    }
-		}
-	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
 </head>
 <body>
-	<div class="container">
-		<div class="wave ripple danger">
-			<div class="circle"></div>
-			<div class="circle"></div>
-			<div class="circle"></div>
-			<div class="content">
-				<i class="fa fa-bell"></i>
-			</div>
-		</div>
- 
-		<div class="spliter"></div>
- 
-		<div class="wave solid warning">
-			<div class="circle"></div>
-			<div class="content">
-				<i class="fa fa-bell"></i>
-			</div>
-		</div>
-	</div>
-	<script>
-		var entry = {
-		  a: {
-		    b: {
-		      c: {
-		        dd: 'abcdd'
-		      }
-		    },
-		    d: {
-		      xx: 'adxx'
-		    },
-		    e: 'ae'
-		  }
+	<style>
+		div {  
+		  position: relative;  
+		  width: 100px;  
+		  height: 100px;
+		 /* transform: translate(50%,50%) */
+		} 
+		.box1{
+			background: black
 		}
-		function formatterObj(obj,name='',result= {}){
-			for(let key in obj){
-				let parentname =name?name+'.'+key:name+key
-				if(typeof obj[key] === 'object'){
-					formatterObj(obj[key],parentname,result)
-				}else{
-					result[parentname] = obj[key]
-				}
-			}
-			return result
+		.box2{
+			background: yellow;
+			border-top: 10px solid black;
 		}
-		console.log(formatterObj(entry))
-	</script>
+		p {  
+		  position: absolute;  
+		  font-size: 20px;  
+		  width: 100px;  
+		  height: 100px;  
+		}  
+		.a {  
+		  background-color: blue;  
+		  z-index: 1000;  
+		}  
+		.b {  
+		  background-color: green;  
+		  z-index: 2;  
+		  top: 20px;  
+		  left: 20px;  
+		}  
+		.c {  
+		  background-color: red;  
+		  z-index: 3;  
+		  top: -20px;  
+		  left: 40px;  
+		}
+		.tagline-skill_inner:after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    right: 0;
+    bottom: -2px;
+    left: 0;
+    border-left: 1px solid #fff;
+    background-color: #2a2a28;
+    -webkit-animation: animatetoright 1s steps(10) infinite alternate;
+    animation: animatetoright 1s steps(10) infinite alternate;
+}
+
+	  </style>
+	  
+	  <body>  
+		<div class="box1">  
+		  <p class="a">a</p>  
+		  <p class="b">b</p>  
+		</div> 
+		<div class="box2">  
+			<p class="c">c</p>  
+		 </div>  
+		 <div>
+			<h1>Typing Animation</h1>
+			<p class="tagline">
+				<span class="tagline-skill"><span class="tagline-skill_inner">webdesign</span></span>
+			</p>
+		</div>
+		
 </body>
 </html>

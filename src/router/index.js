@@ -105,7 +105,7 @@ let routers_item = [
 		path: '/home',
 		name: 'home',
 		component: () => import('@/components/home'),
-		redirect: '/home/ProjectBrowse',//子路由设置默认页
+		redirect: '/home/monitoring',//子路由设置默认页
 		children: [
 			{
 				path: 'ProjectBrowse', //项目概览
@@ -438,7 +438,7 @@ let routers_item = [
 				path: 'TaskManagement',//任务管理
 				name: 'TaskManagement',
 				component: () => import('@/components/TaskManagement'),
-				redirect: '/home/TaskManagement',//子路由设置默认页
+				redirect: '/home/TaskManagement/InspectionRecords',//子路由设置默认页
 				meta: {
 					title: '千仞云平台',
 					requireAuth: true, // 判断该路由是否需要登录权限

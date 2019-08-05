@@ -7,7 +7,7 @@
         <div class="htbn">
           <section>
             <div class="hdr">
-              <p class="pn02">人工巡更日报</p>
+              <p class="pn02">巡更日报</p>
               <p class="l pn">
                 项目名称：{{projectNames}}
                 <!--新都汇-->
@@ -30,32 +30,76 @@
               >
               <div class="r list">
                 <ul v-for="item in dateReport.Table">
-                  <li class="l">巡更次数　<span>{{item.PatrolPlanCount}}</span></li>
-                  <li class="l">待巡更　<span>{{item.UnPatrolCount}}</span></li>
-                  <li class="l">正常点数　<span>{{item.NormalCount}}</span></li>
-                  <li class="l">异常点数　<span class="no">{{item.FaultCount}}</span></li>
+                  <li class="l">计划次数　<span>{{item.PatrolPlanCount}}次</span></li>
+                  <li class="l">实际次数　<span>{{item.ActualCount}}次</span></li>
+                  <li class="l">及时次数　<span>{{item.TestingCount}}次</span></li>
+                  <li class="l">超时次数　<span>{{item.TimeoutCount}}次</span></li>
+                  <li class="l">正常点数　<span>{{item.NormalCount||0}}个</span></li>
+                  <li class="l">异常点数　<span class="no">{{item.FaultCount||0}}个</span></li>
                 </ul>
               </div>
             </div>
           </section>
-          <div class="table-red">
+          <p class="title"><span class="icon"></span>超时详情</p>
+          <div class="table-c">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="gg">
-                <td width="33%">异常巡更点名称</td>
-                 <td width="33%">时间</td>
-                <td width="33%">异常描述</td>
-                <!-- <td width="25%">处理情况</td> -->
+                <td width="">巡更名称</td>
+                <td width="">计划时间</td>
+                <td width="">巡更点数</td>
+                <td width="">待巡更点数</td>
+                <td>正常点数</td>
+                <td>异常点数</td>
+                <td>巡更人</td>
               </tr>
-              <tr v-for="(item,key) in  dateReport.Table1">
-                <td>{{item.PatrolObject}}</td>
-                <td>{{item.PatrolTime}}</td>
-                <td style="color: red;">{{item.PatrolNote}}</td>
-                <!-- <td></td> -->
+              <tr v-for="(item,key) in  dateReport.Table1" :key='key'> 
+                <td>{{item.PatrolLineName}}</td>
+                <td>{{item.RunningOrderDateTime}}</td>
+                <td >{{item.PatrolPointCount}}</td>
+                <td>{{item.WaitingCount}}</td>
+                <td>{{item.NormalCount}}</td>
+                <td :class="{'red':item.FaultCount>0}">{{item.FaultCount}}</td>
+                <td>{{item.FContacts}}</td>
               </tr>
             </table>
           </div>
-
-          <div class="person">备注：</div>
+          <p class="title"><span class="icon"></span>异常详情</p>
+          <div class="table-red">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <thead>
+                <tr class="gg">
+                  <td width="14.2%">巡更名称</td>
+                  <td width="14.2%">计划时间</td>
+                  <td width="14.2%">巡更点数</td>
+                  <td width="14.2%">待巡更点数</td>
+                  <td width="14.2%">正常点数</td>
+                  <td width="14.2%">异常点数</td>
+                  <td width="14.2%">巡更人</td>
+                </tr>
+              </thead>
+            </table>
+            <ul class="tbody">
+              <li v-for="(item,key) in  dateReport.Table2" :key='key'>
+                <div class='header'>
+                  <span>{{item.PatrolLineName}}</span>
+                  <span>{{item.RunningOrderDateTime}}</span>
+                  <span>{{item.PatrolPointCount}}</span>
+                  <span>{{item.WaitingCount}}</span>
+                  <span>{{item.NormalCount}}</span>
+                  <span :class="{'red':item.FaultCount>0}">{{item.FaultCount}}</span>
+                  <span>{{item.FContacts}}</span>
+                </div>
+                <ul class="body">
+                  <li v-for="(obj,i) in item.Data" :key="i">
+                    <span>{{obj.PatrolObject}}</span>
+                    <span>{{obj.PatrolTime}}</span>
+                    <span>{{obj.PatrolNote}}</span>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <!-- <div class="person">备注：</div> -->
           <div class="person_pg">
             <span style="width: 180px; height: 30px; display: inline-block; text-align: left;">巡更人:</span>
             <span style="width: 180px;height: 30px;display: inline-block;text-align: left;">审核人:</span>
@@ -333,10 +377,11 @@ export default {
     async queryDateReport(){
       await new Promise((resolve,reject) => {
         Patrol({
-          FAction:'QueryUPatrolReportByDay',
+          FAction:'QueryUPatrolReportErrByDay',
           FDateTime:this.time.toLocaleDateString().replace(/\//ig,'-')
         })
         .then(data => {
+          console.log(data)
           this.dateReport = data.FObject
           this.showReport = true
         })
@@ -344,8 +389,7 @@ export default {
           reject()
         })
       })
-      return
-      if(this.dateReport.Table.length ===0){
+      if(this.dateReport.Table2.length ===0){
         return
       }
       let fileName = localStorage.getItem("projectname") + '人工巡更' +  this.time.getFullYear() + comm.formatNumber(this.time.getMonth()+1)+comm.formatNumber((this.time.getDate()))
@@ -401,9 +445,59 @@ $img-url:'/static/image/';
       .pimg{
         top: 0;
       }
-      .list ul li{
-        width: 20%
+    }
+    .title{
+      margin-left: -14px;
+      line-height: 40px;
+      text-align: left;
+      font-size: 20px;
+      .icon{
+        display: inline-block;
+        width: 4px;
+        height: 18px;
+        background: #1d7bce;
+        vertical-align: middle;
+        margin-right: 10px;
       }
+    }
+    .tbody{
+      >li{
+        .header{
+          display: flex;
+          line-height: 34px;
+          background: rgba($color: #f3afaf, $alpha: 0.4);
+          span{
+            flex: 1;
+          }
+        }
+        .body{
+          li{
+            line-height: 34px;
+            display: flex;
+            justify-content: start;
+            border: 1px solid rgba($color: #f3afaf, $alpha: 0.4);
+            span{
+              text-align: left;
+            }
+            span:first-of-type{
+              width: 100px;
+              margin-left: 168px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            span:nth-of-type(2){
+              width: 200px;
+            }
+            span:last-of-type{
+              white-space: nowrap;
+            }
+          }
+        }
+      }
+    }
+    .red{
+      color:#ef0f24
     }
   }
 

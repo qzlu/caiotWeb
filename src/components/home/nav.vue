@@ -11,10 +11,10 @@
       >
         <!--{{items.FFunctionURLAddress}}-->
         <section>
-          <router-link :to="{ name: items.FFunctionURLAddress}">
+          <router-link :to="{ name: items.FFunctionURLAddress=='InspectionRecords'?'TaskManagement':items.FFunctionURLAddress}">
             <!--一级标题连接-->
             <p>
-              <img :src="resetImg(key)">
+             <img :src="`/static/image/nav_new/${items.FICONURLAddress}`" alt="">
             </p>
             <h2>{{items.FMenuName}}</h2>
             <!--一级标题连接-->
@@ -244,10 +244,14 @@ a {
   float: left;
   cursor: pointer;
 }
-.home_banner ul li.active {
+/* .home_banner ul li.active {
   background: url(/static/image/index/nav_sel_font.png) -13px 131px;
-}
-.home_banner ul li.active h2 {
+} */
+/* .home_banner ul li.active h2 {
+  color: #dfeafc;
+} */
+.home_banner ul li .router-link-active h2{
+  background: url(/static/image/index/nav_sel_font.png) center;
   color: #dfeafc;
 }
 .home_banner_a ul li img {
@@ -255,7 +259,7 @@ a {
   height: 36px;
 }
 
-.home_banner ul li h2 {
+.home_banner ul li  h2{
   font-size: 22px;
   color: #4379cd;
 }

@@ -6,21 +6,23 @@
       <div class="border border-right-bottom"></div>
       <div class="border border-left-bottom"></div>
       <p class="transfer-item-head">{{leftTitle}}</p>
-      <el-scrollbar>
-        <el-tree
-          :data="data"
-          show-checkbox
-          default-expand-all
-          :node-key="nodeKey"
-          :check-strictly="checkStrictly"
-          ref="tree"
-          :default-checked-keys="defaultChecked"
-          @check-change="checkChange"
-          :render-content="renderContent"
-          :props="defaultProps"
-        >
-        </el-tree>
-      </el-scrollbar>
+      <div style="height:250px">
+        <el-scrollbar>
+          <el-tree
+            :data="data"
+            show-checkbox
+            default-expand-all
+            :node-key="nodeKey"
+            :check-strictly="checkStrictly"
+            ref="tree"
+            :default-checked-keys="defaultChecked"
+            @check-change="checkChange"
+            :render-content="renderContent"
+            :props="defaultProps"
+          >
+          </el-tree>
+        </el-scrollbar>
+      </div>
     </div>
     <i class="arrow"></i>
     <div class="r transfer-item">
@@ -29,19 +31,21 @@
       <div class="border border-right-bottom"></div>
       <div class="border border-left-bottom"></div>
       <p class="transfer-item-head">{{rightTitle}}</p>
-      <el-scrollbar>
-        <el-tree
-          :data="data1"
-          empty-text="无"
-          class="checked"
-          default-expand-all
-          :node-key="nodeKey1"
-          ref="tree1"
-          :filter-node-method="filterNode"
-          :render-content="renderContent1"
-          :props="defaultProps"
-        ></el-tree>
-      </el-scrollbar>
+      <div style="height:250px">
+        <el-scrollbar>
+          <el-tree
+            :data="data1"
+            empty-text="无"
+            class="checked"
+            default-expand-all
+            :node-key="nodeKey1"
+            ref="tree1"
+            :filter-node-method="filterNode"
+            :render-content="renderContent1"
+            :props="defaultProps"
+          ></el-tree>
+        </el-scrollbar>
+      </div>
     </div>
   </div>
 </template>

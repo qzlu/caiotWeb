@@ -11,11 +11,11 @@
                     </p>
                 </div>
             </card>
-            <card title="实时告警"  :height='328'>
+            <card title="实时告警"  :height='328' @click="$router.push('/home/foreshow')">
                 <div class="alarm-list">
                     <el-scrollbar>
                         <ul>
-                            <li v-for="(item,i) in alarmData" :key="i">
+                            <li v-for="(item,i) in alarmData" :key="i" @click="$router.push('/home/foreshow')">
                                 <span>{{item.AlarmTime}}</span>
                                 <span>{{item.AlarmText}}</span>
                             </li>
@@ -23,11 +23,11 @@
                     </el-scrollbar>
                 </div>
             </card>
-            <card title="实时工单"  :height='331'>
+            <card title="实时工单"  :height='331' @click="$router.push('/home/TaskManagement/Worklist')">
                 <div class="alarm-list">
                     <el-scrollbar>
                         <ul>
-                            <li v-for="(item,i) in orderData" :key="i">
+                            <li v-for="(item,i) in orderData" :key="i" @click="$router.push('/home/TaskManagement/Worklist')">
                                 <span>{{item.OrderCreateDateTime}}</span>
                                 <span>{{item.OrderContent}}</span>
                             </li>
@@ -101,7 +101,7 @@
                 </div>
             </div>
             <div class="main-bottom">
-                <device-list :data="areaDevice" @change="getPrjSingleInfo()"></device-list>
+                <device-list :data="areaDevice" :width="382" @change="getPrjSingleInfo()"></device-list>
             </div>
         </div>
     </div>
@@ -151,14 +151,12 @@ export default {
          * 点击区域列表上一个
          */
         pre(){
-            console.log(this.lastIndex)
             this.lastIndex > 4 && this.lastIndex --
         },
         /**
          * 点击区域列表下一个
          */
         next(){
-            console.log(this.lastIndex)
             this.lastIndex < this.areaCount.length-1 && this.lastIndex ++
         },
         /**
@@ -308,7 +306,8 @@ $url:'/static/image';
                     line-height: 50px;
                     display: flex;
                     justify-content: space-between;
-                    border-bottom: 1px dashed #FFFFFF
+                    border-bottom: 1px dashed #FFFFFF;
+                    cursor: pointer;
                 }
             }
         }

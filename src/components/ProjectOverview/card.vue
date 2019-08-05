@@ -1,6 +1,6 @@
 <template>
     <div class="card" :style="style">
-        <h4>
+        <h4 @click="handleClick()">
             {{title}} 
             <i class="iconfont icon-Up" v-if="showMoreIcon" ></i>
             <slot name="header"></slot>
@@ -38,6 +38,11 @@ export default {
             }
         }
     },
+    methods:{
+        handleClick(){
+            this.$emit('click')
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -54,6 +59,7 @@ export default {
             font-weight:400;
             color:rgba(241,241,242,1);
             text-align: left;
+            cursor: pointer;
             .iconfont.icon-Up{
                 display: inline-block;
                 transform: rotate(90deg)

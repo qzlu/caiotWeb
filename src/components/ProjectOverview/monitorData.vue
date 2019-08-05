@@ -1,7 +1,7 @@
 <template>
     <div class="monitor-data">
         <div class="monitor-data-item">
-            <h5><i class="iconfont icon-SZXFY-Earlywarning"></i> 实时告警 <i class="iconfont icon-Up"></i></h5>
+            <h5  @click="$router.push({name:'now_count'})"><i class="iconfont icon-SZXFY-Earlywarning"></i> 实时告警 <i class="iconfont icon-Up"></i></h5>
             <div class="border">
             </div>
             <div class="icon">
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="monitor-data-item">
-            <h5><i class="iconfont icon-Workingodd"></i> 实时工单 <i class="iconfont icon-Up"></i></h5>
+            <h5 @click="$router.push('/home/TaskManagement/Worklist')"><i class="iconfont icon-Workingodd" ></i> 实时工单 <i class="iconfont icon-Up"></i></h5>
             <div class="border">
             </div>
             <div class="icon">
@@ -35,7 +35,7 @@
             <div class="table-body" v-if="orderData.length>0">
                 <el-scrollbar>
                     <table>
-                      <tr v-for="(obj,i) in orderData" :key="i">
+                      <tr v-for="(obj,i) in orderData" :key="i" @click="$router.push('/home/TaskManagement/Worklist')">
                         <td v-for="(item,j) in orderLabels" :key="j" :width='item["width"]' :style="{'text-align':item.align,'color':item.color}" :title="item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]">{{item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]}}</td>
                       </tr>
                     </table>
@@ -45,7 +45,7 @@
     </div>
 </template>
 <script>
-const OrderState = ['','待完成', '已完成', '待结单', '待派单', '已逾期']
+const OrderState = ['','待完成', '已完成', '待接单', '待派单', '已逾期']
 import {project,Orders} from '@/request/api.js'
 import Card from './card.vue'
 export default {
@@ -81,7 +81,7 @@ export default {
                     width: '25%'
                 },
                 {
-                    prop: 'OrderCreateDateTime',
+                    prop: 'RunningOrderDateTime',
                     label: '计划时间',
                     width: '25%'
                 },
@@ -152,6 +152,7 @@ export default {
         rowClick(){
             this.$router.push({name:'now_count'})
         }
+
     }
 }
 </script>
@@ -170,6 +171,7 @@ export default {
             padding-left: 30px;
             line-height: 38px;
             /* color: #18A1EC; */
+            cursor: pointer;
             font-size: 16px;
             text-align: left;
             .iconfont:first-of-type{

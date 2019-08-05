@@ -49,12 +49,14 @@
               <div style="height: 50px;">
                 <p>
                   <!--温度-->
-                  {{item.DataDetail[0].SDataTitle}} 
+                  {{item.DataDetail[0].SDataTitle}}
                   <br />
                   <!--(℃)-->
                   <i style="font-size: 10px;">&nbsp;&nbsp;({{item.DataDetail[0].SDataUnit}})</i>&nbsp;&nbsp;&nbsp;
                 </p>
-                <p class="n">{{item.DataDetail[0].SDataValue[0].DValue>1000?(item.DataDetail[0].SDataValue[0].DValue/10000).toFixed(1)+'w':item.DataDetail[0].SDataValue[0].DValue}}</p>
+                <p
+                  class="n"
+                >{{item.DataDetail[0].SDataValue[0].DValue>1000?(item.DataDetail[0].SDataValue[0].DValue/10000).toFixed(1)+'w':item.DataDetail[0].SDataValue[0].DValue}}</p>
               </div>
               <div style="height: 50px;" v-if="item.DataDetail[1]">
                 <p>
@@ -64,7 +66,9 @@
                   <!--(%)-->
                   <i style="font-size: 10px;">&nbsp;&nbsp;({{item.DataDetail[1].SDataUnit}})</i>&nbsp;&nbsp;&nbsp;
                 </p>
-                <p class="n">{{Math.abs(item.DataDetail[1].SDataValue[0].DValue)>1000?(item.DataDetail[1].SDataValue[0].DValue/10000).toFixed(1)+'w':item.DataDetail[1].SDataValue[0].DValue}}</p>
+                <p
+                  class="n"
+                >{{Math.abs(item.DataDetail[1].SDataValue[0].DValue)>1000?(item.DataDetail[1].SDataValue[0].DValue/10000).toFixed(1)+'w':item.DataDetail[1].SDataValue[0].DValue}}</p>
               </div>
             </div>
           </div>
@@ -137,9 +141,10 @@
                         <!--三相线电压数据-->
                         <div v-for="(c,key) in suList.DataDetail" :class="setclass(c.SDataID)">
                           <p class="gre">
-                            <i v-for="(df,key) in c.SDataValue" :data="df.DStatus">
-                              {{(suList.DeviceTypeID==1003 && c.SDataID == 1) ? (df.DValue>0?'上行':(df.FValue == 0 ? '停止': '下行')):df.DValue}}{{c.SDataValue.length>key+1?'/':''}}
-							</i>
+                            <i
+                              v-for="(df,key) in c.SDataValue"
+                              :data="df.DStatus"
+                            >{{(suList.DeviceTypeID==1003 && c.SDataID == 1) ? (df.DValue>0?'上行':(df.FValue == 0 ? '停止': '下行')):df.DValue}}{{c.SDataValue.length>key+1?'/':''}}</i>
                           </p>
 
                           <p class="grd">
@@ -344,7 +349,7 @@ export default {
 
             // comm.messageErr(jsons.data.Result) //公共状态提示
             if (jsons) {
-				console.log(jsons.data)
+              console.log(jsons.data);
               _this.abc_datalist01 = jsons.data.FObject.ProjectItemInfo; //右一pie图
               _this.abc_datalist02 = jsons.data.FObject.ProjectDeviceTypeValue; //bar右一图
               _this.abc_datalist03 = jsons.data.FObject.ProjectDeviceDataDetail; //右下大框列表
@@ -372,14 +377,17 @@ export default {
 						obj.item=arrs01;*/
     big_typeList() {
       /*重新组装可以直接v-for读取的数据*/
-	  this.abc_datalist04 = this.abc_datalist02.map(item => {
-		  return {
-			  DeviceTypeID:item.DeviceTypeID,
-			  name: item.DeviceType,
-			  icon: item.WebIconName,
-			  item: this.abc_datalist03.filter(obj => obj.DeviceTypeID == item.DeviceTypeID)
-		  }
-	  })
+      this.abc_datalist04 = this.abc_datalist02.map(item => {
+        return {
+          DeviceTypeID: item.DeviceTypeID,
+          name: item.DeviceType,
+          icon: item.WebIconName,
+          item: this.abc_datalist03.filter(
+            obj => obj.DeviceTypeID == item.DeviceTypeID
+          )
+        };
+      });
+      console.log(this.abc_datalist04);
       /*end of 重新组装可以直接v-for读取的数据*/
     },
 

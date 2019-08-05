@@ -1,52 +1,54 @@
 <template>
     <div class="device-container">
         <el-scrollbar>
-            <div class="system-device" v-for="(item,i) in data" :key="i">
-                <h5><i :class="['iconfont',item.WebIconName]"></i>{{item.DeviceType}}({{item.data.length}})</h5>
-                <ul class="clearfix device-list">
-                    <li class="l" v-for="device in item.data" :key="device.DeviceID" :class="{alarm:device.IsAlarm}">
-                        <i :class="{r:true,'el-icon-star-off':!device.IsFocus,'el-icon-star-on':device.IsFocus}" @click="addOrDeleteUFocusMonitor(device)"></i>
-                        <router-link :to="{ name: 'detail_info_list',params:{ id:device.DeviceID,PossionID:device.DataDetail[0].SDataID,getalldata:device}}">
-                            <h4>
-                                    {{device.DeviceName}}
-                            </h4>
-                            <el-row>
-                                <el-col :span="11">
-                                    <ul>
-                                        <li v-for="(obj,j) in device.DataDetail.slice(0,3)" :key="j">
-                                            <el-tooltip placement="top" effect="light">
-                                                <div slot="content">
-                                                    <span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span>
-                                                </div>
-                                                <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
-                                            </el-tooltip>
-                                            <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
-                                        </li>
-                                    </ul>
-                                </el-col>
-                                <el-col :span="3">
-                                    <div class="status" :class="'status-'+device.DeviceStatus">
-                                        <p><i :class="['icon','iconfont',device.WebIconName]"></i></p>
-                                        <p>{{device.DeviceStatusTitle}}</p>
-                                    </div>
-                                </el-col>
-                                <el-col :span="10">
-                                    <ul>
-                                        <li v-for="(obj,j) in device.DataDetail.slice(3)" :key="j">
-                                            <el-tooltip placement="top" effect="light">
-                                                <div slot="content">
-                                                    <span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span>
-                                                </div>
-                                                <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
-                                            </el-tooltip>
-                                            <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
-                                        </li>
-                                    </ul>
-                                </el-col>
-                            </el-row>
-                        </router-link>
-                    </li>
-                </ul>
+            <div class="clearfix">
+                <div class="system-device l" v-for="(item,i) in data" :key="i">
+                    <h5><i :class="['iconfont',item.WebIconName]"></i>{{item.DeviceType}}({{item.data.length}})</h5>
+                    <ul class="clearfix device-list">
+                        <li class="l" v-for="device in item.data" :key="device.DeviceID" :class="{alarm:device.IsAlarm}" :style="{width:width+'px'}">
+                            <i :class="{r:true,'el-icon-star-off':!device.IsFocus,'el-icon-star-on':device.IsFocus}" @click="addOrDeleteUFocusMonitor(device)"></i>
+                            <router-link :to="{ name: 'detail_info_list',params:{ id:device.DeviceID,PossionID:device.DataDetail[0].SDataID,getalldata:device}}">
+                                <h4>
+                                        {{device.DeviceName}}
+                                </h4>
+                                <el-row>
+                                    <el-col :span="11">
+                                        <ul>
+                                            <li v-for="(obj,j) in device.DataDetail.slice(0,3)" :key="j">
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content">
+                                                        <span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span>
+                                                    </div>
+                                                    <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
+                                                </el-tooltip>
+                                                <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
+                                            </li>
+                                        </ul>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <div class="status" :class="'status-'+device.DeviceStatus">
+                                            <p><i :class="['icon','iconfont',device.WebIconName]"></i></p>
+                                            <p>{{device.DeviceStatusTitle}}</p>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="10">
+                                        <ul>
+                                            <li v-for="(obj,j) in device.DataDetail.slice(3)" :key="j">
+                                                <el-tooltip placement="top" effect="light">
+                                                    <div slot="content">
+                                                        <span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span>
+                                                    </div>
+                                                    <p><span v-for="(value, i) in obj.SDataValue" :key="i" class="value">{{value.DValue}}<i v-if="i<obj.SDataValue.length-1">/</i></span></p>
+                                                </el-tooltip>
+                                                <p class="value-title">{{obj.SDataTitle}} <i v-if="obj.SDataUnit!=null&&obj.SDataUnit!=''">({{obj.SDataUnit}})</i></p>
+                                            </li>
+                                        </ul>
+                                    </el-col>
+                                </el-row>
+                            </router-link>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </el-scrollbar>
     </div>
@@ -60,7 +62,9 @@ export default {
         }
     },
     props:{
-        data:Array
+        data:Array,
+        width:Number,
+        height:Number
     },
     methods:{
     	/**
