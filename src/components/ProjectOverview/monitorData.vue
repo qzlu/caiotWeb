@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="monitor-data-item">
-            <h5 @click="$router.push('/home/TaskManagement/Worklist')"><i class="iconfont icon-Workingodd" ></i> 实时工单 <i class="iconfont icon-Up"></i></h5>
+            <h5 @click="$router.push('/TaskManagement/Worklist')"><i class="iconfont icon-Workingodd" ></i> 实时工单 <i class="iconfont icon-Up"></i></h5>
             <div class="border">
             </div>
             <div class="icon">
@@ -35,7 +35,7 @@
             <div class="table-body" v-if="orderData.length>0">
                 <el-scrollbar>
                     <table>
-                      <tr v-for="(obj,i) in orderData" :key="i" @click="$router.push('/home/TaskManagement/Worklist')">
+                      <tr v-for="(obj,i) in orderData" :key="i" @click="$router.push('/TaskManagement/Worklist')">
                         <td v-for="(item,j) in orderLabels" :key="j" :width='item["width"]' :style="{'text-align':item.align,'color':item.color}" :title="item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]">{{item.formatter?item.formatter.call(null,obj[item.prop]):obj[item.prop]}}</td>
                       </tr>
                     </table>

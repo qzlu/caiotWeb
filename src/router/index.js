@@ -86,7 +86,7 @@ import { router_children } from '@/router/index_children.js';//一级子路由�
 
 let routers_item = [
 	{
-		path: '/',
+		path: '/login',
 		name: 'login',
 		component: () => import("@/components/user/login"),
 		meta: {
@@ -102,44 +102,57 @@ let routers_item = [
 		}
 	},
 	{
-		path: '/home',
+		path: '',
 		name: 'home',
 		component: () => import('@/components/home'),
-		redirect: '/home/monitoring',//子路由设置默认页
+		redirect: '/monitoring',//子路由设置默认页
 		children: [
 			{
 				path: 'ProjectBrowse', //项目概览
 				name: 'ProjectBrowse',
 				component: () => import('@/components/ProjectOverview/index.vue'),
-				redirect: '/home/ProjectBrowse/comprehensive',
+				redirect: '/ProjectBrowse/comprehensive',
 				children:[
 					{
 						path: 'comprehensive',
 						name: 'Comprehensive', //综合态势
-						component: () => import('@/components/ProjectOverview/comprehensive.vue')
+						component: () => import('@/components/ProjectOverview/comprehensive.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						},
 					},
-					{
-						path: 'systemBrowse',
-						name: 'SystemBrowse', //系统态势
-						component: () => import('@/components/ProjectOverview/systemBrowse.vue')
-					},
-					{
-						path: 'areaBrowse',
-						name: 'AreaBrowse', //区域态势
-						component: () => import('@/components/ProjectOverview/areaBrowse.vue')
-					}
 				]
 			},
 			{
 				path: 'monitoring',
 				name: 'monitoring',
 				component: () => import('@/components/monitoring'),
-				redirect: '/home/monitoring',//子路由设置默认页
+				redirect: '/monitoring/systemBrowse',//子路由设置默认页
 				children: [
 					{
 						path: '/',
 						name: 'product',
 						component: () => import('@/components/monitoring/product'),
+						redirect: '/monitoring/systemBrowse',//子路由设置默认页
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						},
+					},
+					{
+						path: 'systemBrowse',
+						name: 'SystemBrowse', //系统态势
+						component: () => import('@/components/ProjectOverview/systemBrowse.vue'),
+						meta: {
+							title: '千仞云平台',
+							requireAuth: true,
+						},
+					},
+					{
+						path: 'areaBrowse',
+						name: 'AreaBrowse', //区域态势
+						component: () => import('@/components/ProjectOverview/areaBrowse.vue'),
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,
@@ -201,7 +214,7 @@ let routers_item = [
 				path: 'foreshow',//预告警管理
 				name: 'foreshow',
 				component: () => import('@/components/foreshow'),
-				redirect: '/home/foreshow',//子路由设置默认页
+				redirect: '/foreshow',//子路由设置默认页
 
 				children: [
 					/*{ path: '/', //实时告警
@@ -258,14 +271,14 @@ let routers_item = [
 				path: 'UniversalConfigPage',   //通用配置页面,所有配置的页面，都跳转在这个页面
 				name: 'UniversalConfigPage',
 				component: () => import('@/components/commonPage/index'),
-				redirect: '/home/ConfigPage_list/:guid',//子路由设置默认页
+				redirect: '/ConfigPage_list/:guid',//子路由设置默认页
 				meta: {
 					title: '千仞云平台',
 					requireAuth: true,
 				},
 				children: [
 					{
-						path: '/home/ConfigPage_list/:guid',
+						path: '/ConfigPage_list/:guid',
 						name: 'ConfigPage_list',
 						component: () => import('@/components/commonPage/list'),
 						meta: {
@@ -280,7 +293,7 @@ let routers_item = [
 				path: 'DeviceManagement',//设备管理
 				name: 'DeviceManagement',
 				component: () => import('@/components/DeviceManagement'),
-				redirect: '/home/DeviceManagement',//子路由设置默认页
+				redirect: '/DeviceManagement',//子路由设置默认页
 				meta: {
 					title: '千仞云平台',
 					requireAuth: true,
@@ -374,7 +387,7 @@ let routers_item = [
 				path: 'energy',//能源警管理
 				name: 'energy',
 				component: () => import('@/components/energy'),
-				redirect: '/home/energy',//子路由设置默认页
+				redirect: '/energy',//子路由设置默认页
 				meta: {
 					title: '千仞云平台',
 					requireAuth: true,
@@ -438,7 +451,7 @@ let routers_item = [
 				path: 'TaskManagement',//任务管理
 				name: 'TaskManagement',
 				component: () => import('@/components/TaskManagement'),
-				redirect: '/home/TaskManagement/InspectionRecords',//子路由设置默认页
+				redirect: '/TaskManagement/InspectionRecords',//子路由设置默认页
 				meta: {
 					title: '千仞云平台',
 					requireAuth: true, // 判断该路由是否需要登录权限
@@ -663,7 +676,7 @@ let routers_item = [
 				path: 'Count',//报表统计
 				name: 'Count',
 				component: () => import('@/components/energy'),
-				redirect: '/home/Count',
+				redirect: '/Count',
 				children: [
 					{
 						path: '/',
@@ -730,7 +743,7 @@ let routers_item = [
 				path: 'SystemManagement',//系统管理
 				name: 'SystemManagement',
 				component: () => import('@/components/SystemManagement'),
-				redirect: '/home/SystemManagement/DeviceChangeManagement',
+				redirect: '/SystemManagement/DeviceChangeManagement',
 				meta: {
 					title: '千仞云平台',
 					requireAuth: true,

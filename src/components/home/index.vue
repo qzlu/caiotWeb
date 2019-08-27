@@ -165,14 +165,6 @@ export default {
     }
   },
   beforeCreate() {
-    let {token, projectID}= this.$route.query
-    if(token){
-        localStorage.setItem('Token',token)
-        localStorage.setItem('inIframe',1)
-    }
-    if(projectID){
-        localStorage.setItem('projectid',projectID)
-    }
   },
   created() {},
   methods: {
@@ -183,7 +175,7 @@ export default {
       localStorage.setItem("projectid", "");
       localStorage.setItem("projectname", "");
       localStorage.setItem("refresh", 1); //用户退出时，刷新登录页面，避免项目定时器ajax继续执行
-      this.$router.push({ path: "/" });
+      this.$router.push({ path: "/login" });
     },
     getNowFormatDate() {
       //处理时间2018-10-15 例如

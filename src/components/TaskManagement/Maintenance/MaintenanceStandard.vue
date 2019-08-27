@@ -41,6 +41,8 @@
                             <el-select v-model="addStandard.MaintenanceCycle"  placeholder="请选择">
                                 <!-- <el-option label="日" value="1"></el-option> -->
                                 <el-option label="月" value="2"></el-option>
+                                <el-option label="季度" value="4"></el-option>
+                                <el-option label="半年" value="5"></el-option>
                                 <el-option label="年" value="3"></el-option>
                             </el-select>
                         </li>
@@ -81,7 +83,7 @@
                                   </div>
                                 </el-popover>
                             </div>
-                            <div class="date-select"  v-if="addStandard.MaintenanceCycle == 2">
+                            <div class="date-select"  v-else-if="addStandard.MaintenanceCycle == 2">
                                     <ul class="l clearfix time-content">
                                         <li  style="margin-top:0" v-for="(time, i) in timeArr2" :key="i">{{time[0]}}号　{{time[1]}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr2',i)"></i></li>
                                     </ul>
@@ -128,7 +130,7 @@
                                   </div>
                                 </el-popover>
                             </div>
-                            <div class="date-select"  v-if="addStandard.MaintenanceCycle == 3">
+                            <div class="date-select"  v-else>
                                     <ul class="l clearfix time-content">
                                         <li  style="margin-top:0" v-for="(time, i) in timeArr3" :key="i">{{time[0]}}月 {{time[1]}}号　{{time[2]}}<i class="el-icon-circle-close-outline" @click="deleteTime('timeArr3',i)"></i></li>
                                     </ul>
@@ -397,7 +399,7 @@ export default {
             m3:null,
             show2:false,
             levelTextArr:['','一级保养','二级保养','三级保养'],
-            cycleText:['','日常','月度','年度'],
+            cycleText:['','日常','月度','年度','季度','半年'],
             contentArr:[''],
             maintenanceItem:null,
             standardType:1 //1为任务管理下的保养标准 ， 2//标准配置下的保养标准
@@ -561,7 +563,8 @@ export default {
          * 点击新增
          */
         add(){
-            if(!this.device){
+            console.log(this.device);
+            if(!this.device||!this.device.DeviceTypeID){
                 this.$message({
                     type:'warning',
                     message:'请选择设备类型'
@@ -825,9 +828,9 @@ $img-url:'/static/image/';
             color: #18A1EC
         }
         .device-container{
+            height: 650px;
             margin-top: 36px;
             .el-tree{
-                height: 650px;
                 background: none;
                 color: #18A1EC;
                 .el-tree-node:focus {
@@ -900,7 +903,8 @@ $img-url:'/static/image/';
             .label{
                 width: 130px;
                 display: inline-block;
-                text-align: right
+                text-align: right;
+                vertical-align: middle;
             }
             .el-input{
                 width: 165px;

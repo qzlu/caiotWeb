@@ -83,7 +83,7 @@ export default {
     }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 $url:'/static/image';
 .device-container{
     width: 100%;
@@ -120,6 +120,11 @@ $url:'/static/image';
         }
         >li.alarm{
             background: url(#{$url}/indexdetail/content_bg_2.png) 10px 0 no-repeat;
+            background-size: 100% 100%;
+/*            background: rgba($color: #560505, $alpha: 0.3);
+           background-position:-10px 0;
+           box-shadow: 0px 0px 10px #9c1428 inset;
+           border-radius: 10px; */
         }
         >li{
             width: 25%;

@@ -382,9 +382,9 @@ $img-url:'/static/image/';
             color: #18A1EC
         }
         .device-container{
+            height: 650px;
             margin-top: 36px;
             .el-tree{
-                height: 650px;
                 background: none;
                 color: #18A1EC;
                 .el-tree-node:focus {

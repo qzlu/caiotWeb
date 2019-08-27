@@ -11,11 +11,11 @@
                     </p>
                 </div>
             </card>
-            <card title="实时告警"  :height='328' @click="$router.push('/home/foreshow')">
+            <card title="实时告警"  :height='328' @click="$router.push('/foreshow')">
                 <div class="alarm-list">
                     <el-scrollbar>
                         <ul>
-                            <li v-for="(item,i) in alarmData" :key="i" @click="$router.push('/home/foreshow')">
+                            <li v-for="(item,i) in alarmData" :key="i" @click="$router.push('/foreshow')">
                                 <span>{{item.AlarmTime}}</span>
                                 <span>{{item.AlarmText}}</span>
                             </li>
@@ -23,11 +23,11 @@
                     </el-scrollbar>
                 </div>
             </card>
-            <card title="实时工单"  :height='331' @click="$router.push('/home/TaskManagement/Worklist')">
+            <card title="实时工单"  :height='331' @click="$router.push('/TaskManagement/Worklist')">
                 <div class="alarm-list">
                     <el-scrollbar>
                         <ul>
-                            <li v-for="(item,i) in orderData" :key="i" @click="$router.push('/home/TaskManagement/Worklist')">
+                            <li v-for="(item,i) in orderData" :key="i" @click="$router.push('/TaskManagement/Worklist')">
                                 <span>{{item.OrderCreateDateTime}}</span>
                                 <span>{{item.OrderContent}}</span>
                             </li>

@@ -7,8 +7,8 @@
                     <span :class="{err:item.AlarmCount>0}">{{item.AlarmCount}}</span>/{{item.DeviceCount}}
                 </span>
                 <div class="content">
-                    <div :class="['statu',{warning:item.FState == 1,alarm: item.FState == 3,'un-use':item.FState == 2}]">
-                        <!-- {{stateText[item.FState]}} -->
+                    <div :class="['statu',{alarm: item.FState == 3||item.FState == 1,'un-use':item.FState == 2}]">
+                        {{stateText[item.FState]}}
                     </div>
                     <ul  class="param clearfix">
                         <li v-for="(obj,j) in item.DeviceTypeInfo" :key="j">
@@ -30,14 +30,14 @@
             </div>
         </div>
         <div class="aside">
-            <card :title="item.SystemParamName" v-for="(item,i) in systemList[1]||[]" :key="i" :height="214" @click.native="selectSystem(item)">
+            <card :class="{active:item.ParamID === activeSystem.ParamID}" :title="item.SystemParamName" v-for="(item,i) in systemList[1]||[]" :key="i" :height="214" @click.native="selectSystem(item)">
                 <span slot="header" class="r header-r">
                     <i class="iconfont icon-Equipment"></i>
                     <span :class="{err:item.AlarmCount>0}">{{item.AlarmCount}}</span>/{{item.DeviceCount}}
                 </span>
                 <div class="content">
-                    <div :class="['statu',{warning:item.FState == 1,alarm: item.FState == 3,'un-use':item.FState == 2}]">
-                        <!-- 正常 -->
+                    <div :class="['statu',{alarm: item.FState == 3||item.FState == 1,'un-use':item.FState == 2}]">
+                        {{stateText[item.FState]}}
                     </div>
                     <ul  class="param clearfix">
                         <li v-for="(obj,j) in item.DeviceTypeInfo" :key="j">
@@ -57,13 +57,15 @@ import {ProjectTrend, project, Monitor } from '@/request/api.js'
 import card from './card.vue'
 import monitorData from './monitorData.vue'
 import deviceList from './deviceList.vue'
+import { clearTimeout } from 'timers';
 export default {
     data(){
         return{
             systemList:[],
             activeSystem:null,
             systemDevice:[],
-            stateText:['正常','预警','未开通','火警']
+            timer:null,
+            stateText:['正常','告警','未开通','火警']
         }
     },
     components:{
@@ -73,6 +75,10 @@ export default {
     },
     created(){
         this.querySystemAlarmByCount()
+    },
+    beforeDestroy(){
+        clearTimeout(this.timer)
+        this.timer = null
     },
     methods:{
         /**
@@ -87,6 +93,9 @@ export default {
                 !this.activeSystem && (this.activeSystem = result.FObject[0])
                 this.systemList.push(...[data.slice(0,4),data.slice(4)])
                 this.getPrjSingleInfo()
+                this.timer = setTimeout(() => {
+                    this.querySystemAlarmByCount()
+                }, 5000);
             }).catch((err) => {
                 
             });
@@ -127,6 +136,9 @@ $url:'/static/image';
     display: flex;
     height: 912px;
     justify-content: space-around;
+    .warning{
+        color: #e0e213
+    }
     .aside{
         width: 336px;
         height: 100%;
@@ -160,11 +172,12 @@ $url:'/static/image';
                 border-radius:9px;
                 box-shadow:  0 0 14px rgba(1,150,7,1);
                 position: relative;
-                font-size: 26px;
+                font-size: 28px;
+                font-weight: 500;
                 color: #02CD35;
-                background: url(#{$url}/index/normal.gif)
+               /*  background: url(#{$url}/index/normal.gif) */
             }
-            .statu.alarm{
+/*             .statu.alarm{
                 background: url(#{$url}/index/fire.gif);
                 border: 1px solid #fb0d0d;
                 box-shadow: 0 0 14px #fb0d0d;
@@ -178,17 +191,17 @@ $url:'/static/image';
                 border:1px solid #737373;
                 box-shadow:  0 0 14px #737373;
                 background: url(#{$url}/index/unuse.gif)
-            }
-/*             .statu::after{
+            } */
+            .statu::after{
                 content: "";
                 display: block;
-                background-image: linear-gradient(44deg, rgba(0, 255, 51, 0) 50%, #00ff33 100%);
+                background-image: linear-gradient(44deg, rgba(0, 255, 51, 0) 42%, #00ff33 100%);
                 width: 36px;
                 height: 36px;
                 position: absolute;
                 top: 26px;
                 left: 0;
-                animation: radar-beam 5s infinite;
+                animation: radar-beam 3s infinite;
                 animation-timing-function: linear;
                 transform-origin: bottom right;
                 border-radius: 100% 0 0 0;
@@ -199,12 +212,29 @@ $url:'/static/image';
                 color: #fb0d0d;
             }
             .statu.alarm::after{
-                background-image: linear-gradient(44deg, rgba($color: #fb0d0d,$alpha:0) 37%,rgba($color: #fb0d0d,$alpha:1));
+                background-image: linear-gradient(44deg, rgba($color: #fb0d0d,$alpha:0) 42%,rgba($color: #fb0d0d,$alpha:1));
+            }
+            .statu.warning{
+                border: 1px solid #e0e213;
+                box-shadow: 0 0 14px #e0e213;
+                color: #e0e213;
+            }
+            .statu.warning::after{
+                background-image: linear-gradient(44deg, rgba($color: #fb0d0d,$alpha:0) 42%,rgba($color: #e0e213,$alpha:1));
+            }
+            .statu.un-use{
+                border:1px solid #737373;
+                box-shadow:  0 0 14px #737373;
+                color:#737373;
+                font-size: 22px;
+            }
+            .statu.un-use::after{
+                background-image: linear-gradient(44deg, rgba($color: #fb0d0d,$alpha:0) 42%,rgba($color: #737373,$alpha:1));
             }
             @keyframes radar-beam {
                 from{transform: rotate(0deg)}
                 to{transform: rotate(360deg)}
-            } */
+            }
             .param{
                 li{
                     line-height: 30px;

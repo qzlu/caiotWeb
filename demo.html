@@ -7,71 +7,111 @@
 	<title>Document</title>
 </head>
 <body>
-	<style>
-		div {  
-		  position: relative;  
-		  width: 100px;  
-		  height: 100px;
-		 /* transform: translate(50%,50%) */
+	<div>
+		<form action="">
+			<span>请输入用户名</span><input type="text" name="userName">
+			<span>请输入密码</span><input type="text" name="password">
+			<span>请输入手机号码</span><input type="text" name="phoneNumber">
+			<button>登录</button>
+		</form>
+	</div>
+	<script>
+		var strangly = {
+			inNoEmpty: (value,errMsg) => {
+				if(value === '') return errMsg
+			},
+			minLength: (value,length,errMsg) => {
+				if(value.length<value) return errMsg
+			},
+			isMobile: (value, errMsg) =>{
+				if(!(/(1[3|4|5|7|8][0-9]{9}$)/).test(value)){
+					return errMsg
+				}
+			}
+		}
+		var Validator = function (){
+			this.cache = []
+		}
+		Validator.prototype.add = function(dom,rules) {
+			var self = this
+			for(let i = 0,rule;rule=rules[i++];){
+			}
+		}
+		var arr = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2']
+		var arr1 =  ['A', 'B', 'C', 'D']
+		for(let i = 0;i<arr1.length;i++){
+    		let index = 0;
+    		arr.forEach((item,j) => {
+				let reg = new RegExp(arr1[i]);
+				reg.test(item)&&(index = j)
+			})
+			arr.splice(index+1,0,arr1[i])
+		}
+		function test(arr,k){
+			while(k>0){
+				k--;
+				arr.unshift(arr.pop())
+			}
+		}
+		var arr = [1, 2, 3, 4, 5, 6, 7]
+		test(arr,3)
+		console.log(test(test_arr))
+		function myNew(){
+			let construct = Array.prototype.shift.call(arguments)
+			let obj = {}
+			construct.prototype = obj.__proto__
+			let ret = construct(arguments)
+			return typeof ret ==="object"?ret:obj 
+		}
+		Function.prototype.myCall = function(construct,...args) {
+			let obj = construct || window
+			let key = new Symbol()
+			obj[key] = this
+			let result = obj[key](...args)
+			delete obj[key]
+			return result
+		}
+		/**
+		* 防抖
+		*/
+		function debounce(fn,delay){
+			let timer
+			return (...args) => {
+				clearTimeout(timer)
+				timer = setTimeout(() => {
+					fn.call(this,...args)
+				},delay)
+			}
+		}
+		/**
+		* 节流
+		*/
+		function throttle(fn,delay = 500){
+			let run = true
+			return (args) => {
+				if(!run) return
+				run = false
+				setTimeout(() => {
+					fn.call(this,args)
+					run = true
+				},delay)
+			}
+		}
+		/**
+		*深拷贝
+		*/
+		function deepClone(obj){
+			if(typeof obj !== obj){
+				return obj
+			}
 		} 
-		.box1{
-			background: black
+		/**
+		*	转换千分位
+		*/
+		function translateNumber(num){
+			let str = num.toString()
+			return str.replace(/(?=(?!\d)(\d{3}+$))/g,',')
 		}
-		.box2{
-			background: yellow;
-			border-top: 10px solid black;
-		}
-		p {  
-		  position: absolute;  
-		  font-size: 20px;  
-		  width: 100px;  
-		  height: 100px;  
-		}  
-		.a {  
-		  background-color: blue;  
-		  z-index: 1000;  
-		}  
-		.b {  
-		  background-color: green;  
-		  z-index: 2;  
-		  top: 20px;  
-		  left: 20px;  
-		}  
-		.c {  
-		  background-color: red;  
-		  z-index: 3;  
-		  top: -20px;  
-		  left: 40px;  
-		}
-		.tagline-skill_inner:after {
-    content: "";
-    position: absolute;
-    top: -1px;
-    right: 0;
-    bottom: -2px;
-    left: 0;
-    border-left: 1px solid #fff;
-    background-color: #2a2a28;
-    -webkit-animation: animatetoright 1s steps(10) infinite alternate;
-    animation: animatetoright 1s steps(10) infinite alternate;
-}
-
-	  </style>
-	  
-	  <body>  
-		<div class="box1">  
-		  <p class="a">a</p>  
-		  <p class="b">b</p>  
-		</div> 
-		<div class="box2">  
-			<p class="c">c</p>  
-		 </div>  
-		 <div>
-			<h1>Typing Animation</h1>
-			<p class="tagline">
-				<span class="tagline-skill"><span class="tagline-skill_inner">webdesign</span></span>
-			</p>
-		</div>
-		
+	</script>
 </body>
 </html>
