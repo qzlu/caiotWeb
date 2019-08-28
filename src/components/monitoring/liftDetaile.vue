@@ -33,9 +33,9 @@
         <div class="event-list">
             <event-list :data='eventData' :showTitle='false'></event-list> 
         </div>
-        <div class="lift-video" v-if="liftStatus">
+        <div class="lift-video">
             <ul class="operation top-operation">
-                <li :class="{'not-allowed':!isJoining}">拍照</li>
+                <li :class="{'not-allowed':!isJoining}" @click="takePhoto()">拍照</li>
                 <li :class="{'not-allowed':isJoining}" @click="join()">视频<br>连接</li>
                 <li :class="{'not-allowed':!isJoining}" @click="closeVideo()">关闭</li>
             </ul>
@@ -57,6 +57,7 @@ import eventList from './d_l_a.vue'
 import {project} from '../../request/api.js'
 import AgoraRTC from 'agora-rtc-sdk'
 import axios from 'axios'
+import html2Canvas from 'html2canvas'
 export default {
     data(){
         return{
@@ -194,7 +195,7 @@ export default {
                   console.log("User " + uid + " join channel successfully");
                   this.isJoining = true;
                   this.loading = false
-                  this.openLiftVideo()
+                  /* this.openLiftVideo() */
                   resolve(uid)
 
                 }, function(err) {
@@ -203,6 +204,9 @@ export default {
                 });
             })
             .then((uid) => {
+                AgoraRTC.getDevices(item => {
+                    console.log(item)
+                })
                 /********** 初始化音视频流 **********/
                 this.localStream =  AgoraRTC.createStream({
                     streamID: uid,
@@ -281,7 +285,17 @@ export default {
             });
         },
         takePhoto(){
-            this.getPdf('agora_local','测试')
+            let  canvas = document.createElement("canvas");
+            let  canvasCtx = canvas.getContext("2d");
+            canvas.width = 500
+            canvas.height = 500
+            let  video=document.querySelector('video')
+            canvasCtx.drawImage(video, 0, 0, 500, 500, 0, 0, 500, 500);
+            let dataUrl = canvas.toDataURL("image/png");
+            let a = document.createElement('a')
+            a.href = dataUrl
+            a.download = 'download'
+            a.click()
         }
     }
 }
