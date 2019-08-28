@@ -212,6 +212,9 @@ $img-url:'/static/image/';
 .el-scrollbar__wrap{
     overflow-x: hidden;
 }
+.el-select-dropdown__wrap.el-scrollbar__wrap{
+    overflow-x:scroll
+}
 .err{
     color: #D62445
 }

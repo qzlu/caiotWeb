@@ -6,30 +6,32 @@
                 <el-date-picker type="daterange" v-model="time">
                 </el-date-picker>
             </li>
-<!--             <li class="l">
+            <li class="l">
                 <span class="label">路线名称</span>
                 <el-select v-model="road"  filterable value-key="ID"  placeholder="请选择">
+                    <el-option :value="0" label="全部"></el-option>
                     <el-option v-for="road in roadDatas" :key="road.ID" :label="road.PatrolLineName" :value="road.ID"></el-option>
                 </el-select>
             </li>
             <li class="l">
                 <span class="label">巡更人</span>
                 <el-select v-model="user"  placeholder="请选择">
-                    <el-option value="" label="全部"></el-option>
+                    <el-option :value="0" label="全部"></el-option>
                     <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
                 </el-select>
             </li>
             <li class="l">
                 <span class="label">巡更状态</span>
-                <el-select v-model="status"  filterable  placeholder="请选择">
-                    <el-option :value="1">正常</el-option>
-                    <el-option :value="1">异常</el-option>
-                    <el-option :value="1">超时</el-option>
-                    <el-option :value="1">漏巡</el-option>
+                <el-select v-model="status"    placeholder="请选择">
+                    <el-option :value="0" label="全部"></el-option>
+                    <el-option :value="1" label="漏巡"></el-option>
+                    <el-option :value="2" label="超时"></el-option>
+                    <el-option :value="3" label="正常"></el-option>
+                    <el-option :value="4" label="异常"></el-option>
                 </el-select>
-            </li> -->
-            <li class="l"><button class="zw-btn" @click="queryData()">查询</button></li>
-            <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile()">导出</button></li>
+            </li>
+            <li class="l"><button class="zw-btn" @click="pageIndex = 1;queryData()">查询</button></li>
+            <li class="l"><button class="zw-btn" style="width:120px" @click="exportFile()"><i class="iconfont icon-Export"></i>导出Excel</button></li>
         </ul>
         <div class="zw-table">
             <el-table
@@ -98,13 +100,16 @@ export default {
                 }
             ],
             roadDatas:[], //所有路线
-            road:null,
-            user:null,
+            road:0,
+            user:0,
             status:0
         }
     },
     computed:{
         users(){
+            if(!this.$store.state.orderUser[0]){
+                this.$store.dispatch('queryOrderTUsers')
+            }
             return this.$store.state.orderUser //负责人
         }
     },
@@ -124,9 +129,11 @@ export default {
                 PageSize:10,
                 StartDateTime:this.time[0].toLocaleDateString() + ' 00:00',
                 EndDateTime:this.time[1].toLocaleDateString() + ' 23:59',
+                FUserGuid:this.user,
+                FPatrolLineID:this.road,
+                FPatrolState:this.status
             })
             .then((data) => {
-                console.log(data)
                 this.total = data.FObject.Table ? data.FObject.Table[0].FTotalCount : 0
                 this.tableData =  data.FObject.Table1 || []
             })
@@ -171,9 +178,12 @@ export default {
                 SearchKey:this.filterText,
                 StartDateTime:this.time[0].toLocaleDateString() + ' 00:00',
                 EndDateTime:this.time[1].toLocaleDateString() + ' 23:59',
+                FUserGuid:this.user,
+                FPatrolLineID:this.road,
+                FPatrolState:this.status
             })
             .then(data => {
-                window.location = data.FObject;
+                window.location ="http://www.szqianren.com/"+data.FObject;
             })
             .catch(error => {
                 this.$message({

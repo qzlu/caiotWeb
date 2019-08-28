@@ -154,6 +154,10 @@
                             <span class="label">计划工时(小时)</span>
                             <el-input type="number" v-model="addRoadData.FPlanUseTimes"></el-input>
                         </li>
+                        <li>
+                            <span class="label">超时工时(小时)</span>
+                            <el-input type="number" v-model="addRoadData.FAllowTimeOut"></el-input>
+                        </li>
                     </ul>
                 </div>
                 <div style="text-align:center;height:42px;margin-top:37px;">
@@ -245,9 +249,11 @@
                         </div>
                     </template>
                </el-table-column>
-               <el-table-column prop="FNoticeTime" label="计划提醒时间" :formatter="(row)=>'提前'+row.FNoticeTime+'小时'" show-overflow-tooltip>
+               <el-table-column prop="FNoticeTime" label="计划提醒时间" :formatter="(row)=>'提前'+(row.FNoticeTime||0)+'小时'" show-overflow-tooltip>
                </el-table-column>
-               <el-table-column prop="FPlanUseTimes" label="计划工时" :formatter="(row)=> row.FPlanUseTimes+'小时'"  show-overflow-tooltip>
+               <el-table-column prop="FPlanUseTimes" label="计划工时" :formatter="(row)=> (row.FPlanUseTimes||0)+'小时'"  show-overflow-tooltip>
+               </el-table-column>
+               <el-table-column prop="FAllowTimeOut" label="超时工时" :formatter="(row)=> (row.FAllowTimeOut||0)+'小时'"  show-overflow-tooltip>
                </el-table-column>
                <el-table-column
                  prop=""
@@ -339,6 +345,7 @@ import table from '@/mixins/table' //表格混入数据
 import {treeTransfer} from '@/zw-components/index'
 import * as comm from "@/assets/js/pro_common";
 import '../InspectionRoad.scss'
+import { close } from 'fs';
 export default {
     mixins:[table],
     data(){
@@ -402,7 +409,8 @@ export default {
                 PatrolCycle:1,
                 FDescription:'',
                 FNoticeTime:'',
-                FPlanUseTimes:''
+                FPlanUseTimes:'',
+                FAllowTimeOut:''
             },
             pointData:[],//所有巡更点
             defaultProps:{
@@ -498,6 +506,7 @@ export default {
                 PatrolCycle:this.PatrolCycle,
             })
             .then(data => {
+                console.log(data)
                 this.tableData = data.FObject
                 this.tableData.forEach(item => {
                     item.PatrolTime = item.PatrolTime.replace(/,$/ig,'').split(',')
@@ -622,6 +631,7 @@ export default {
             this.addRoadData.ID = ''
             this.addRoadData.FNoticeTime = ''
             this.addRoadData.FPlanUseTimes = ''
+            this.addRoadData.FAllowTimeOut = ''
             this.timeArr = []
             this.timeArr1 = []
             this.timeArr2 = []
@@ -639,6 +649,8 @@ export default {
             this.addRoadData.ID = item.ID
             this.addRoadData.FNoticeTime = item.FNoticeTime
             this.addRoadData.FPlanUseTimes = item.FPlanUseTimes
+            console.log(item)
+            this.addRoadData.FAllowTimeOut = item.FAllowTimeOut
             //显示弹框时，默认填入时间
             if(show){
                 if(item.PatrolCycle == 1){

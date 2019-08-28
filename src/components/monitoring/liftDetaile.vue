@@ -204,7 +204,7 @@ export default {
                   console.log("User " + uid + " join channel successfully");
                   this.isJoining = true;
                   this.loading = false
-                  /* this.openLiftVideo() */
+                  this.openLiftVideo()
                   resolve(uid)
 
                 }, function(err) {
