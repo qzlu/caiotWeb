@@ -5,20 +5,22 @@
       <div class="border border-right-bottom"></div>
       <div class="border border-left-bottom"></div>
       <p class="zw-tree-head">{{title}}</p>
-      <el-scrollbar>
-        <el-tree
-          :data="data"
-          :show-checkbox='showCheckbox'
-          default-expand-all
-          :node-key="nodeKey"
-          ref="tree"
-          :default-checked-keys="defaultChecked"
-          @check-change="checkChange"
-          :render-content="renderContent"
-          :props="defaultProps"
-        >
-        </el-tree>
-      </el-scrollbar>
+      <div style="height:250px">
+        <el-scrollbar>
+          <el-tree
+            :data="data"
+            :show-checkbox='showCheckbox'
+            default-expand-all
+            :node-key="nodeKey"
+            ref="tree"
+            :default-checked-keys="defaultChecked"
+            @check-change="checkChange"
+            :render-content="renderContent"
+            :props="defaultProps"
+          >
+          </el-tree>
+        </el-scrollbar>
+      </div>
   </div>
 </template>
 <script>

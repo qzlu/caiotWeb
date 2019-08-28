@@ -428,7 +428,6 @@ export default {
           )
         };
       });
-      console.log(this.abc_datalist04)
       /*end of 重新组装可以直接v-for读取的数据*/
     },
 

@@ -17,23 +17,6 @@
         </div>
         <div class="lcen">
           <h1>用户登录</h1>
-          <!-- 	<div class="name">
-					<label class="name-label _uname" for="user_name"></label>
-					<input name="user_name" type="text" class="itemsy" placeholder="用户名">
-				</div>
-				
-				<div class="passw">
-					<label class="name-label _uname" for="passw"></label>
-					<input name="passw" type="password" class="itemsy" placeholder="密码">
-				</div>
-	
-	     <div class="stoage">
-				 <span class="s-a" :class="{'active0':isActive==0,'active1':isActive==1}" @click="ch_active()"></span><span class="s-b">住密码</span>
-			 </div>
-	      <div class="btn_go">
-					<a href="javascript:;" style="outline: none;">登 录</a>
-          </div>-->
-          <!-- 自定义 -->
           <el-form
             :model="ruleForm2"
             status-icon
@@ -61,12 +44,6 @@
             <div class="btn_go">
               <a href="javascript:;" style="outline: none;" @click="submitForm('ruleForm2')">登 录</a>
             </div>
-            <!--
-					<el-form-item>
-					<el-button type="primary" @click="submitForm('ruleForm2')" class="btn_sumit">提交</el-button>
-						 <el-button @click="resetForm('ruleForm2')" class="btn_resumit">重置</el-button> 
-					</el-form-item>
-            -->
           </el-form>
         </div>
       </div>
@@ -159,8 +136,8 @@ export default {
               ); //用户别名，每个账号都有个中文名
               this.getprojectID(); //成功登录，取用户第一个项目projectid 和projectName
               setTimeout(() => {
-                this.$router.push({ path: "home" });
-              }, 1000);
+                this.$router.push({ path: "/" });
+              }, 300);
             })
             .catch(function(err) {});
         } else {
@@ -493,11 +470,6 @@ a {
   background-size: 100% 100%;
   min-width: 1900px;
   min-height: 1080px;
-  /*    background: #034478;
-    background: -webkit-linear-gradient(0deg, #034478,#010223 );
-    background: -o-linear-gradient(0deg, #034478,#010223); 
-    background: -moz-linear-gradient(0deg,#034478,#010223); 
-    background: linear-gradient(0deg,#034478,#010223);*/
 }
 .login_center {
   width: 1900px;
@@ -623,7 +595,4 @@ a {
 :-ms-input-placeholder {
   color: #c5cfd9;
 }
-</style>
-<style>
-/* body{ background: #0a0929;} */
 </style>

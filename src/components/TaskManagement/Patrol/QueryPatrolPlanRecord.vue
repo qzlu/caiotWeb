@@ -6,6 +6,28 @@
                 <el-date-picker type="daterange" v-model="time">
                 </el-date-picker>
             </li>
+            <li class="l">
+                <span class="label">路线名称</span>
+                <el-select v-model="road"  filterable value-key="ID"  placeholder="请选择">
+                    <el-option v-for="road in roadDatas" :key="road.ID" :label="road.PatrolLineName" :value="road.ID"></el-option>
+                </el-select>
+            </li>
+            <li class="l">
+                <span class="label">巡更人</span>
+                <el-select v-model="user"  placeholder="请选择">
+                    <el-option value="" label="全部"></el-option>
+                    <el-option v-for="user in users" :key="user.FGUID" :label="user.FContacts" :value="user.FGUID"></el-option>
+                </el-select>
+            </li>
+            <li class="l">
+                <span class="label">巡更状态</span>
+                <el-select v-model="status"  filterable  placeholder="请选择">
+                    <el-option :value="1">正常</el-option>
+                    <el-option :value="1">异常</el-option>
+                    <el-option :value="1">超时</el-option>
+                    <el-option :value="1">漏巡</el-option>
+                </el-select>
+            </li>
             <li class="l"><button class="zw-btn" @click="queryData()">查询</button></li>
             <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile()">导出</button></li>
         </ul>
@@ -75,10 +97,20 @@ export default {
                     label:'巡更人',
                 }
             ],
+            roadDatas:[], //所有路线
+            road:null,
+            user:null,
+            status:0
+        }
+    },
+    computed:{
+        users(){
+            return this.$store.state.orderUser //负责人
         }
     },
     created(){
         this.queryData()
+        this.queryRoad()
     },
     methods:{
         /**
@@ -108,6 +140,27 @@ export default {
         handleCurrentChange(val){
             this.pageIndex = val
             this.queryData()
+        },
+        /**
+         * 查询巡更路线
+         */
+        queryRoad(){
+
+            let startDateTime = '00:00'
+            let endDateTime = '23:59'
+            Patrol({
+                FAction:'QueryUPatrolLine',
+                FName:'',
+                StartDateTime:startDateTime,
+                EndDateTime:endDateTime,
+                PatrolCycle:0,
+            })
+            .then(data => {
+                this.roadDatas = data.FObject
+            })
+            .catch(error => {
+
+            })
         },
         /**
          * exportFile 导出

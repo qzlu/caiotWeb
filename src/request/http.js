@@ -69,6 +69,8 @@ export function post(url, params) {
             resolve(res.data);
         })
         .catch(err =>{
+            console.log('err',err)
+            console.log(params)
             messageErr(err.data?err.data.Result:100,err.data?err.data.Message:err)
             reject(err.data?err.data.Message:err)
         })

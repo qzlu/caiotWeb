@@ -1,31 +1,36 @@
 <template>
   <div class="monitoring">
-    <!-- 实时监控 -->
-    <div class="left">
-      <div class="left_item01">
-        <ul>
-          <li class="top">
-            <p class="text">
-              <span class="tc">天气信息</span>
-            </p>
-            <p class="time">{{time.clock}}</p>
-            <p class="date">{{time.currs}}</p>
-            <div class="sd">
-              <!--<img src="/static/image/index/leftbar_icon_1.png">-->
-              <i class="icon iconfont tq_icons" :class="weathers.img_id"></i>
-              <i class="sm" style="margin-left: 5px;">{{weathers.s}}℃/</i>
-              <i>{{weathers.h}}℃</i>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div class="left_item02">
-        <my-componentLeft :datas="datalist"></my-componentLeft>
-      </div>
-    </div>
-    <div class="m_right ">
+    <div v-if="$route.name === 'SystemBrowse'||$route.name === 'AreaBrowse'">
       <router-view></router-view>
+    </div>
+    <div v-else>
+      <!-- 实时监控 -->
+      <div class="left">
+        <div class="left_item01">
+          <ul>
+            <li class="top">
+              <p class="text">
+                <span class="tc">天气信息</span>
+              </p>
+              <p class="time">{{time.clock}}</p>
+              <p class="date">{{time.currs}}</p>
+              <div class="sd">
+                <!--<img src="/static/image/index/leftbar_icon_1.png">-->
+                <i class="icon iconfont tq_icons" :class="weathers.img_id"></i>
+                <i class="sm" style="margin-left: 5px;">{{weathers.s}}℃/</i>
+                <i>{{weathers.h}}℃</i>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="left_item02">
+          <my-componentLeft :datas="datalist"></my-componentLeft>
+        </div>
+      </div>
+      <div class="m_right ">
+        <router-view></router-view>
+      </div>
     </div>
   </div>
 </template>

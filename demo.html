@@ -2,167 +2,116 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>CSS实战 - 波纹扩散效果</title>
-	<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/fonts/fontawesome-webfont.svg">
- 
-	<style type="text/css">
-		body {
-			margin: 0;
-		}
- 
-        .container {  
-            position: absolute;
-            top: 30%;
-            left: 30%;
-            width: 40%;  
-            height: 40%;
-        } 
- 
-        .spliter {
-			width: 100%;
-			height: 20px;
-		}
- 
-		/************以下为具体实现************/
- 
-		.wave {
-			position: relative;
-		    width: 100px;
-		    height: 100px;
-		    text-align: center;
-		    line-height: 100px;
-		    font-size: 28px;
-		}
- 
-		.wave .circle {
-		    position: absolute;
-		    border-radius: 50%;
-		    opacity: 0;
-		}
- 
-		/* 波纹效果 */
-		.wave.ripple .circle {
-		    width: calc(100% - 6px); /* 减去边框的大小 */
-    		height: calc(100% - 6px);/* 减去边框的大小 */
-		    border: 3px solid #fff;
-		}
- 
-		.wave.ripple .circle:first-child {
-			animation: circle-opacity 2s infinite;
-		}
- 
-		.wave.ripple .circle:nth-child(2) {
-			animation: circle-opacity 2s infinite;
-			animation-delay: .3s;
-		}
- 
-		.wave.ripple .circle:nth-child(3) {
-		 	animation: circle-opacity 2s infinite;
-			animation-delay: .6s;
-		}
- 
-		.wave.ripple.danger {
-		    color: red;
-		}
- 
-		.wave.ripple.danger .circle {
-			border-color: red;
-		}
- 
-		.wave.ripple.warning {
-		    color: orange;
-		}
- 
-		.wave.ripple.warning .circle {
-		    border-color: orange;
-		}
- 
-		/* 波动效果 */
-		.wave.solid .circle{
-			width: 100%;
-    		height: 100%;
-		    background: #fff;
-		}
- 
-		.wave.solid .circle:first-child {
-			animation: circle-opacity 2s infinite;
-		}
- 
-		.wave.solid.danger {
-			color: red;
-		}
- 
-		.wave.solid.danger .circle{
-			background: red;
-		}
-		
-		.wave.solid.warning {
-			color: orange;
-		}
- 
-		.wave.solid.warning .circle{
-			background: orange;
-		}
- 
-		@keyframes circle-opacity{
-		    from {
-		        opacity: 1;
-		        transform: scale(0);
-		    }
-		    to {
-		        opacity: 0;
-		        transform: scale(1);
-		    }
-		}
-	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
 </head>
 <body>
-	<div class="container">
-		<div class="wave ripple danger">
-			<div class="circle"></div>
-			<div class="circle"></div>
-			<div class="circle"></div>
-			<div class="content">
-				<i class="fa fa-bell"></i>
-			</div>
-		</div>
- 
-		<div class="spliter"></div>
- 
-		<div class="wave solid warning">
-			<div class="circle"></div>
-			<div class="content">
-				<i class="fa fa-bell"></i>
-			</div>
-		</div>
+	<div>
+		<form action="">
+			<span>请输入用户名</span><input type="text" name="userName">
+			<span>请输入密码</span><input type="text" name="password">
+			<span>请输入手机号码</span><input type="text" name="phoneNumber">
+			<button>登录</button>
+		</form>
 	</div>
 	<script>
-		var entry = {
-		  a: {
-		    b: {
-		      c: {
-		        dd: 'abcdd'
-		      }
-		    },
-		    d: {
-		      xx: 'adxx'
-		    },
-		    e: 'ae'
-		  }
-		}
-		function formatterObj(obj,name='',result= {}){
-			for(let key in obj){
-				let parentname =name?name+'.'+key:name+key
-				if(typeof obj[key] === 'object'){
-					formatterObj(obj[key],parentname,result)
-				}else{
-					result[parentname] = obj[key]
+		var strangly = {
+			inNoEmpty: (value,errMsg) => {
+				if(value === '') return errMsg
+			},
+			minLength: (value,length,errMsg) => {
+				if(value.length<value) return errMsg
+			},
+			isMobile: (value, errMsg) =>{
+				if(!(/(1[3|4|5|7|8][0-9]{9}$)/).test(value)){
+					return errMsg
 				}
 			}
+		}
+		var Validator = function (){
+			this.cache = []
+		}
+		Validator.prototype.add = function(dom,rules) {
+			var self = this
+			for(let i = 0,rule;rule=rules[i++];){
+			}
+		}
+		var arr = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2']
+		var arr1 =  ['A', 'B', 'C', 'D']
+		for(let i = 0;i<arr1.length;i++){
+    		let index = 0;
+    		arr.forEach((item,j) => {
+				let reg = new RegExp(arr1[i]);
+				reg.test(item)&&(index = j)
+			})
+			arr.splice(index+1,0,arr1[i])
+		}
+		function test(arr,k){
+			while(k>0){
+				k--;
+				arr.unshift(arr.pop())
+			}
+		}
+		var arr = [1, 2, 3, 4, 5, 6, 7]
+		test(arr,3)
+		console.log(test(test_arr))
+		function myNew(){
+			let construct = Array.prototype.shift.call(arguments)
+			let obj = {}
+			construct.prototype = obj.__proto__
+			let ret = construct(arguments)
+			return typeof ret ==="object"?ret:obj 
+		}
+		Function.prototype.myCall = function(construct,...args) {
+			let obj = construct || window
+			let key = new Symbol()
+			obj[key] = this
+			let result = obj[key](...args)
+			delete obj[key]
 			return result
 		}
-		console.log(formatterObj(entry))
+		/**
+		* 防抖
+		*/
+		function debounce(fn,delay){
+			let timer
+			return (...args) => {
+				clearTimeout(timer)
+				timer = setTimeout(() => {
+					fn.call(this,...args)
+				},delay)
+			}
+		}
+		/**
+		* 节流
+		*/
+		function throttle(fn,delay = 500){
+			let run = true
+			return (args) => {
+				if(!run) return
+				run = false
+				setTimeout(() => {
+					fn.call(this,args)
+					run = true
+				},delay)
+			}
+		}
+		/**
+		*深拷贝
+		*/
+		function deepClone(obj){
+			if(typeof obj !== obj){
+				return obj
+			}
+		} 
+		/**
+		*	转换千分位
+		*/
+		function translateNumber(num){
+			let str = num.toString()
+			return str.replace(/(?=(?!\d)(\d{3}+$))/g,',')
+		}
 	</script>
 </body>
 </html>

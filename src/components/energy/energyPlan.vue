@@ -118,10 +118,10 @@ export default {
                     prop: 'WarningUsage',
                     label: '预警用量',
                 },
-                {
+/*                 {
                     prop: 'EnergyCount',
                     label: '实际用量',
-                },
+                }, */
                 {
                     prop:'EnergyTypeUnit',
                     label:'单位'
