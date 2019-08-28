@@ -58,6 +58,7 @@ import {project} from '../../request/api.js'
 import AgoraRTC from 'agora-rtc-sdk'
 import axios from 'axios'
 import html2Canvas from 'html2canvas'
+import { type } from 'os';
 export default {
     data(){
         return{
@@ -173,6 +174,14 @@ export default {
          * 视频连接
          */
         async join(){
+            if(!this.liftStatus){
+                this.$message({
+                    message:'电梯正常',
+                    type:'warning',
+                    druration:500
+                })
+                return
+            }
             if(this.isJoining){
                 return
             }
@@ -277,6 +286,14 @@ export default {
          * 取消报警
          */
         closeAlarm(){
+            if(!this.liftStatus){
+                this.$message({
+                    message:'电梯正常',
+                    type:'warning',
+                    druration:500
+                })
+                return
+            }
             axios({
                 method:'post',
                 url:`https://dt.caszyj.com:8444/elevator-monitor/elev/pushCancelAlarm?client_id=${this.liftInfo.OtherSourceID}&historyID=${this.liftStatus.HistoryID}&status=${this.liftStatus.Status}&op_type=1`,
