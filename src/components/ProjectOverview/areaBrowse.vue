@@ -111,7 +111,6 @@ import Card from './card.vue'
 import formatDate from '@/utils/formatDate'
 import {project,ProjectTrend, Orders} from '@/request/api.js'
 import deviceList from './deviceList.vue'
-import { setTimeout, clearTimeout } from 'timers';
 export default {
     data(){
         return{
@@ -141,8 +140,8 @@ export default {
         this.queryData()
     },
     beforeDestroy(){
-        clearTimeout(this.timer)
-        clearTimeout(this.timer1)
+        this.timer&&clearTimeout(this.timer)
+        this.timer1&&clearTimeout(this.timer1)
         this.timer = null
         this.timer1 = null
     },

@@ -57,7 +57,6 @@ import {ProjectTrend, project, Monitor } from '@/request/api.js'
 import card from './card.vue'
 import monitorData from './monitorData.vue'
 import deviceList from './deviceList.vue'
-import { clearTimeout } from 'timers';
 export default {
     data(){
         return{
@@ -77,7 +76,7 @@ export default {
         this.querySystemAlarmByCount()
     },
     beforeDestroy(){
-        clearTimeout(this.timer)
+        this.timer&&clearTimeout(this.timer)
         this.timer = null
     },
     methods:{
@@ -118,6 +117,7 @@ export default {
                     })
                 })
                 this.systemDevice = systemDevice.filter(item => item.data.length>0)
+                console.log(this.systemDevice)
             }).catch((err) => {
                 
             });

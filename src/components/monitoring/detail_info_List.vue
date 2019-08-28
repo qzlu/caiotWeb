@@ -38,7 +38,7 @@
           <img src="static/image/index/back_btn.png">返回
         </p>
         <div style="height:920px;">
-          <lift-detaile :eventData="dl_datalist"></lift-detaile>
+          <lift-detaile :liftInfo="datalist02" :eventData="dl_datalist"></lift-detaile>
         </div>
       </div>
     </div>
@@ -59,11 +59,12 @@
                         <!--1#变压器-->
                       </p>
                     </div>
-                    <div v-for="(c,key) in datalist02.DataDetail" :class="setclass(c.SDataID)">
+                    <div v-for="(c,key) in datalist02.DataDetail" :class="setclass(c.SDataID)" :key="key">
                       <p class="gre">
                         <i
                           v-for="(df,key) in c.SDataValue"
                           :data="df.DStatus"
+                          :key="key"
                           @click="click_show_line(c.SDataID)"
                         >{{(datalist02.DeviceTypeID==1003&&c.SDataID==1) ? (df.DValue>0?'上行':(df.FValue == 0 ? '停止': '下行')) : df.DValue}}{{key!==c.SDataValue.length-1?'/':''}}</i>
                       </p>

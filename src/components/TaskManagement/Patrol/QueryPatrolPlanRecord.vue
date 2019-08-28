@@ -6,7 +6,7 @@
                 <el-date-picker type="daterange" v-model="time">
                 </el-date-picker>
             </li>
-            <li class="l">
+<!--             <li class="l">
                 <span class="label">路线名称</span>
                 <el-select v-model="road"  filterable value-key="ID"  placeholder="请选择">
                     <el-option v-for="road in roadDatas" :key="road.ID" :label="road.PatrolLineName" :value="road.ID"></el-option>
@@ -27,7 +27,7 @@
                     <el-option :value="1">超时</el-option>
                     <el-option :value="1">漏巡</el-option>
                 </el-select>
-            </li>
+            </li> -->
             <li class="l"><button class="zw-btn" @click="queryData()">查询</button></li>
             <li class="l"><button class="zw-btn zw-btn-export" @click="exportFile()">导出</button></li>
         </ul>

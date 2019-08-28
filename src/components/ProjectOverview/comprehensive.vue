@@ -192,7 +192,6 @@ import {pieChart, barChart,Number} from '@/zw-components/index.js'
 import {ProjectTrend} from '@/request/api.js'
 import card from './card.vue'
 import monitorData from './monitorData.vue'
-import { clearTimeout } from 'timers';
 export default {
     data(){
         return{
@@ -286,8 +285,8 @@ export default {
         this.changeNumber()
     },
     beforeDestroy(){
-        clearTimeout(this.timer)
-        clearTimeout(this.timer1)
+        this.timer&&clearTimeout(this.timer)
+        this.timer1&&clearTimeout(this.timer1)
         this.timer = null
         this.timer1 = null
     },

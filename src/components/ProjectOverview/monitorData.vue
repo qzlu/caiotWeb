@@ -109,7 +109,7 @@ export default {
         this.queryData()
     },
     beforeDestroy(){
-        clearTimeout(this.timer)
+        this.timer&&clearTimeout(this.timer)
         this.timer = null
     },
     methods:{

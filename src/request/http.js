@@ -3,8 +3,8 @@ import axios from 'axios';
 import {messageErr } from '../assets/js/pro_common';
 // 环境的切换
 if (process.env.NODE_ENV == 'development') {    
-    axios.defaults.baseURL = 'http://172.172.172.37:8080/Caiot/';
-    /* axios.defaults.baseURL = 'http://www.szqianren.com/Caiot/' */
+    /* axios.defaults.baseURL = 'http://172.172.172.37:8080/Caiot/'; */
+    axios.defaults.baseURL = 'http://www.szqianren.com/Caiot/'
 } 
 else if (process.env.NODE_ENV == 'debug') {    
     axios.defaults.baseURL = 'http://172.172.172.37:8080/Caiot/';
