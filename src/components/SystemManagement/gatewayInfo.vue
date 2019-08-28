@@ -12,10 +12,10 @@
                     <el-input v-model="addInfo.LDasName">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="网关ID" prop="LDasID" :rules="[{ required: true, message: '请输入'}]">
+<!--                 <el-form-item label="网关ID" prop="LDasID" :rules="[{ required: true, message: '请输入'}]">
                     <el-input type="number" placeholder="网关ID只能输入数字" v-model="addInfo.LDasID">
                     </el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="网关位置" prop="Position" :rules="[{ required: true, message: '请输入'}]">
                     <el-input v-model="addInfo.Position">
                     </el-input>
@@ -133,7 +133,7 @@ export default {
             projectName:localStorage.getItem('projectname'),
             defaultAddInfo:{//新增项目参数默认数据
                 ProjectID:parseInt(localStorage.getItem('projectid')),
-                LDasID:null,
+                LDasID:0,
                 IsEnable:true,
                 LDasName:null,
                 Position:null,
@@ -142,7 +142,7 @@ export default {
             },
             addInfo:{ //新增或修改项目参数
                 ProjectID:null,
-                LDasID:null,
+                LDasID:0,
                 IsEnable:true,
                 LDasName:null,
                 Position:null,

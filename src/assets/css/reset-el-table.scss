@@ -42,10 +42,10 @@
         background: #053077
     }
     &--enable-row-hover &__body tr:hover>td{
-        background:rgba(19,79,164,1);
+        background:rgba(19,79,164,0.5);
         border:2px solid rgba(0, 0, 0, 1);
-        opacity:0.5;
-        color: #2A91FC;
+        /* opacity:0.5; */
+       /*  color: #2A91FC; */
     }
 
 }

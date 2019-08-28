@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" style="width:100%;height:100%"></div>
+  <div :id="id" style="width:100%;height:100%;z-index:10"></div>
 </template>
 <script>
 //引入uuid文件
@@ -14,9 +14,9 @@ export default {
     data: {
       type: Object
     },
+    series: Array,
     color:{
         type:Array,
-        required:true
     },
     setting:{
         type:Object
@@ -27,13 +27,18 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-        this.showPieChart()
+        (this.data||this.series) && this.showPieChart()
     })
   },
   watch: {
-    data(){
+    data(value){
         this.$nextTick(() => {
-            this.showPieChart()
+            value && this.showPieChart()
+        })
+    },
+    series(value){
+        this.$nextTick(() => {
+            value && this.showPieChart()
         })
     }
   },
@@ -48,8 +53,7 @@ export default {
       var myChart = echarts.init(dom);
       var app = {};
       var option = null;
-      app.title = "环形图";
-
+      app.title = "环形图"
       option = {
         tooltip: {
           trigger: "item",
@@ -62,15 +66,15 @@ export default {
           textStyle: { color: "#fff" },
           itemWidth: 13,
           itemHeight: 13,
-          data: this.$props.data.columns
+          data: this.$props.data&&this.$props.data.columns  
         },
-        series: [
+        series: this.series || [
           {
             name: "访问来源",
             type: "pie",
             radius: ["50", "60"],
             avoidLabelOverlap: false,
-            center:this.$props.setting&&this.$props.setting.center?this.$props.setting.center:['50%','50%'],
+            center:this.setting&&this.setting.center||['50%','50%'],
             label: {
               normal: {
                 show: false,
@@ -92,7 +96,7 @@ export default {
             data:this.$props.data.rows
           }
         ],
-        color: this.$props.color
+        color:this.$props.color && this.$props.color
       };
       if (option && typeof option === "object") {
         myChart.setOption(option, true);

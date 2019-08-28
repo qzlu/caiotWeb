@@ -3,8 +3,8 @@ import axios from 'axios';
 import {messageErr } from '../assets/js/pro_common';
 // 环境的切换
 if (process.env.NODE_ENV == 'development') {    
-    axios.defaults.baseURL = 'http://172.172.172.37:8080/Caiot/';
-    /* axios.defaults.baseURL = 'http://www.szqianren.com/Caiot/' */
+    /* axios.defaults.baseURL = 'http://172.172.172.37:8080/Caiot/'; */
+    axios.defaults.baseURL = 'http://www.szqianren.com/Caiot/'
 } 
 else if (process.env.NODE_ENV == 'debug') {    
     axios.defaults.baseURL = 'http://172.172.172.37:8080/Caiot/';
@@ -69,6 +69,8 @@ export function post(url, params) {
             resolve(res.data);
         })
         .catch(err =>{
+            console.log('err',err)
+            console.log(params)
             messageErr(err.data?err.data.Result:100,err.data?err.data.Message:err)
             reject(err.data?err.data.Message:err)
         })

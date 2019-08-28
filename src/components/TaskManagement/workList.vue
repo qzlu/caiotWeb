@@ -235,8 +235,9 @@
             </div>
         </el-dialog>
         <el-dialog title="工单详情" class="show-detail" :visible.sync="showDetail">
+            <div style="height:760px">
             <el-scrollbar>
-                <div style="max-height:760px">
+                <div>
                     <div>
                         <p class="title"><span class="icon-title"></span>工单信息</p>
                         <ul class="info" v-if="workInfo">
@@ -252,7 +253,11 @@
                                 <span class="item-title">工单名称:</span>
                                 <span class="item-info">{{workInfo.OrderContent}}</span>
                             </li>
-                            <li class="l">
+                            <li class="l" v-if="workInfo.OrderType==9">
+                                <span class="item-title">路线名称:</span>
+                                <span class="item-info">{{workInfo.PatrolLineName}}</span>
+                            </li>
+                            <li class="l" v-else>
                                 <span class="item-title">创建时间:</span>
                                 <span class="item-info">{{workInfo.OrderCreateDateTime}}</span>
                             </li>
@@ -313,9 +318,15 @@
                             <li class="clearfix" v-for="(item,index) in areaArr.Table1" :key="index">
                                 <div class="l area-name">
                                     <div>
-                                        <span>{{item.PatrolPointName}}</span>
+                                        <span :title="item.PatrolPointName">{{item.PatrolPointName}}</span>
                                         <div :class="{circle:true,waiting:item.PatrolState==0,running:item.PatrolState==1,finish:item.PatrolState==2,error:item.PatrolResult=='异常',}">
                                             <div class="circle-inner"></div>
+                                        </div>
+                                        <div class="photo" v-if="item.IsTaking">
+                                            <i class="iconfont icon-vidicon"></i>
+                                            <div class="img-container">
+                                                <img :src="'http://www.szqianren.com/'+item.ImgPath" alt="">
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="border r"></div>
@@ -324,7 +335,7 @@
 <!--                                     <li class="l "><span>待抄表:</span>{{item.WaitingCount}}</li>
                                     <li class="l "><span>正常:</span>{{item.NormalCount}}</li>
                                     <li class="l "><span>异常:</span>{{item.FaultCount}}</li><br> -->
-                                    <li class="l"><span>开始时间:{{item.FStartInspectionTime}}</span><span>　结束时间:{{item.FLastInspectionTime}}</span></li>
+                                    <li style="text-align:left"><span>完成时间:{{item.FLastInspectionTime}}</span><span :class="['r',{red:item.PatrolResult==='异常'}]" style="margin-right:40px;">{{item.PatrolResult}}</span></li>
                                     <li class="l" v-if="item.PatrolNote != ''&&item.PatrolNote !=null" style="color:red"><span>异常描述:</span>{{item.PatrolNote}}</li>
                                 </ul>
                             </li>
@@ -536,6 +547,7 @@
                     </div>
                 </div>
             </el-scrollbar>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -701,7 +713,7 @@ export default {
             workInfo:null,
             areaArr:[],
             showOrder:false,//显示派单弹框
-            workObj:{}
+            workObj:{},
         }
     },
     computed:{
@@ -720,7 +732,6 @@ export default {
         this.$store.dispatch('queryOrderTUsers')
     },
     mounted(){
-
     },
     methods:{
         handleCurrentChange(val){
@@ -771,6 +782,7 @@ export default {
             this.showDetail = true
             this.workInfo = row
             this.areaArr = []
+            console.log(this.workInfo)
             Orders({
                 FAction:'QueryOrdersRecordDetail',
                 ID:row.ID
@@ -973,6 +985,9 @@ export default {
                         background:rgba(44,146,252,1);
                     }
                 }
+                .red{
+                    color: #EF0F24;
+                }
                 .info{
                     width: 982px;
                     height: 228px;
@@ -1012,7 +1027,7 @@ export default {
                 .progress{
                     width: 990px;
                     margin-top: 14px;
-                    padding: 30px 20px 20px 20px;
+                    padding: 30px 20px 80px 20px;
                     box-sizing: border-box;
                     border:1px solid rgba(223,221,221,1);
                     li:first-of-type,li:last-of-type{
@@ -1050,6 +1065,7 @@ export default {
                                 width: 240px;
                                 height: 22px;
                                 line-height: 22px;
+                                position: relative;
                             }
                             span{
                                 width:183px;
@@ -1063,6 +1079,37 @@ export default {
                                 white-space: nowrap;
                                 text-align: right;
                                 margin-right: 20px;
+                            }
+                            .photo{
+                                position: absolute;
+                                right: 40px;
+                                .iconfont{
+                                    display: inline-block;
+                                    vertical-align: top;
+                                    color: #2c92fc;
+                                    font-size: 30px;
+                                }
+                                .img-container{
+                                    width: 60px;
+                                    height: 60px;
+                                    display: inline-block;
+                                    position: relative;
+                                }
+                                img{
+                                    position: absolute;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: translate(-50%,-50%);
+                                    width: 60px;
+                                    height: 60px;
+                                    transition: all 0.5s;
+                                    z-index: 1000;
+                                }
+                                img:hover{
+                                    width: 300px;
+                                    height: 300px;
+                                    z-index: 1001;
+                                }
                             }
                             .circle{
                                 width:24px;

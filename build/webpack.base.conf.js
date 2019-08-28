@@ -31,8 +31,6 @@ module.exports = {
   },
   externals: {
     echarts: 'echarts',
-/*     'video.js':'videojs',
-    'videojs-contrib-hls.js':'videojs-contrib-hls' */
   },
   // plugins: [new BundleAnalyzerPlugin()],
   module: {

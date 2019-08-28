@@ -14,11 +14,11 @@
       <div class="show_vdeos" id="innerVideo"></div>
     </div>
 
-    <section class="det_top">
+    <section :class="['det_top',{lift:(abc_datalist04[0]&&abc_datalist04[0].DeviceTypeID == 1003)}]">
       <p class="btn_back" @click="routerback()">
         <img src="static/image/index/back_btn.png" />返回
       </p>
-      <div class="det_ghyi">
+      <div class="det_ghyi" v-if="abc_datalist04[0]&&abc_datalist04[0].DeviceTypeID != 1003">
         <!--右1-->
 
         <div
@@ -49,12 +49,14 @@
               <div style="height: 50px;">
                 <p>
                   <!--温度-->
-                  {{item.DataDetail[0].SDataTitle}} 
+                  {{item.DataDetail[0].SDataTitle}}
                   <br />
                   <!--(℃)-->
                   <i style="font-size: 10px;">&nbsp;&nbsp;({{item.DataDetail[0].SDataUnit}})</i>&nbsp;&nbsp;&nbsp;
                 </p>
-                <p class="n">{{item.DataDetail[0].SDataValue[0].DValue>1000?(item.DataDetail[0].SDataValue[0].DValue/10000).toFixed(1)+'w':item.DataDetail[0].SDataValue[0].DValue}}</p>
+                <p
+                  class="n"
+                >{{item.DataDetail[0].SDataValue[0].DValue>1000?(item.DataDetail[0].SDataValue[0].DValue/10000).toFixed(1)+'w':item.DataDetail[0].SDataValue[0].DValue}}</p>
               </div>
               <div style="height: 50px;" v-if="item.DataDetail[1]">
                 <p>
@@ -64,7 +66,9 @@
                   <!--(%)-->
                   <i style="font-size: 10px;">&nbsp;&nbsp;({{item.DataDetail[1].SDataUnit}})</i>&nbsp;&nbsp;&nbsp;
                 </p>
-                <p class="n">{{Math.abs(item.DataDetail[1].SDataValue[0].DValue)>1000?(item.DataDetail[1].SDataValue[0].DValue/10000).toFixed(1)+'w':item.DataDetail[1].SDataValue[0].DValue}}</p>
+                <p
+                  class="n"
+                >{{Math.abs(item.DataDetail[1].SDataValue[0].DValue)>1000?(item.DataDetail[1].SDataValue[0].DValue/10000).toFixed(1)+'w':item.DataDetail[1].SDataValue[0].DValue}}</p>
               </div>
             </div>
           </div>
@@ -96,9 +100,10 @@
       </div>
     </section>
 
-    <section class="det_itemList">
+    <section :class="['det_itemList',,{lift:abc_datalist04[0]&&abc_datalist04[0].DeviceTypeID == 1003}]">
       <div class="gh_line" style="height: 25px;"></div>
-      <div class="mains">
+      <!-- 不是电梯 -->
+      <div class="mains" v-if="abc_datalist04[0]&&abc_datalist04[0].DeviceTypeID != 1003">
         <div v-for="(gitem,key) in abc_datalist04" style="float: left;">
           <div class="det_tlg">
             <div class="title">
@@ -137,9 +142,10 @@
                         <!--三相线电压数据-->
                         <div v-for="(c,key) in suList.DataDetail" :class="setclass(c.SDataID)">
                           <p class="gre">
-                            <i v-for="(df,key) in c.SDataValue" :data="df.DStatus">
-                              {{(suList.DeviceTypeID==1003 && c.SDataID == 1) ? (df.DValue>0?'上行':(df.FValue == 0 ? '停止': '下行')):df.DValue}}{{c.SDataValue.length>key+1?'/':''}}
-							</i>
+                            <i
+                              v-for="(df,key) in c.SDataValue"
+                              :data="df.DStatus"
+                            >{{(suList.DeviceTypeID==1003 && c.SDataID == 1) ? (df.DValue>0?'上行':(df.FValue == 0 ? '停止': '下行')):df.DValue}}{{c.SDataValue.length>key+1?'/':''}}</i>
                           </p>
 
                           <p class="grd">
@@ -175,6 +181,47 @@
             </ul>
           </div>
         </div>
+      </div>
+      <!-- 电梯页面 -->
+      <div class="lift-list" v-else>
+        <h4><i class="iconfont icon-Equipment"></i>设备列表</h4>
+        <ul>
+          <li v-for="(item,i) in abc_datalist04[0]?abc_datalist04[0].item:[]" :key="i">
+            <i
+              :class="{r:true, 'el-icon-star-off':!item.IsFocus,'el-icon-star-on':item.IsFocus}"
+              @click.stop="addOrDeleteUFocusMonitor(item)"
+            ></i>
+            <router-link :to="{ name: 'detail_info_list',params:{ id:item.DeviceID,PossionID:item.DataDetail[0].SDataID,getalldata:item}}">
+              <h5>
+                {{item.DeviceName}}
+              </h5>
+              <div >
+                <div class="statu l">
+                </div>
+                <div class="statu-items l">
+                  <p>
+                    <span class="value">{{item.DataDetail[1].SDataValue[0].DValue>0?'上行':(item.DataDetail[1].SDataValue[0].DValue==0?'停止':'下行')}}</span><br>
+                    <span class="label">运动方向</span>
+                  </p>
+                  <p>
+                    <span class="value">{{item.DataDetail[3].SDataValue[0].DValue}}</span><br>
+                    <span class="label">速度（m/s）</span>
+                  </p>
+                  <p>
+                    <span class="value">{{item.DataDetail[0].SDataValue[0].DValue}}</span><br>
+                    <span class="label">楼层</span>
+                  </p>
+                </div>
+                <div class="statu-items l">
+                  <p>
+                    <span class="value">{{item.DataDetail[2].SDataValue[0].DValue}}</span><br>
+                    <span class="label">是否有人</span>
+                  </p>
+                </div>
+              </div>
+            </router-link>
+          </li>
+        </ul>
       </div>
     </section>
   </div>
@@ -344,7 +391,6 @@ export default {
 
             // comm.messageErr(jsons.data.Result) //公共状态提示
             if (jsons) {
-				console.log(jsons.data)
               _this.abc_datalist01 = jsons.data.FObject.ProjectItemInfo; //右一pie图
               _this.abc_datalist02 = jsons.data.FObject.ProjectDeviceTypeValue; //bar右一图
               _this.abc_datalist03 = jsons.data.FObject.ProjectDeviceDataDetail; //右下大框列表
@@ -359,8 +405,8 @@ export default {
       let _this = this;
       //返回一个Promise对象
       return new Promise(function(resolve, reject) {
+         _this.big_typeList();
         _this.Pie_list(_this.setdocID, 0); //生成pie图
-        _this.big_typeList();
         _this.set_bar(); //生成柱图
         resolve("succ");
       });
@@ -372,14 +418,16 @@ export default {
 						obj.item=arrs01;*/
     big_typeList() {
       /*重新组装可以直接v-for读取的数据*/
-	  this.abc_datalist04 = this.abc_datalist02.map(item => {
-		  return {
-			  DeviceTypeID:item.DeviceTypeID,
-			  name: item.DeviceType,
-			  icon: item.WebIconName,
-			  item: this.abc_datalist03.filter(obj => obj.DeviceTypeID == item.DeviceTypeID)
-		  }
-	  })
+      this.abc_datalist04 = this.abc_datalist02.map(item => {
+        return {
+          DeviceTypeID: item.DeviceTypeID,
+          name: item.DeviceType,
+          icon: item.WebIconName,
+          item: this.abc_datalist03.filter(
+            obj => obj.DeviceTypeID == item.DeviceTypeID
+          )
+        };
+      });
       /*end of 重新组装可以直接v-for读取的数据*/
     },
 
@@ -580,7 +628,7 @@ export default {
 
 
 
-<style scoped>
+<style lang='scss' scoped>
 h1,
 h2 {
   font-weight: normal;
@@ -653,7 +701,9 @@ a {
   height: 226px;
   position: relative;
 }
-
+.det_top.lift{
+  height: 0;
+}
 .det_top .det_left {
   position: relative;
   margin-top: -15px;
@@ -783,12 +833,19 @@ a {
   width: 1559px;
   height: 690px;
   background: url(/static/image/index/content_bg_6.png);
+  background-size: 100% 100%;
+}
+.detail .det_itemList.lift{
+  height: 920px;
 }
 .detail .det_itemList .mains {
   padding: 0 5px 0 20px;
   margin-right: 5px;
   height: 636px;
   overflow: auto;
+}
+.detail .det_itemList.lift .mains{
+  height:862px
 }
 .detail .det_tlg {
   /*padding: 25px 16px 0 20px;*/
@@ -974,5 +1031,69 @@ a {
 }
 .det_itemList .deo_list ul li .lrn .line {
   height: 18px;
+}
+/************************* 电梯 ****************************/
+.lift-list{
+  padding: 22px;
+  h4{
+    padding-left: 48px;
+    text-align: left;
+    color: #18A1EC;
+    height: 55px;
+    line-height: 55px;
+    font-size: 20px;
+    display: flex;
+    .iconfont{
+      font-size: 28px;
+      margin-right: 10px;
+    }
+  }
+  ul{
+    li{
+      width: 380px;
+      height: 192px;
+      background: url(/static/image/indexdetail/fvc4e.png) 89px 0 no-repeat;
+      background-size:290px 100%;
+      h5{
+        text-align: left;
+        padding-left: 16px;
+        font-size:18px;
+        font-weight:400;
+        color:rgba(82,94,126,1);
+      }
+      [class*="el-icon-star-"]{
+        top: 0px;
+      }
+    }
+    .statu{
+      width:72px;
+      height:124px;
+      line-height: 124px;
+      margin-top: 20px;
+      margin-left: 24px;
+      font-size: 32px;
+      background:rgba(11,38,79,1);
+      border:1px solid rgba(1,150,7,1);
+      border-radius:9px;
+      box-shadow:  0 0 14px rgba(1,150,7,1);
+      background: url(/static/image/indexdetail/normal.gif)
+    }
+    .statu-items{
+      margin-left: 30px;
+      p{
+        text-align: left;
+        span.value{
+          font-size: 16px
+        }
+        span.label{
+          font-size: 12px;
+          color: #737373;
+        }
+      }
+      p+p{
+        margin-top: 20px;
+      }
+    }
+  }
 }
 </style>

@@ -25,6 +25,7 @@ const Device = p => post('Device',p)
 const HandlingEvents = p => post('HandlingEvents',p)
 const FileUploadContext = p => post('FileUploadContext', p)
 const Energy = p => post('Energy', p)
+const ProjectTrend = p => post('ProjectTrend', p)
 export{
     login,
     project,
@@ -43,5 +44,6 @@ export{
     Device,
     HandlingEvents,
     FileUploadContext,
-    Energy
+    Energy,
+    ProjectTrend
 }
