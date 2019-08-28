@@ -204,9 +204,6 @@ export default {
                 });
             })
             .then((uid) => {
-                AgoraRTC.getDevices(item => {
-                    console.log(item)
-                })
                 /********** 初始化音视频流 **********/
                 this.localStream =  AgoraRTC.createStream({
                     streamID: uid,
@@ -217,28 +214,24 @@ export default {
             }).catch((err) => {
                 
             });
-            await new Promise((resolve,reject) => {
-                this.localStream.init(() => {
-                  console.log("getUserMedia successfully");
-                  /* this.localStream.play('agora_local'); */
-                  resolve()
-                }, function (err) {
-                  console.log("getUserMedia failed", err);
-                  reject()
-                });
-            })
-            /************* 发布本地音视频流 **************/
-            this.client.publish(this.localStream, function (err) {
-              console.log("Publish local stream error: " + err);
-            });
+            this.localStream.init(() => {
+              console.log("getUserMedia successfully");
+              /* this.localStream.play('agora_local'); */
+              /************* 发布本地音视频流 **************/
+              this.client.publish(this.localStream, function (err) {
+                console.log("Publish local stream error: " + err);
+              });
 
+            }, function (err) {
+              console.log("getUserMedia failed", err);
+            });
             this.client.on('stream-published', function (evt) {
               console.log("Publish local stream successfully");
             });
             /*************** 订阅远端音视频流 **************/
             this.client.on('stream-added',  (evt) => {
               var stream = evt.stream;
-              console.log("New stream added: " + stream.getId());
+              console.log("8888888888New stream added: " + stream.getId());
 
               this.client.subscribe(stream, function (err) {
                 console.log("Subscribe stream failed", err);
@@ -246,9 +239,24 @@ export default {
             });
             this.client.on('stream-subscribed', function (evt) {
               var remoteStream = evt.stream;
-              console.log("Subscribe remote stream successfully: " + remoteStream.getId());
+              console.log("9999Subscribe remote stream successfully: " + remoteStream.getId());
               remoteStream.play('agora_local');
             })
+            this.client.on('stream-removed',evt => {
+                var remoteStream = evt.stream;
+                var id = remoteStream.getId();
+                this.removeView(id)
+            })
+            this.client.on('peer-leave', evt =>{
+                var remoteStream = evt.stream;
+                var id = remoteStream.getId();
+                this.removeView(id)
+            })
+        },
+        removeView(id){
+            let parent = document.querySelector('#agora_local')
+            let video = document.querySelector(`#player_${id}`)
+            parent.removeChild(video)
         },
         /**
          * 关闭视屏
