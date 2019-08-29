@@ -275,7 +275,6 @@ export default {
                 return
             }
             this.client.leave(() => {
-                console.log('关闭')
                 this.isJoining = false
                 this.closeAlarm()
             },(err) =>{
@@ -312,10 +311,10 @@ export default {
         takePhoto(){
             let  canvas = document.createElement("canvas");
             let  canvasCtx = canvas.getContext("2d");
-            canvas.width = 500
-            canvas.height = 500
+            canvas.width = 240
+            canvas.height = 320
             let  video=document.querySelector('video')
-            canvasCtx.drawImage(video, 0, 0, 500, 500, 0, 0, 500, 500);
+            canvasCtx.drawImage(video, 0, 0, 240, 320);
             let dataUrl = canvas.toDataURL("image/png");
             let a = document.createElement('a')
             a.href = dataUrl
