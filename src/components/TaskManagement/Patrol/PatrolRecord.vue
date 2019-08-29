@@ -273,6 +273,7 @@ import * as comm from "@/assets/js/pro_common";
 import {Inspection,FileUpLoad,project,Patrol} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
 import {pieChart} from '@/zw-components/index'
+import '../InspectionRecords.scss';
 export default {
   mixins:[table],
   data() {
@@ -434,7 +435,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='scss' >
-@import '../InspectionRecords.scss';
 $img-url:'/static/image/';
 .Ins_records  {
   .ppt_item.month-report{
