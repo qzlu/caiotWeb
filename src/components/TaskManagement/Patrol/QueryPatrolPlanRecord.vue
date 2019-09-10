@@ -1,6 +1,6 @@
 <template>
     <div class="report patrol-report">
-        <!-- 人工巡更月报 -->
+        <!-- 人工巡更报告 -->
         <el-dialog :visible.sync="showReport" width="1280px">
           <!--html-->
           <section class="ppt_item month-report" id="date-report" v-if="dateReport.Table">
@@ -19,24 +19,25 @@
                 </div>
                 <div class="ng_item" style="height:190px;">
                   <img
-                    src="/static/image/task/bicon_1.png"
-                    class="pimg"
-                    :class="{nnor:dateReport.Table1.length>0}"
-                  >
-                  <img
                     src="/static/image/task/bicon_2.png"
                     class="pimg"
-                    :class="{nnor:dateReport.Table1.length==0}"
+                    v-if="dateReport.Table[0].PlanFaultCount>0||dateReport.Table[0].PlanOvertimeCount>0||dateReport.Table[0].PlanleakCount>0"
+                  >
+                  <img
+                    src="/static/image/task/bicon_1.png"
+                    class="pimg"
+                    v-else
                   >
                   <div class="r list">
                     <ul v-for="item in dateReport.Table">
-                      <li class="l">计划巡更　<span>{{item.PatrolPlanCount||0}}次</span></li>
-                      <li class="l">正常次数　<span>{{item.PlanNormalCount||0}}次</span></li>
-                      <li class="l">异常次数　<span>{{item.PlanFaultCount||0}}次</span></li>
-                      <li class="l">超时次数　<span>{{item.PlanOvertimeCount||0}}次</span></li>
-                      <li class="l">漏巡次数　<span>{{item.PlanleakCount||0}}个</span></li>
-                      <li class="l">异常点数　<span class="no">{{item.FaultCount||0}}个</span></li>
-                      <li class="l">漏巡点数　<span>{{item.leakCount||0}}个</span></li>
+                      <li class="l">计划班次　<span>{{item.PatrolPlanCount||0}}次</span></li>
+                      <li class="l">正常班次　<span>{{item.PlanNormalCount||0}}次</span></li>
+                      <li class="l">异常班次　<span class="red">{{item.PlanFaultCount||0}}次</span></li>
+                      <li class="l">异常点数　<span class="red">{{item.FaultCount||0}}个</span></li>
+                      <li class="l">超时班次　<span class="red">{{item.PlanOvertimeCount||0}}次</span></li>
+                      <li class="l">超时点数　<span class="red">{{item.OvertimeCount||0}}个</span></li>
+                      <li class="l">漏巡班次　<span class="red">{{item.PlanleakCount||0}}次</span></li>
+                      <li class="l">漏巡点数　<span class="red">{{item.leakCount||0}}个</span></li>
                     </ul>
                   </div>
                 </div>
@@ -64,47 +65,47 @@
                   </tr>
                 </table>
               </div> -->
-              <p class="title"><span class="icon"></span>异常详情</p>
-              <div>
+              <p class="title"><span class="icon"></span>巡更详情</p>
+              <div class="table-red">
                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                   <thead>
                     <tr class="gg">
-                      <td width="10%">巡更名称</td>
-                      <td width="11%">计划时间</td>
-                      <td width="10%">巡更点数</td>
+                      <td width="12.5%">巡更名称</td>
+                      <td width="12.5%">计划时间</td>
+                      <td width="12.5%">巡更点数</td>
                       <td width="10%">正常点数</td>
                       <td width="10%">异常点数</td>
                       <td width="10%">超时点数</td>
                       <td width="10%">漏巡点数</td>
                       <td width="10%">巡更人</td>
-                      <td width="10%">巡更时间</td>
+                      <td width="12.5%">巡更时间</td>
                     </tr>
                   </thead>
                 </table>
                 <ul class="tbody">
                   <li v-for="(item,key) in  dateReport.Table1" :key='key'>
                     <div class='header'>
-                      <span>{{item.PatrolLineName}}</span>
-                      <span>{{item.PatrolDatetime}}</span>
-                      <span>{{item.PlanCount}}</span>
-                      <span>{{item.NormalCount}}</span>
-                      <span :class="{'red':item.FaultCount>0}">{{item.FaultCount}}</span>
-                      <span>{{item.OvertimeCount}}</span>
-                      <span>{{item.leakCount}}</span>
-                      <span>{{item.FContacts}}</span>
-                      <span>{{item.PatrolTime}}</span>
+                      <span style="width:12.5%">{{item.PatrolLineName}}</span>
+                      <span style="width:12.5%">{{item.PatrolDatetime}}</span>
+                      <span style="width:12.5%">{{item.PlanCount}}</span>
+                      <span style="width:10%">{{item.NormalCount}}</span>
+                      <span style="width:10%" :class="{'red':item.FaultCount>0}">{{item.FaultCount}}</span>
+                      <span style="width:10%" :class="{'red':item.OvertimeCount>0}">{{item.OvertimeCount}}</span>
+                      <span style="width:10%" :class="{'red':item.leakCount>0}">{{item.leakCount}}</span>
+                      <span style="width:10%">{{item.FContacts}}</span>
+                      <span style="width:12.5%">{{item.PatrolTime}}</span>
                     </div>
                     <ul class="body">
                       <li v-for="(obj,i) in item.Data" :key="i">
-                        <span></span>
-                        <span></span>
-                        <span>{{obj.PatrolPointName}}</span>
-                        <span>{{obj.FPatrolState == '正常'?'正常':''}}</span>
-                        <span class="red">{{obj.FPatrolState == '异常'?'异常':''}}</span>
-                        <span class="red">{{obj.FPatrolState == '超时'?'超时':''}}</span>
-                        <span class="red">{{obj.FPatrolState == '漏巡'?'漏巡':''}}</span>
-                        <span></span>
-                        <span>{{obj.PatrolTime}}</span>
+                        <span style="width:12.5%"></span>
+                        <span style="width:12.5%"></span>
+                        <span style="width:12.5%" :class="{red:obj.FPatrolState == '异常'||obj.FPatrolState == '超时'||obj.FPatrolState == '漏巡'}">{{obj.PatrolPointName}}</span>
+                        <span style="width:10%">{{obj.FPatrolState == '正常'?'正常':''}}</span>
+                        <span style="width:10%" class="red">{{obj.FPatrolState == '异常'?'异常':''}}</span>
+                        <span style="width:10%" class="red">{{obj.FPatrolState == '超时'?'超时':''}}</span>
+                        <span style="width:10%" class="red">{{obj.FPatrolState == '漏巡'?'漏巡':''}}</span>
+                        <span style="width:10%"></span>
+                        <span style="width:12.5%">{{obj.PatrolTime}}</span>
                       </li>
                     </ul>
                   </li>
@@ -144,10 +145,10 @@
                 <span class="label">巡更状态</span>
                 <el-select v-model="status"    placeholder="请选择">
                     <el-option :value="0" label="全部"></el-option>
-                    <el-option :value="1" label="漏巡"></el-option>
-                    <el-option :value="2" label="超时"></el-option>
-                    <el-option :value="3" label="正常"></el-option>
-                    <el-option :value="4" label="异常"></el-option>
+                    <el-option value="漏巡" label="漏巡"></el-option>
+                    <el-option value="超时" label="超时"></el-option>
+                    <el-option value="正常" label="正常"></el-option>
+                    <el-option value="异常" label="异常"></el-option>
                 </el-select>
             </li>
             <li class="l"><button class="zw-btn" @click="pageIndex = 1;queryData()">查询</button></li>
@@ -198,11 +199,11 @@ export default {
                     label:'巡更计划名称'
                 },
                 {
-                    prop: 'PatrolPlanDatetime',
+                    prop: 'PatrolDatetime',
                     label: '计划时间',
                 },
                 {
-                    prop: 'PatrolObject',
+                    prop: 'PatrolPointName',
                     label: '巡更点',
                 },
                 {
@@ -210,7 +211,7 @@ export default {
                     label: '巡更时间',
                 },
                 {
-                    prop: 'PatrolResult',
+                    prop: 'FPatrolState',
                     label: '巡更结果',
                 },
                 {
@@ -349,12 +350,58 @@ export default {
 $img-url:'/static/image/';
 .patrol-report  {
   .ppt_item.month-report{
+    width: 1250px;
+    background: #fff;
+    z-index: 150;
+    color: #000;
+    font-size: 16px;
+    .htbn{
+      padding: 20px 30px;
+      .hdr{
+        height: 120px;
+        .pn{
+          height: 50px;
+          width: 30%;
+          text-align: left;
+          font-size: 20px;
+        }
+        .pn02{
+          height: 50px;
+          font-size: 26px;
+          text-align: center;
+        }
+        .pn03{
+          height: 50px;
+          width: 30%;
+          text-align: right;
+          font-size: 20px;
+        }
+      }
+    }
     .ng_item{
-      height: 150px;
+      height: 190px;
       padding-bottom: 10px;
+      background: #e4e4e4;
+      position: relative;
       overflow: hidden;
       .pimg{
+        position: absolute;
+        left: 36px;
         top: 0;
+      }
+      .list{
+        width: 780px;
+        ul{
+          padding: 15px 0 0;
+          li{
+            width: 50%;
+            height: 45px;
+            line-height: 45px;
+            float: left;
+            text-align: left;
+            font-size: 20px;
+          }
+        }
       }
     }
     .title{
@@ -371,29 +418,46 @@ $img-url:'/static/image/';
         margin-right: 10px;
       }
     }
+    .table-red{
+      .gg{
+        background: #a79696;
+        td{
+          border-left: 1px solid #a79696;
+          border-top: 1px solid #a79696;
+          text-align: center;
+          height: 35px;
+        }
+      }
+    }
     .tbody{
       >li{
         .header{
-          display: flex;
-          line-height: 34px;
+          background: rgba($color: #e4e4e4, $alpha: 0.4);
+        }
+        .header,.body{
+          white-space: nowrap;
+          font-size: 0;
+         /*  display: flex; */
           /* background: rgba($color: #f3afaf, $alpha: 0.4); */
           span{
-            flex: 1;
-            white-space: nowrap;
-          }
-        }
-        .body{
-          li{
+            /* flex: 1; */
+            height: 34px;
             line-height: 34px;
-            display: flex;
-            justify-content: start;
-            /* border: 1px solid rgba($color: #f3afaf, $alpha: 0.4); */
-            span{
-                flex: 1;
-                white-space: nowrap;
-            }
+            display: inline-block;
+            white-space: nowrap;
+            vertical-align: middle;
+            font-size: 14px;
+            border-left: 1px solid rgba($color: #a79696, $alpha: 0.6);
+            border-top: 1px solid rgba($color: #a79696, $alpha: 0.6);
+            box-sizing: border-box;
+          }
+          span:last-of-type{
+            border-right: 1px solid rgba($color: #a79696, $alpha: 0.6);
           }
         }
+      }
+      >li:last-of-type{
+        border-bottom: 1px solid rgba($color: #a79696, $alpha: 0.6);
       }
     }
     .red{

@@ -11,9 +11,9 @@
                 ></el-date-picker>
             </li>
             <li class="l"><button class="zw-btn"><i class="el-icon-search"></i>查询</button></li>
-            <li class="l">
+<!--             <li class="l">
                 <button class="zw-btn zw-btn-export">导出</button>
-            </li>
+            </li> -->
             <li class="l">
                <!--  <button class="zw-btn zw-btn-report">报事月报</button> -->
             </li>
@@ -23,10 +23,11 @@
                 </el-input>
             </li>
         </ul>
-        <div style="height:830px;">
+        <div>
             <el-table
                :data="tableData"
                style="width: 100%"
+               :height="350"
                header-row-class-name="el-table-header"
                :row-class-name="tableRowClassName"
                >

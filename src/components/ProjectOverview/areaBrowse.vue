@@ -13,7 +13,7 @@
             </card>
             <card title="实时告警"  :height='328' @click="$router.push('/foreshow')">
                 <div class="alarm-list">
-                    <el-scrollbar>
+                    <el-scrollbar v-if="alarmData.length">
                         <ul>
                             <li v-for="(item,i) in alarmData" :key="i" @click="$router.push('/foreshow')">
                                 <span>{{item.AlarmTime}}</span>
@@ -21,6 +21,9 @@
                             </li>
                         </ul>
                     </el-scrollbar>
+                    <div v-else class="statu">
+                        正常
+                    </div>
                 </div>
             </card>
             <card title="实时工单"  :height='331' @click="$router.push('/TaskManagement/Worklist')">
@@ -300,6 +303,7 @@ $url:'/static/image';
             margin-top: 10px;
             height: 260px;
             padding:  0 10px;
+            position: relative;
             ul{
                 li{
                     line-height: 50px;
@@ -308,6 +312,39 @@ $url:'/static/image';
                     border-bottom: 1px dashed #FFFFFF;
                     cursor: pointer;
                 }
+            }
+            .statu{
+                width:72px;
+                height:124px;
+                line-height: 124px;
+                border:1px solid rgba(1,150,7,1);
+                border-radius:9px;
+                box-shadow:  0 0 14px rgba(1,150,7,1);
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%,-50%);
+                font-size: 28px;
+                font-weight: 500;
+                color: #02CD35;
+            }
+            .statu::after{
+                content: "";
+                display: block;
+                background-image: linear-gradient(44deg, rgba(0, 255, 51, 0) 42%, #00ff33 100%);
+                width: 36px;
+                height: 36px;
+                position: absolute;
+                top: 26px;
+                left: 0;
+                animation: radar-beam 3s infinite;
+                animation-timing-function: linear;
+                transform-origin: bottom right;
+                border-radius: 100% 0 0 0;
+            }
+            @keyframes radar-beam {
+                from{transform: rotate(0deg)}
+                to{transform: rotate(360deg)}
             }
         }
     }
@@ -414,19 +451,19 @@ $url:'/static/image';
                                             margin-right: 4px;
                                         }
                                         .run{
-                                            background: #00D294;                                       
+                                            background: #03cd82;                                       
                                         }
                                         .stop{
-                                            background: #747474;      
+                                            background: #b2b2b2;      
                                         }
                                         .alarm{
-                                            background: #E89F52;   
+                                            background: #fe0000;   
                                         }
                                         .repair{
-                                            background: #2E90F5;   
+                                            background: #fe9a00;   
                                         }
                                         .maintain{
-                                            background: #F5DC5B;   
+                                            background: #0eaff8;   
                                         }
                                     }
                                     .value{

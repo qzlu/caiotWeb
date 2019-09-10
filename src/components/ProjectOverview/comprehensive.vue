@@ -3,7 +3,7 @@
         <div class="aside">
             <card title="设备态势">
                 <div class="pie-chart">
-                    <pie-chart :data='deviceCount' :color='["#00D294","#747474","#F19E40","#2A91FC", "#F1E240"]' :setting="{center:['98','50%']}"></pie-chart>
+                    <pie-chart :data='deviceCount' :color='["#03cd82","#b2b2b2","#Fe0000","#fe9a00", "#0eaff8"]' :setting="{center:['98','50%']}"></pie-chart>
                     <div class="border-dashed">
                         <p class="title">设备总数</p>
                         <p class="value">{{this.count.DeviceCount}}</p>
@@ -133,7 +133,7 @@
         <div class="aside">
             <card title="告警态势">
                 <div class="pie-chart">
-                    <pie-chart :series='alarmCount' :color='["#00D294","#747474","#89192E","#F19E40"]' :setting="{center:['98','50%']}"></pie-chart>
+                    <pie-chart :series='alarmCount' :color='["#03cd82","#b2b2b2","#fe0000","#fde801"]' :setting="{center:['98','50%']}"></pie-chart>
                     <div class="border-dashed">
                         <p class="title">今日告警</p>
                         <p class="value">{{count.TodayAlarmCount}}</p>

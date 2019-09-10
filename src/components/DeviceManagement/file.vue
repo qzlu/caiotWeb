@@ -1,8 +1,9 @@
 <template>
     <div>
-        <div style="height:830px;">
+        <div>
             <el-table
                :data="fileList"
+               :height="350"
                style="width: 100%"
                header-row-class-name="el-table-header"
                :row-class-name="tableRowClassName"

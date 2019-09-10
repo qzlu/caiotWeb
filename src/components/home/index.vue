@@ -51,7 +51,7 @@
         </div>
         <div class="list_b">
           <div class="in"></div>
-          <div class="name_select">
+          <div class="name_select" style="right:80px;">
             <p>
               <span>{{curr_selectdata && curr_selectdata.ShortName}}</span>
               <span v-if="selecdata.length>1" style="padding: 11px 5px 0 0; float: right;">
@@ -523,7 +523,7 @@ $img-url: "/static/image/";
 .header_item .list_b .in {
   width: 348px;
   height: 101px;
-  background: url(/static/image/index/nav_logo.png);
+  background: url(/static/image/index/nav_1.png);
   position: absolute;
   top: 0;
   left: 0;

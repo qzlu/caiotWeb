@@ -312,12 +312,12 @@ let routers_item = [
 						path: 'DeviceInfo/:deviceID',   //设备详情
 						name: 'DeviceInfo',
 						component: () => import('@/components/DeviceManagement/deviceInfo.vue'),
-						redirect: 'DeviceInfo/:deviceID',
+						/* redirect: 'DeviceInfo/:deviceID', */
 						meta: {
 							title: '千仞云平台',
 							requireAuth: true,
 						},
-						children: [
+/* 						children: [
 							{
 								path: '',
 								name: 'basicInfo', //设备详情基本信息
@@ -365,7 +365,7 @@ let routers_item = [
 									requireAuth: true,
 								},
 							},
-						]
+						] */
 					},
 					{
 						path: 'EquipmentStatistics',   //设备统计

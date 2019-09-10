@@ -16,9 +16,9 @@
                 >
                 </el-date-picker>
             </li>
-            <li class="l">
+<!--             <li class="l">
                 <button class="zw-btn zw-btn-export">导出</button>
-            </li>
+            </li> -->
         </div>
         <div class="header clearfix">
             <div class="l">
@@ -26,8 +26,8 @@
                 <span>{{timeText[timeType][0]}}使用率</span>
             </div>
             <div class="l" style="margin-left:27%">
-                <img src="static/image/nav_new/nav_icon_3.png" alt="">
-                <span>配套设备参数</span>
+                <img src="static/image/count/icon_3.png" alt="">
+                <span>启停记录</span>
             </div>
         </div>
         <div class="log-content">
@@ -40,6 +40,7 @@
                 <el-table
                    :data="tableData"
                    style="width: 100%"
+                   :height="300"
                    header-row-class-name="el-table-header"
                    :row-class-name="tableRowClassName"
                    >
@@ -171,7 +172,7 @@ export default {
             }
         }
         .log-content{
-            height: 630px;
+            height: 330px;
             .circle{
                 width: 27%;
                 height: 100%;

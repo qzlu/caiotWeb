@@ -3,7 +3,7 @@
         <div class="tab-content-item clearfix">
             <div class="header">
                 <img src="static/image/nav_new/nav_icon_3.png" alt="">
-                <span>设备铭牌</span>
+                <span>基本信息</span>
             </div>
             <div class="info-content">
                 <ul class="l">
@@ -14,6 +14,10 @@
                     <li class="l"><span class="label">出厂编号：</span>　<span>{{info.ManufacturingNumber}}</span></li>
                     <li class="l"><span class="label">出厂日期：</span>　<span>{{info.ManufacturingTime}}</span></li>
                     <li class="l"><span class="label">使用年限：</span>　<span>{{info.ServiceLife}}</span></li>
+                    <li class="l"><span class="label">项目名称：</span>　<span>{{projectName}}</span></li>
+                    <li class="l"><span class="label">设备类型：</span>　<span>{{info.DeviceTypeName}}</span></li>
+                    <li class="l"><span class="label">区域名称：</span>　<span>{{info.AreaName}}</span></li>
+                    <li class="l"><span class="label">系统名称：</span>　<span>{{info.ParamName}}</span></li>
                     <!-- <li class="l"><span class="label">维护截止：</span>　<span>{{info.EditorDateTime}}</span></li> -->
                 </ul>
                 <div class="r">
@@ -28,6 +32,29 @@
                     </div>
                 </div>
             </div>
+            <ul class="tab-header clearfix">
+                <li>
+                        设备档案
+                </li>
+                <li>
+                        大事件
+                </li>
+                <li>
+                        告警记录
+                </li>
+                <li>
+                        维修记录
+                </li>
+                <li>
+                        保养记录
+                </li>
+                <li>
+                        启停日志
+                </li>
+                <li>
+                        相关资料
+                </li>
+            </ul>
             <div class="header">
                 <img src="static/image/count/icon_2.png" alt="">
                 <span>使用登记</span>
@@ -38,10 +65,6 @@
                     <li class="l"><span class="label">安装日期：</span>　<span>{{info.InstallationDateTime}}</span></li>
                     <li class="l"><span class="label">验收日期：</span>　<span>{{info.AcceptanceDateTime}}</span></li>
                     <li class="l"><span class="label">投运日期：</span>　<span>{{info.OperatingDateTime}}</span></li>
-                    <li class="l"><span class="label">项目名称：</span>　<span>{{projectName}}</span></li>
-                    <li class="l"><span class="label">设备类型：</span>　<span>{{info.DeviceTypeName}}</span></li>
-                    <li class="l"><span class="label">区域名称：</span>　<span>{{info.AreaName}}</span></li>
-                    <li class="l"><span class="label">系统名称：</span>　<span>{{info.ParamName}}</span></li>
                 </ul>
             </div>
             <div class="header clearfix">
