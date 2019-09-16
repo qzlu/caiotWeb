@@ -216,6 +216,7 @@ export default {
       localStorage.setItem("projectid", obj.ProjectID);
       localStorage.setItem("projectname", obj.ShortName);
       this.curr_selectdata = obj;
+      let url = location.href
       location.reload();
       // this.$router.push({ path: "/" });
     },
