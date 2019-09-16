@@ -53,7 +53,7 @@
             <div class="clearfix lift-list" v-else>
                 <h4><i class="iconfont icon-Equipment"></i>设备列表</h4>
                 <ul>
-                  <li v-for="(item,i) in data[0]?data[0].data:[]" :key="i">
+                  <li :class="{alarm:item.IsAlarm}" v-for="(item,i) in data[0]?data[0].data:[]" :key="i">
                     <i
                       :class="{r:true, 'el-icon-star-off':!item.IsFocus,'el-icon-star-on':item.IsFocus}"
                       @click.stop="addOrDeleteUFocusMonitor(item)"
@@ -63,8 +63,8 @@
                         {{item.DeviceName}}
                       </h5>
                       <div >
-                        <div class="statu l">
-                            正常
+                        <div :class="['statu','l',{alarm:item.IsAlarm}]">
+                            {{item.IsAlarm?item.AlarmDataItemName.slice(0,2):'正常'}}
                         </div>
                         <div class="statu-items l">
                           <p>
@@ -134,11 +134,14 @@ $url:'/static/image';
     border-radius:10px 6px 6px 10px;
     background: rgba($color: #052256, $alpha: 0.4);
     box-shadow: 0 0 8px 8px rgba($color: #052256, $alpha: 1) inset;
-    [class*="el-icon-star-"]{
-    	font-size:24px;
-        cursor: pointer;
-        margin-right: 20px;
-    }  
+    [class*="el-icon-star-"] {
+      font-size: 24px;
+      cursor: pointer;
+      position: relative;
+      top: 10px;
+      right: 20px;
+      z-index: 100;
+    }
     .el-icon-star-off{
     	color:#525E7E
     }
@@ -161,7 +164,7 @@ $url:'/static/image';
         }
         ul.device-list{
             >li.alarm{
-                background: url(#{$url}/indexdetail/content_bg_2.png) 10px 0 no-repeat;
+                background: url(#{$url}/indexdetail/content_bg_2.png) 0px 0 no-repeat;
                 background-size: 100% 100%;
             }
             >li{
@@ -254,6 +257,10 @@ $url:'/static/image';
         }
       }
       ul{
+        >li.alarm{
+            background: url(#{$url}/indexdetail/content_bg_2.png) 0px 0 no-repeat;
+            background-size: 100% 100%;
+        }
         li{
           width: 25%;
           height: 192px;
@@ -263,7 +270,7 @@ $url:'/static/image';
           h5{
             text-align: left;
             padding-left: 16px;
-            font-size:18px;
+            font-size:16px;
             font-weight:400;
             color:rgba(82,94,126,1);
           }
