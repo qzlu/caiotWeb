@@ -217,8 +217,8 @@ export default {
       localStorage.setItem("projectname", obj.ShortName);
       this.curr_selectdata = obj;
       let url = location.href
+      this.$router.push(this.$route.path);
       location.reload();
-      // this.$router.push({ path: "/" });
     },
     ccName_item(x) {
       this.curr_selectdata02 = x;
@@ -426,7 +426,7 @@ $img-url: "/static/image/";
 
 .home .name_select {
   position: absolute;
-  width: 160px;
+  width: 180px;
   height: 63px;
   top: 35px;
   right: 40px;
