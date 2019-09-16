@@ -4,6 +4,7 @@
  * @param {Number} pageIndex 页码
  */
 import {zwPagination} from '@/zw-components/index'
+import '@/views/TaskManagement/InspectionItem.scss';
 export default{
     data() {
         return{
