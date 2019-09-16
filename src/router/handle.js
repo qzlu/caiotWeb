@@ -7,10 +7,11 @@ router.beforeEach((to, from, next) => {
 	if (to.meta.title) {
 		document.title = to.meta.title;
 	}
-	let { token, projectID, showMenu } = to.query
+	let { token, projectID, showMenu ,user } = to.query
 	if (token) {
 		localStorage.setItem('Token', token)
 		localStorage.setItem('inIframe', showMenu || 1)
+		localStorage.setItem('iuserName',user)
 	}
 	if (projectID) {
 		localStorage.setItem('projectid', projectID)
