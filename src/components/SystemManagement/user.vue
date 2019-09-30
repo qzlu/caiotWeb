@@ -40,6 +40,33 @@
                     <button class="zw-btn zw-btn-primary" @click="submit()">确定</button>
                 </div>
             </el-dialog>
+            <el-dialog :visible.sync="show1" width="560">
+                <ul class="tab-header clearfix">
+                    <li class="active l"><div>集团项目权限</div></li>
+                    <li class="l"></li>
+                    <!-- <div class="border">
+                    
+                    </div> -->
+                </ul>
+                <div class="tab-content clearfix">
+                    <tree-transfer
+                    ref="transfer"
+                    :data="projectList"
+                    :data1="userProject"
+                    leftTitle="所有权限"
+                    rightTitle="已选权限"
+                    nodeKey="ProjectID"
+                    nodeKey1="ProjectID"
+                    :defaultChecked="defaultChecked"
+                    @check-change="checkChange"
+                    :defaultProps="defaultProps"
+                    >
+                    </tree-transfer>
+                    <div class="submit">
+                        <button class="zw-btn zw-btn-primary" @click="updateUserProject()">确定</button>
+                    </div>
+                </div>
+            </el-dialog>
         </div>
         <ul class="user-head clearfix report-header">
             <li class="l" @click="add"><button class="zw-btn zw-btn-add">新增</button></li>
@@ -70,10 +97,11 @@
                </el-table-column>
                <el-table-column
                  prop=""
-                 width="200"
+                 width="250"
                  label="操作">
                  <template slot-scope="scoped">
                      <div class="user-operation">
+                        <span @click="queryUsersProject(scoped.row)">权限</span>
                         <span @click="deleteUser(scoped.row)">删除</span>
                         <span @click="updateUser(scoped.row)">编辑</span>
                         <span @click="resetUsers(scoped.row)">初始化</span>
@@ -86,8 +114,9 @@
     </div>
 </template>
 <script>
-import {system} from '@/request/api.js'//api接口（接口统一管理）;
+import {system,project} from '@/request/api.js'//api接口（接口统一管理）;
 import table from '@/mixins/table' //表格混入数据
+import {treeTransfer} from '@/zw-components/index'
 const userType = ['',{id:1,name:'运营管理'},{id:2, name:'集团管理'},{id:3,name:'项目管理'},{id:4,name:'项目现场运维'}]
 export default {
     mixins:[table],
@@ -151,6 +180,14 @@ export default {
                     label: '密码'
                 } */
             ],
+            show1:false,
+            defaultChecked:[],
+            userProject:[],
+            defaultProps: { //
+                children: 'data',
+                label: 'ShortName'
+            },
+            activeUser:null, 
             roleList:null, // 新增或修改弹框中的角色列表
             //新增用户默认数据
             defaultFormData:{
@@ -188,12 +225,25 @@ export default {
             FTelephoneRule:[{required: true, validator: phoneNumbre}], //联系方式规则
         }
     },
+    components:{
+        treeTransfer
+    },
     watch:{
         filterText(){
             clearTimeout(timer)
             var timer = setTimeout(() => {
                 this.queryData()
             },500)
+        },
+        show1(val){
+            if(!val){
+                this.$refs.transfer.$refs.tree.setCheckedNodes([])
+            }
+        }
+    },
+    computed:{
+        projectList(){
+            return this.$store.state.projectList
         }
     },
     created(){
@@ -340,6 +390,70 @@ export default {
             })
         },
         /**
+         * 399.获取指定账号管理项目
+         */
+        queryUsersProject(row){
+            this.activeUser = row
+            this.defaultChecked = []
+            project({
+                FAction:'QueryUsersProject',
+                FUserGuid:row.FGUID
+            })
+            .then((result) => {
+                this.userProject = result.FObject
+                this.defaultChecked = this.userProject.map(item => item.ProjectID)
+                this.show1 = true
+            }).catch((err) => {
+                console.log(err);
+            });
+        },
+        /**
+         * 项目集团关系树形节点选择发生改变触发
+         */
+        checkChange(data,check){
+            if(check){
+                let isExit = this.userProject.find(item => item.ProjectID == data.ProjectID)
+                if(!isExit){
+                    this.userProject.push({
+                        ProjectID:data.ProjectID,
+                        ShortName:data.ShortName
+                    })
+                }
+            }else {
+                this.userProject = this.userProject.filter(item => item.ProjectID != data.ProjectID)
+            }
+        },
+        /**
+         * 修改用户项目权限
+         */
+        updateUserProject(){
+            if(this.userProject.length == 0){
+                this.$message({
+                  type: 'warning',
+                  message: '请选择项目!'
+                });
+                return
+            }
+            let idStr = this.userProject.map(item => item.ProjectID).join(',')
+            this.show1 = false
+            project({
+                FAction:'UpdateUsersProject',
+                FUserGuid:this.activeUser.FGUID,
+                FProjectIDStr:idStr
+            })
+            .then((result) => {
+                this.$message({
+                  type: 'success',
+                  message: '设置成功!'
+                });
+            }).catch((err) => {
+                this.$message({
+                  type: 'error',
+                  message: '设置失败!'
+                });
+            });
+        },
+        /**
          * deleteUser 删除用户
          * @param {type Object} user 用户
          */
@@ -456,6 +570,40 @@ $img-url:'/static/image/';
             .submit{
                 text-align: center;
                 margin-top: 37px;
+            }
+            .tab-header{
+                position: relative;
+                color: white;
+                font-size: 14px;
+                padding: 5px 6px;
+                li{
+                    height: 25px;
+                    line-height: 25px;
+                    padding: 0 12px;
+                    cursor: pointer;
+                    border-bottom:1px solid#7EF7FE;
+                    opacity:0.5;
+                    background-color:rgba(20,107,214,0.22);
+                    background-clip:content-box;
+                    div{
+                        padding: 0 12px;
+                    }
+                }
+                li.active{
+                    border:1px solid#7EF7FE;
+                    border-bottom: none;
+                    background:none
+                }
+                li:last-of-type{
+                    width: 100px;
+                    background:none
+                }
+            }
+            .tab-content{
+                padding: 20px 30px;
+                .zw-btn{
+                    margin-top: 26px;
+                }
             }
         }
     }

@@ -159,7 +159,7 @@ export default {
       } else {
         this.curr_selectdata = this.$store.state.projectList.find(
           item => item.ProjectID == projectID
-        );
+        )||this.$store.state.projectList[0];
         return this.$store.state.projectList;
       }
     }
@@ -172,8 +172,6 @@ export default {
       //退出按钮
       localStorage.setItem("Token", "");
       localStorage.setItem("iuserName", "");
-      localStorage.setItem("projectid", "");
-      localStorage.setItem("projectname", "");
       localStorage.setItem("refresh", 1); //用户退出时，刷新登录页面，避免项目定时器ajax继续执行
       this.$router.push({ path: "/login" });
     },

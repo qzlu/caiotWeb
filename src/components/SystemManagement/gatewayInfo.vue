@@ -12,10 +12,10 @@
                     <el-input v-model="addInfo.LDasName">
                     </el-input>
                 </el-form-item>
-<!--                 <el-form-item label="网关ID" prop="LDasID" :rules="[{ required: true, message: '请输入'}]">
+                <el-form-item label="网关ID" prop="LDasID" :rules="[{ required: true, message: '请输入'}]">
                     <el-input type="number" placeholder="网关ID只能输入数字" v-model="addInfo.LDasID">
                     </el-input>
-                </el-form-item> -->
+                </el-form-item>
                 <el-form-item label="网关位置" prop="Position" :rules="[{ required: true, message: '请输入'}]">
                     <el-input v-model="addInfo.Position">
                     </el-input>

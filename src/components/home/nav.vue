@@ -112,8 +112,16 @@ export default {
   data() {
     return {
       curr: "monitoring",
-      navData: []
     };
+  },
+  computed:{
+    navData(){
+      if(this.$store.state.menuData.length>0){
+        return this.$store.state.menuData
+      }else{
+        this.$store.dispatch('getMenu')
+      }
+    }
   },
   methods: {
     ichange(x) {
@@ -148,7 +156,7 @@ export default {
     let ref_router = this.$route.path.split("/")[2];
     this.curr = ref_router;
     /*动态用户一级菜单Banner */
-		this.getMenu()
+		/* this.getMenu() */
   }
 };
 </script>

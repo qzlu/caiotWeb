@@ -7,7 +7,7 @@
                     <ul class="clearfix device-list">
                         <li class="l" v-for="device in item.data" :key="device.DeviceID" :class="{alarm:device.IsAlarm}" :style="{width:width+'px'}">
                             <i :class="{r:true,'el-icon-star-off':!device.IsFocus,'el-icon-star-on':device.IsFocus}" @click="addOrDeleteUFocusMonitor(device)"></i>
-                            <router-link :to="{ name: 'detail_info_list',params:{ id:device.DeviceID,PossionID:device.DataDetail[0].SDataID,getalldata:device}}">
+                            <router-link :to="{ name: 'detail_info_list',params:{ id:device.DeviceID,PossionID:device.DataDetail[0]?device.DataDetail[0].SDataID:0,getalldata:device}}">
                                 <h4>
                                         {{device.DeviceName}}
                                 </h4>

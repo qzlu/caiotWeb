@@ -134,10 +134,12 @@ export default {
                 "FUserNickname",
                 data.FObject[0].FUserNickname
               ); //用户别名，每个账号都有个中文名
-              this.getprojectID(); //成功登录，取用户第一个项目projectid 和projectName
-              setTimeout(() => {
-                this.$router.push({ path: "/" });
-              }, 300);
+              this.$store.dispatch('getMenu')
+              .then((result) => {
+                this.$router.push({name:`${result.FFunctionURLAddress}`})
+              }).catch((err) => {
+                console.log(err,'12');
+              });
             })
             .catch(function(err) {});
         } else {
@@ -153,23 +155,6 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-
-    getprojectID() {
-      //获取项目id及名称
-      project({
-        FAction: "GetProject"
-      })
-        .then(data => {
-          /*设置默认项目 FIsDefault==1为默认项目*/
-          let projects = data.FObject; //所有项目
-          let fist = projects.find(item => item.FIsDefault);
-          localStorage.setItem("projectid", fist.ProjectID);
-          localStorage.setItem("projectname", fist.ShortName);
-          /*设置默认项目*/
-        })
-        .catch(error => {});
-    },
-
     ch_active() {
       //记住用户名和密码
 

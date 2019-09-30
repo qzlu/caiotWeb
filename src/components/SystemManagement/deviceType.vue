@@ -65,7 +65,7 @@
                <el-table-column
                  prop=""
                  label="图标">
-                 <template slot-scope="scoped">
+                 <template  slot-scope="scoped">
                      <div>
                          <i :class="['iconfont',scoped.row.IconName]"></i>
                      </div>

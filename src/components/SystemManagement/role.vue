@@ -24,7 +24,7 @@
         <div class="role-config">
             <el-dialog :visible.sync="show1" width="560">
                 <ul class="tab-header clearfix">
-                    <li :class="{'active': tabIndex === 1,'l':true}" @click="tabIndex = 1"><div>集团项目权限</div></li>
+                    <!-- <li :class="{'active': tabIndex === 1,'l':true}" @click="tabIndex = 1"><div>集团项目权限</div></li> -->
                     <li :class="{'active': tabIndex === 2,'l':true}" @click="tabIndex = 2"><div>PC功能点</div></li>
                     <!-- <li :class="{'active': tabIndex === 3,'l':true}" @click="tabIndex = 3"><div>APP功能点</div></li> -->
                     <li class="l"></li>
@@ -186,7 +186,7 @@ export default {
             show:false, //控制新增弹框是否显示
             type:0,  // 0 :新增角色 1：修改角色
             show1:false, //控制权限弹框是否显示
-            tabIndex:1, // 选项卡索引
+            tabIndex:2, // 选项卡索引
             data:[], //权限弹框所有项目数据
             data1:[], //权限弹框已选项目数据
             defaultChecked:[], //权限弹框已选项目，控制所有项目默认选中

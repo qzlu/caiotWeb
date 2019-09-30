@@ -65,7 +65,7 @@
                           v-for="(df,key) in c.SDataValue"
                           :data="df.DStatus"
                           :key="key"
-                          @click="click_show_line(c.SDataID)"
+                          @click="clickDeviceItem(c)"
                         >{{(datalist02.DeviceTypeID==1003&&c.SDataID==1) ? (df.DValue>0?'上行':(df.FValue == 0 ? '停止': '下行')) : df.DValue}}{{key!==c.SDataValue.length-1?'/':''}}</i>
                       </p>
                       <p class="grd">
@@ -83,30 +83,18 @@
                       <p>
                         <i
                           class="icon iconfont"
-                          :class="datalist02.WebIconName"
-                          :data="datalist02.DeviceStatus"
+                          :class="[datalist02.WebIconName,`status-${datalist02.DeviceStatus}`]"
                           style="font-size: 50px;"
                         ></i>
                       </p>
                       <p class="tx">
                         <i
-                          class="icon iconfont"
-                          :data="datalist02.DeviceStatus"
+                          :class="[`status-${datalist02.DeviceStatus}`]"
                         >{{datalist02.DeviceStatusTitle}}</i>
                         <!--合闸-->
                       </p>
                     </div>
                   </div>
-
-                  <!--<div class="lrn r">
-	 		  		<p class="gre">0.96</p>
-	 		  		<p class="grd">功率因数(V)</p>	
-	 		  		<p class="gre">456/526/455</p>
-	 		  		<p class="grd">绕组温度(℃）</p>	 		  		
-	 		  		<p class="gre">456/526/455</p>
-	 		  		<p class="grd">视在功率(KVA)</p>
-	 		  			 		  			
-                  </div>-->
                 </div>
               </li>
             </ul>
@@ -122,7 +110,18 @@
               style="width: 900px; height: 185px; float: left; color: #fff; margin-top: 19px;"
               id="container_vn"
             >
-              <line-chart :data="linedata" :color='["#FF3600", "#00D1D9", "#FF7300"]'></line-chart>
+              <div v-if="datalist02.DeviceTypeID == 500" class="type-500">
+                <el-scrollbar>
+                  <ul v-if="activeItem">
+                    <li v-for="(item,i) in alarmData" :key="i">
+                      <span>{{item.FDateTime}}</span>
+                      <span>{{activeItem.SDataTitle.replace(/数/ig,'')}}</span>
+                      <span>{{item.event}}</span>
+                    </li>
+                  </ul>
+                </el-scrollbar>
+              </div>
+              <line-chart v-else  :data="linedata" :color='["#FF3600", "#00D1D9", "#FF7300"]'></line-chart>
             </div>
           </div>
         </div>
@@ -186,7 +185,6 @@ import videojs from "video.js";
 import * as comm from "../../assets/js/pro_common";
 import img_data from "./d_l_a.vue"; //中间图片
 import table_data from "./d_l_b.vue"; //列表组件
-var echarts = require("echarts");
 import {project} from '@/request/api';
 import {lineChart} from '@/zw-components/index';
 import liftDetaile from './liftDetaile.vue' //电梯页面
@@ -196,46 +194,17 @@ export default {
       datalist: [], //静态数据
       datalist02: this.$route.params.getalldata, //点击进来当前设备详情，左1
       linedata: {}, //图表线条数据
+      alarmData:[], //消防主机告警数据
       video_div: false,
       dl_datalist: [], //大事件数据
+      activeItem:null, //当前选中的设备数据项
+      timer:null,
       videoUrl:
         "http://hls.open.ys7.com/openlive/669cf1ba63a34653a1c358b17ceea2b6.m3u8"
     };
   },
   created() {
-    //   console.log(this.$route.params.getalldata)
-
-    /*避免用户刷新无数据，写入本地存储*/
-    //localStorage.setItem("data_link",this.$route.params.getalldata);
-    //如果用户刷新，就从localStorage的取数据
-    var urls = this.$route.params.getalldata;
-    var isok = urls.DeviceID;
-    if (isok) {
-      localStorage.setItem("dataing", JSON.stringify(urls));
-    } else {
-      var d = localStorage.getItem("dataing");
-      this.datalist02 = JSON.parse(d);
-      //console.log(d)
-    }
-    /*避免用户刷新无数据，写入本地存储*/
-
-    var data = [
-      {
-        id: "0",
-        title: "供配电0",
-        name: "设备总数",
-        num: "1000",
-        a1: "22",
-        a2: "12",
-        list: [
-          { value: 80, name: "运行" },
-          { value: 15, name: "停止" },
-          { value: 5, name: "故障" }
-        ]
-      }
-      /*{id:"1",title:"告警总况",name:"及时恢复",num:"500",list:[{value:80, name:'已恢复'},{value:20, name:'未恢复'}]},		*/
-    ];
-    this.datalist = data;
+    this.getDeviceInfo()
     this.getDeviceMemorabilia()
   },
   methods: {
@@ -244,6 +213,27 @@ export default {
     },
     routerback() {
       this.$router.back(-1);
+    },
+      /**
+     * 获取设备信息
+     */
+    getDeviceInfo() {
+      project({
+        FAction: "GetPrjSingleAreaDeviceInfo",
+        AreaID: 1,
+        DeviceID: this.$route.params.id
+      })
+      .then(data => {
+        this.datalist02 = data.FObject[0]||{}
+        if(this.datalist02.DataDetail&&this.datalist02.DataDetail.length>0){
+          !this.activeItem&&(this.activeItem = this.datalist02.DataDetail[0])
+          this.clickDeviceItem(this.activeItem)
+        }
+        this.timer = setTimeout(() => {
+          this.getDeviceInfo()
+        },1000*10)
+      })
+      .catch(err => {});
     },
     /**
      * 获取大事件数据
@@ -314,7 +304,6 @@ export default {
         this.datalist02.DeviceTypeID == 801 ||
         this.datalist02.DeviceTypeID == 800
       ) {
-        console.log(info)
         this.videoUrl = info && info.ExtendAddress;
         if (!this.videoUrl) return;
         this.video_div = true;
@@ -323,199 +312,56 @@ export default {
         });
       }
     },
-    click_show_line(x) {
-			project({
-				FAction: "GetDeviceDataItemChartData",
-        DeviceID: this.$route.params.id, //产品自己id
-        PossionID: x //_this.$route.params.PossionID默认第一个（三相电压id）
-			})
-			.then(data => {
-        console.log(data)
-        this.linedata = this.formatChartData(data.FObject);
-        //this.line_data_reset();
-			})
-			.catch(err => {})
-    },
-
-    line_data_reset() {
-      //重新组装线条图形表
-
-      //console.log(this.linedata)
-      let d = this.linedata;
-      let arr_name = [],
-        x_arr = [],
-        y_arr = [];
-      arr_name = d.map(item => item.DataItemName);
-      let ggg = d[0].ProjectChartLineDatas; //x轴是一样的，把第一个X轴的数据写入数组
-      x_arr = ggg.map(item => item.X);
-      /*组装成line图表相应的格式数据*/
-      y_arr = d.map(item => {
-        let data = item.ProjectChartLineDatas.map(obj => {
-          return  obj.Y
-        });
-        return {
-          type: "line",
-          name: item.DataItemName,
-          data: data
-        };
-      });
-      //arr_name名称，x_arr为x轴上的数据，每条都一样，y_arr为y轴数据
-      this.line_chart(arr_name, x_arr, y_arr);
-    },
-
-    /*动态数据pie*/
-
-    Pro() {
-      let _this = this;
-			//返回一个Promise对象
-      return new Promise(function(resolve, reject) {
-        _this.$axios
-          .post("Project", {
-            FTokenID: localStorage.getItem("Token"),
-            FAction: "GetDeviceDataItemChartData",
-            FVersion: "1.0.0",
-            ProjectID: localStorage.getItem("projectid"),
-            DeviceID: _this.$route.params.id, //产品自己id
-            PossionID: _this.$route.params.PossionID //默认第一个（三相电压id）
-          })
-          .then(function(jsons) {
-            //console.log(jsons.data.FObject)
-            comm.messageErr(jsons.data.Result); //公共状态提示
-            _this.linedata = _this.formatChartData(jsons.data.FObject);
-
-            if (jsons) {
-              resolve("succ");
-            }
-          })
-          .catch(function(err) {});
-      });
-    },
-    Pro2() {
-      let _this = this;
-      //返回一个Promise对象
-      return new Promise(function(resolve, reject) {
-        // _this.line_data_reset();
-
-        /*给所有图动态加色*/
-        var doc_all = document.getElementsByTagName("i");
-
-        for (var gg = 0; gg < doc_all.length; gg++) {
-          if (doc_all[gg].getAttribute("data")) {
-            var hg = Number(doc_all[gg].getAttribute("data"));
-            var ggg = comm.resetColor(hg);
-            doc_all[gg].style.color = ggg;
-          }
-        }
-        /*给所有图动态加色*/
-
-        resolve("succ");
-      });
-    },
-
-    line_chart(name, x, ydatas) {
-      //生成line 坐标图
-      //console.log(x)
-      var dom = document.getElementById("container_vn");
-      var myChart = echarts.init(dom);
-      var app = {};
-      var option = null;
-      option = {
-        title: {
-          // text: '折线图堆叠'
-        },
-        tooltip: {
-          trigger: "axis"
-        },
-        textStyle: {
-          fontWeight: "normal", //标题颜色
-          color: "#fff"
-        },
-        legend: {
-          // data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎'],
-          data: name,
-          // itemWidth: 0,
-          //itemHeight: 0,
-          textStyle: {
-            fontWeight: "normal", //标题颜色
-            color: "#fff"
-          }
-        },
-        grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          containLabel: true
-        },
-        toolbox: {
-          feature: {
-            // saveAsImage: {}
-          }
-        },
-        xAxis: {
-          type: "category",
-          boundaryGap: false,
-          axisLine: {
-            //y轴色
-            lineStyle: {
-              color: "#7f7f7f",
-              width: 1
-            }
-          },
-          data: x
-        },
-        yAxis: {
-          type: "value",
-          splitLine: { show: false }, //去除网格线
-          axisLine: {
-            //y轴色
-            lineStyle: {
-              color: "#7f7f7f",
-              width: 1
-            }
-          }
-        },
-        series: ydatas,
-        color: ["#FF3600", "#00D1D9", "#FF7300"]
-      };
-      if (option && typeof option === "object") {
-        myChart.setOption(option, true);
+    /**
+     * 点击设备的每个数据项时
+     */
+    clickDeviceItem(item){
+      this.activeItem = item
+      if(this.datalist02.DeviceTypeID == 500){
+        this.queryFireHostAlarmData()
+      }else{
+        this.getChartData()
       }
-    }
+    },
+    /**
+     * 获取实时监测折线图数据
+     */
+    getChartData(){
+      project({
+        FAction: "GetDeviceDataItemChartData",
+        DeviceID: this.$route.params.id,
+        PossionID:this.activeItem.SDataID
+      })
+      .then((result) => {
+        this.linedata = this.formatChartData(result.FObject)
+      }).catch((err) => {
+        
+      });
+    },
+    /**
+     * 398.查询消防主机未恢复告警数据
+     */
+    queryFireHostAlarmData(id){
+      project({
+        FAction: 'QueryFireHostAlarmData',
+        DeviceID:this.$route.params.id,
+        DataItemID:this.activeItem.SDataID
+      })
+      .then((result) => {
+        this.alarmData = result.FObject || []
+      }).catch((err) => {
+        
+      });
+    },
+
   },
   components: { "my-imgdata": img_data, table_data ,lineChart,liftDetaile},
   mounted: function() {
-    let _this = this;
-    function settimeouts_detil_info_list() {
-      _this
-        .Pro()
-        .then(function(d) {
-          return _this.Pro2(d);
-        })
-        .then(function() {
-          /* 去除最后一条"/" */
-          var doc_gh = document.querySelectorAll(".gre");
-          for (let j of doc_gh) {
-            let ab = j.children,
-              len = j.children.length;
-            if (len) {
-              ab[len - 1].innerHTML = ab[len - 1].innerHTML.replace("/", "");
-              //console.log(ab[len-1].innerHTML)
-            }
-          }
-          /* end of 去除最后一条"/" */
-        })
-        .catch(function(err) {});
 
-      let timeoutId_detal_info_list = setTimeout(
-        settimeouts_detil_info_list,
-        24000
-      );
-      let router_currt = _this.$route.name;
-      if (router_currt != "detail_info_list") {
-        clearTimeout(timeoutId_detal_info_list);
-      }
-    }
-    settimeouts_detil_info_list();
+  },
+  beforeDestroy(){
+    clearTimeout(this.timer)
+    this.timer = null
   },
   destroyed() {
     if (this.video_div) {
@@ -748,6 +594,7 @@ a {
   color: #03cd82;
   font-size: 17px;
   padding: 1px 0;
+  cursor: pointer;
 }
 .det_left ul li .a1 .grd {
   font-size: 13px;
@@ -829,5 +676,33 @@ a {
 .iframe-container iframe{
   width: 100%;
   height: 900px;
+}
+.status-1{
+    color: #1bd1a1
+}
+.status-2{
+    color: #73777a
+}
+.status-3{
+    color: #0091fe
+}
+.status-4{
+    color: #fef500
+}
+.status-5{
+    color: #9c1428
+}
+.type-500{
+  height: 164px;
+  margin-top: 30px;
+}
+.type-500 ul li{
+  height: 34px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+.type-500 ul li span+span{
+  margin-left: 50px;
 }
 </style>
