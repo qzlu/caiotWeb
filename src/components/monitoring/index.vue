@@ -1,6 +1,6 @@
 <template>
   <div class="monitoring">
-    <div v-if="$route.name === 'SystemBrowse'||$route.name === 'AreaBrowse'">
+    <div  v-if="$route.name === 'SystemBrowse'||$route.name === 'AreaBrowse'">
       <router-view></router-view>
     </div>
     <div v-else>

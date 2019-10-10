@@ -120,7 +120,7 @@ export default {
             FPassword: this.ruleForm2.checkPass,
             FAction: "Web"
           })
-            .then(data => {
+            .then(async data => {
               this.$message({
                 message: "登录成功！",
                 type: "success",
@@ -134,11 +134,20 @@ export default {
                 "FUserNickname",
                 data.FObject[0].FUserNickname
               ); //用户别名，每个账号都有个中文名
+              await this.$store.dispatch("getProject")
+              .then((result) => {
+                let projectID = localStorage.getItem("projectid");
+                if(!projectID){
+                  localStorage.setItem("projectid",result[0].ProjectID)
+                }
+              }).catch((err) => {
+                this.$message.error(err);
+              });
               this.$store.dispatch('getMenu')
               .then((result) => {
                 this.$router.push({name:`${result.FFunctionURLAddress}`})
               }).catch((err) => {
-                console.log(err,'12');
+                this.$message.error(err);
               });
             })
             .catch(function(err) {});

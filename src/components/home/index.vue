@@ -51,7 +51,7 @@
         </div>
         <div class="list_b">
           <div class="in"></div>
-          <div class="name_select" style="right:80px;">
+          <div class="name_select" style="right:80px;" v-if="selecdata">
             <p>
               <span>{{curr_selectdata && curr_selectdata.ShortName}}</span>
               <span v-if="selecdata.length>1" style="padding: 11px 5px 0 0; float: right;">
@@ -136,7 +136,7 @@ export default {
       curr_selectdata: "", //"新都会",
       seledata02: [localStorage.getItem("iuserName")], //["admin","user","新都会","云平台","新都会","云平台"],
       curr_selectdata02: localStorage.getItem("iuserName"),
-      datalist: "", //告警数据列表
+      datalist: [], //告警数据列表
       addclass: "",
       show: false,
       inIframe: localStorage.getItem("inIframe"), //是否是iframe调用
@@ -150,7 +150,9 @@ export default {
   computed: {
     selecdata() {
       let projectID = localStorage.getItem("projectid");
-      if (projectID > 0 && this.inIframe == 1) {
+      if(this.$store.state.projectList&&this.$store.state.projectList == 0){
+        this.$store.dispatch("getProject")
+      }else if (projectID > 0 && this.inIframe == 1) {
         let projectList = this.$store.state.projectList.filter(
           item => item.ProjectID == projectID
         );
@@ -165,8 +167,10 @@ export default {
     }
   },
   beforeCreate() {
+    
   },
-  created() {},
+  created() {
+  },
   methods: {
     all_out() {
       //退出按钮
@@ -248,12 +252,6 @@ export default {
           .catch(error => {});
       });
     },
-
-    Pro2() {
-      let _this = this;
-      //返回一个Promise对象
-      return new Promise(function(resolve, reject) {});
-    },
     beforeUpdatedPassword() {
       this.show = true;
       Object.keys(this.changePassWord).forEach(item => {
@@ -302,29 +300,26 @@ export default {
     var curr_time = this.getNowFormatDate();
     let _this = this;
     function  settimeouts_warn() {
-      var html_tem = document.getElementById("pin_wanr");
-      var chen = html_tem.children;
-      if (chen) var len = chen.length;
-      if (len) {
-        _this.addclass = "";
-      } else {
-        setTimeout(function() {
-          _this.addclass = "notice_green";
-        }, 100);
-      }
-      _this
-        .Pro(curr_time)
-        .then(function(d) {
-          return _this.Pro2(d);
-        })
-        .then(function() {})
-        .catch(function(err) {});
-
-      let timeoutId = setTimeout(settimeouts_warn, 2000);
+      _this.Pro(curr_time)
+      .then((result) => {
+        var html_tem = document.getElementById("pin_wanr");
+        var chen = html_tem.children;
+        if (chen) var len = chen.length;
+        if (len) {
+          _this.addclass = "";
+        } else {
+          setTimeout(function() {
+            _this.addclass = "notice_green";
+          }, 100);
+        }
+        let timeoutId = setTimeout(settimeouts_warn, 2000);
+      }).catch((err) => {
+        
+      });
     }
-
-    settimeouts_warn();
-    this.$store.commit("getProject");
+    this.$nextTick(() => {
+      settimeouts_warn();
+    })
   },
   components: { navItem }
 };

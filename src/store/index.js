@@ -28,19 +28,6 @@ const store = new Vuex.Store({
     },
     mutations: {
         /**
-         * 获取所有项目
-         */
-        getProject(state){
-            project({
-                FAction: "GetProject"
-            })
-            .then((data) => {
-                state.projectList = data.FObject
-            }).catch((err) => {
-                
-            });
-        },
-        /**
          * 66.获取所有区域
          * @param {*} state 
          */
@@ -71,6 +58,22 @@ const store = new Vuex.Store({
     actions:{
         queryOrderTUsers({commit}){
             commit('queryOrderTUsers')
+        },
+        /**
+         * 获取所有项目
+         */
+        getProject({state}){
+            return new Promise((resolve,reject) => {
+                project({
+                    FAction: "GetProject"
+                })
+                .then((data) => {
+                    state.projectList = data.FObject
+                    resolve(state.projectList)
+                }).catch((err) => {
+                    reject(err)
+                });
+            })
         },
         /**
          * 获取菜单列表
